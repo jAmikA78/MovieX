@@ -12,6 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.depi.moviex.ui.theme.MovieXTheme
+import android.content.Intent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
+import com.airbnb.lottie.compose.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,13 +26,42 @@ class MainActivity : ComponentActivity() {
         setContent {
             MovieXTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    SplashScreen {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SplashScreen(onAnimationFinished: () -> Unit) {
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.splash_animation)
+    )
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1
+    )
+
+    if (progress == 1f) {
+        LaunchedEffect(Unit) {
+            onAnimationFinished()
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress }
+        )
     }
 }
 

@@ -11,6 +11,15 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+
+// Program colours
+val BackgroundDark = Color(0xFF13131D)
+val PrimaryRed = Color(0xFFE54E3C)
+val OnboardingIconColor = Color(0xFFF78F78)
+val TextColorWhite = Color(0xFFFFFFFF)
+val PagerIndicatorInactive = Color(0xFF53535F)
+
+
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,

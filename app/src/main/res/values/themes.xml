@@ -2,4 +2,8 @@
 <resources>
 
     <style name="Theme.MovieX" parent="android:Theme.Material.Light.NoActionBar" />
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2b8c97a (Initial commit)
 </resources>

@@ -244,12 +244,12 @@ docker run --rm \
   -v ~/.gradle-docker-cache:/root/.gradle \
   mingc/android-build-box:latest \
   bash -c 'cd /project && ./gradlew assembleDebug --no-daemon'
-  # Uninstall and install the app
-  adb uninstall com.depi.moviex
-  # Install the app
-  adb install app/build/outputs/apk/debug/app-debug.apk
-  # Run the app
-  adb run-as com.depi.moviex
+# Uninstall and install the app
+adb uninstall com.depi.moviex
+# Install the app
+adb install app/build/outputs/apk/debug/app-debug.apk
+# Run the app
+adb shell am start -n "com.depi.moviex/.MainActivity"
 ```
 
 ### Docker Limitations

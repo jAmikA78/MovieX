@@ -1,4 +1,4 @@
-package com.example.moviex.ui.theme.screens.onboarding
+package com.depi.moviex.ui.theme.screens.onboarding
 
 data class OnboardingPage(
     val iconRes: Int,

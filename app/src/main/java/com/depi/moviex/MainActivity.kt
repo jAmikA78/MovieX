@@ -1,4 +1,4 @@
-package com.example.moviex
+package com.depi.moviex
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,9 +10,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.moviex.ui.screens.SplashScreen
-import com.example.moviex.ui.screens.onboarding.OnboardingScreen
-import com.example.moviex.ui.theme.MovieXTheme
+import com.depi.moviex.ui.screens.SplashScreen
+import com.depi.moviex.ui.screens.onboarding.OnboardingScreen
+import com.depi.moviex.ui.theme.MovieXTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

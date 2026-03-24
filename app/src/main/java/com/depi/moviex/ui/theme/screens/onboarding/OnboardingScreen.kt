@@ -1,4 +1,4 @@
-package com.example.moviex.ui.screens.onboarding
+package com.depi.moviex.ui.screens.onboarding
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -18,9 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.moviex.R
-import com.example.moviex.ui.theme.*
-import com.example.moviex.ui.theme.screens.onboarding.OnboardingPage
+import com.depi.moviex.R
+import com.depi.moviex.ui.theme.*
+import com.depi.moviex.ui.theme.screens.onboarding.OnboardingPage
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

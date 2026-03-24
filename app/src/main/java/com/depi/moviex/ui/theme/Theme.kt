@@ -12,6 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 
+
+import androidx.compose.ui.graphics.Color
+
+
 // Program colours
 val BackgroundDark = Color(0xFF13131D)
 val PrimaryRed = Color(0xFFE54E3C)

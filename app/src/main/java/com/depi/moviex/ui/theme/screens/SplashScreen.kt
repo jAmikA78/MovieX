@@ -1,4 +1,4 @@
-package com.example.moviex.ui.screens
+package com.depi.moviex.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.moviex.R
+import com.depi.moviex.R
 import kotlinx.coroutines.delay
 
 @Composable

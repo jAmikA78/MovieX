@@ -1,6 +1,6 @@
-package com.depi.moviex.movie.remote.api
+package com.depi.moviex.movie.data.remote.api
 
-import com.depi.moviex.movie.remote.models.MovieDto
+import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.BuildConfig
 import com.depi.moviex.utils.K
 import retrofit2.http.GET

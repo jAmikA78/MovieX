@@ -1,4 +1,4 @@
-package com.depi.moviex.movie.remote.models
+package com.depi.moviex.movie.data.remote.models
 
 
 import kotlinx.serialization.SerialName

@@ -115,7 +115,7 @@ fun LoginScreen(
                 onClick = onGuestLogin,
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
+                border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
                     brush = Brush.linearGradient(
                         colors = listOf(Color(0xFFE54E3C), Color(0xFF8A30B1).copy(alpha = 0.5f))
                     )

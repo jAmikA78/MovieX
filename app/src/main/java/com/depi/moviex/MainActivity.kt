@@ -18,7 +18,9 @@ import com.depi.moviex.ui.screens.SplashScreen
 import com.depi.moviex.ui.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.MovieXTheme
 import com.depi.moviex.ui.theme.screens.LoginScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

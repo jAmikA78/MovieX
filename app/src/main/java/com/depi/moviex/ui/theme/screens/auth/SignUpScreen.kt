@@ -1,10 +1,10 @@
-package com.depi.moviex.ui.theme.screens
+package com.depi.moviex.ui.theme.screens.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -14,28 +14,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.BorderStroke
-import com.depi.moviex.R
+import androidx.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onGuestLogin: () -> Unit,
-    onSignUpClick: () -> Unit
-)
-{
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+private fun SignUpScreenPreview() {
+    SignUpScreen(
+        onSignUpSuccess = {},
+        onLoginClick = {},
+        onGuestLogin = {}
+    )
+}
 
-    val loginButtonGradient = Brush.linearGradient(
+@Composable
+fun SignUpScreen(
+    onSignUpSuccess: () -> Unit,
+    onLoginClick: () -> Unit,
+    onGuestLogin: () -> Unit
+) {
+    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+
+    val signUpButtonGradient = Brush.linearGradient(
         colors = listOf(
             Color(0xFFE54E3C),
             Color(0xFF8A30B1)
@@ -52,40 +60,55 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth().align(Alignment.Center)
         ) {
-
             Text(
-                text = "Login",
+                text = "Sign Up",
                 color = Color.White,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 40.dp)
             )
 
-            // --Username--
-            MovieXTextField(
+            AuthTextField(
                 value = username,
                 onValueChange = { username = it },
                 label = "Username",
-                placeholder = "Type your username",
+                placeholder = "Choose a username",
                 icon = Icons.Default.Person
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // --Password--
-            MovieXTextField(
+            AuthTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = "Email",
+                placeholder = "Enter your email",
+                icon = Icons.Default.Email
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AuthTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = "Password",
-                placeholder = "Type your password",
+                placeholder = "Create a password",
+                icon = Icons.Default.Lock,
+                isPassword = true
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AuthTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = "Confirm Password",
+                placeholder = "Confirm your password",
                 icon = Icons.Default.Lock,
                 isPassword = true
             )
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            //  زرار LOGIN الأساسي (بالـ Gradient)
             Button(
-                onClick = onLoginSuccess,
+                onClick = onSignUpSuccess,
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -93,69 +116,38 @@ fun LoginScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(loginButtonGradient, shape = RoundedCornerShape(10.dp)),
+                        .background(signUpButtonGradient, shape = RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "LOGIN",
+                        text = "SIGN UP",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Text(
-                text = "Or Sign Up Using",
-                color = Color.White.copy(alpha = 0.5f),
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
-            OutlinedButton(
-                onClick = onGuestLogin,
-                modifier = Modifier.fillMaxWidth().height(55.dp),
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(2.dp, Color(0xFFE54E3C))
-            ) {
-                Text(
-                    text = "CONTINUE AS GUEST",
-                    color = Color(0xFFE54E3C), // لون مميز للضيف
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // 8. Sign Up رابط أسفل الشاشة
         TextButton(
-            onClick = onSignUpClick,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)
+            onClick = onLoginClick,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
         ) {
             Text(
-                text = "SIGN UP",
+                text = "Already have an account? Login" +
+                        "\nOr continue as GUEST",
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             )
         }
     }
 }
 
 @Composable
-fun SocialIcon(iconResId: Int) {
-    Box(
-        modifier = Modifier
-            .size(50.dp)
-            .background(Color.White, shape = CircleShape) // عشان تظهر واضحة
-            .padding(10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MovieXTextField(
+fun AuthTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -191,7 +183,8 @@ fun MovieXTextField(
             ),
             shape = RoundedCornerShape(10.dp),
             visualTransformation = if (isPassword) PasswordVisualTransformation()
-            else VisualTransformation.None
+            else VisualTransformation.None,
+            singleLine = true
         )
     }
 }

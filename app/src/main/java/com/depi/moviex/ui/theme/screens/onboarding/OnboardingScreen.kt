@@ -1,4 +1,4 @@
-package com.depi.moviex.ui.screens.onboarding
+package com.depi.moviex.ui.theme.screens.onboarding
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -21,7 +21,14 @@ import androidx.compose.ui.unit.sp
 import com.depi.moviex.R
 import com.depi.moviex.ui.theme.*
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingPage
+import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
+
+@Preview
+@Composable
+private fun OnboardingScreenPreview() {
+    OnboardingScreen(onFinish = {})
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

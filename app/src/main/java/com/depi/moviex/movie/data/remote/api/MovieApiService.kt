@@ -19,4 +19,31 @@ interface MovieApiService {
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("include_adult") includeAdult: Boolean = false
     ): MovieDto
+
+    @GET(K.TV_SHOW_ENDPOINT)
+    suspend fun fetchTvShows(
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("include_adult") includeAdult: Boolean = false
+    ): MovieDto
+
+    @GET(K.ACTION_ENDPOINT)
+    suspend fun fetchActionMovies(
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("with_genres") genreId: String = K.GENRE_ACTION.toString(),
+        @Query("include_adult") includeAdult: Boolean = false
+    ): MovieDto
+
+    @GET(K.DRAMA_ENDPOINT)
+    suspend fun fetchDramaMovies(
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("with_genres") genreId: String = K.GENRE_DRAMA.toString(),
+        @Query("include_adult") includeAdult: Boolean = false
+    ): MovieDto
+
+    @GET(K.COMEDY_ENDPOINT)
+    suspend fun fetchComedyMovies(
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("with_genres") genreId: String = K.GENRE_COMEDY.toString(),
+        @Query("include_adult") includeAdult: Boolean = false
+    ): MovieDto
 }

@@ -7,4 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface MovieRepository {
     fun fetchDiscoverMovies(): Flow<Response<List<Movie>>>
     fun fetchTrendingMovies(): Flow<Response<List<Movie>>>
+    fun fetchTvShows(): Flow<Response<List<Movie>>>
+    fun fetchActionMovies(): Flow<Response<List<Movie>>>
+    fun fetchDramaMovies(): Flow<Response<List<Movie>>>
+    fun fetchComedyMovies(): Flow<Response<List<Movie>>>
 }

@@ -4,20 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.depi.moviex.ui.screens.SplashScreen
-import com.depi.moviex.ui.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.MovieXTheme
-import com.depi.moviex.ui.theme.screens.LoginScreen
+import com.depi.moviex.ui.theme.screens.auth.LoginScreen
+import com.depi.moviex.ui.theme.screens.auth.SignUpScreen
+import com.depi.moviex.ui.theme.screens.home.HomeScreen
+import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
+import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -71,17 +67,34 @@ fun AppNavigation() {
                         popUpTo("login") { inclusive = true }
                     }
                 },
-                onSignUpClick = { /* ودى لصفحة الساين اب */ }
+                onSignUpClick = {
+                    navController.navigate("signup")
+                }
+            )
+        }
+
+        composable("signup") {
+            SignUpScreen(
+                onSignUpSuccess = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onLoginClick = {
+                    navController.navigate("login")
+                },
+                onGuestLogin = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
             )
         }
 
         composable("home") {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Welcome to MovieX Home", color = Color.White)
-            }
+            HomeScreen(
+                // add movie detail screen
+            )
         }
     }
 }

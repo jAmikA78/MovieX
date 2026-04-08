@@ -1,8 +1,8 @@
-package com.example.jetmovie.movie_detail.domain.repository
+package com.depi.moviex.movie_detail.domain.repository
 
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.utils.Response
-import com.example.jetmovie.movie_detail.domain.models.MovieDetail
+import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import kotlinx.coroutines.flow.Flow
 
 interface MovieDetailRepository {

@@ -1,4 +1,4 @@
-package com.example.jetmovie.movie_detail.domain.models
+package com.depi.moviex.movie_detail.domain.models
 
 data class MovieDetail(
     val backdropPath: String,

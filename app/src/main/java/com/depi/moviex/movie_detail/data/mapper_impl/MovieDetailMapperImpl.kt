@@ -3,9 +3,9 @@ package com.depi.moviex.movie_detail.data.mapper_impl
 import com.depi.moviex.common.data.ApiMapper
 import com.depi.moviex.movie_detail.data.remote.models.CastDto
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
-import com.example.jetmovie.movie_detail.domain.models.Cast
-import com.example.jetmovie.movie_detail.domain.models.MovieDetail
-import com.example.jetmovie.movie_detail.domain.models.Review
+import com.depi.moviex.movie_detail.domain.models.Cast
+import com.depi.moviex.movie_detail.domain.models.MovieDetail
+import com.depi.moviex.movie_detail.domain.models.Review
 import java.text.SimpleDateFormat
 import java.util.Locale
 

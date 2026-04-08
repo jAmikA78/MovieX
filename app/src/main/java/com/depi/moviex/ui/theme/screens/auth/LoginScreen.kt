@@ -21,6 +21,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depi.moviex.auth.domain.models.LoginState
+import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
 
 @Preview
 @Composable
@@ -28,7 +32,8 @@ private fun LoginScreenPreview() {
     LoginScreen(
         onLoginSuccess = {},
         onGuestLogin = {},
-        onSignUpClick = {}
+        onSignUpClick = {},
+        loginViewModel = hiltViewModel()
     )
 }
 
@@ -37,11 +42,21 @@ private fun LoginScreenPreview() {
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onGuestLogin: () -> Unit,
-    onSignUpClick: () -> Unit
-)
-{
+    onSignUpClick: () -> Unit,
+    loginViewModel: LoginViewModel = hiltViewModel()
+) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    val loginState by loginViewModel.loginState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Success -> onLoginSuccess()
+            is LoginState.Error -> { /* Error handled in UI */ }
+            else -> { /* Handle other states */ }
+        }
+    }
 
     val loginButtonGradient = Brush.linearGradient(
         colors = listOf(
@@ -89,14 +104,34 @@ fun LoginScreen(
                 isPassword = true
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Error message
+            if (loginState is LoginState.Error) {
+                Text(
+                    text = (loginState as LoginState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            // Loading indicator
+            if (loginState is LoginState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             //  زرار LOGIN الأساسي (بالـ Gradient)
             Button(
-                onClick = onLoginSuccess,
+                onClick = { loginViewModel.login(username, password) },
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                enabled = loginState !is LoginState.Loading
             ) {
                 Box(
                     modifier = Modifier

@@ -13,6 +13,7 @@ import com.depi.moviex.ui.theme.screens.auth.LoginScreen
 import com.depi.moviex.ui.theme.screens.auth.SignUpScreen
 import com.depi.moviex.ui.theme.screens.home.HomeScreen
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
+import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -93,7 +94,25 @@ fun AppNavigation() {
 
         composable("home") {
             HomeScreen(
-                // add movie detail screen
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onSettingsClick = {
+                    navController.navigate("settings")
+                }
+            )
+        }
+
+        composable("settings") {
+            SettingsScreen(
+                onSignOut = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
     }

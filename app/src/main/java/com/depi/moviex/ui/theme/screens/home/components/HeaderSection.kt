@@ -22,7 +22,6 @@ fun HeaderSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 60.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
             text = "Welcome back",

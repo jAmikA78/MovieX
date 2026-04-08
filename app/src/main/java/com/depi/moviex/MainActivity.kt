@@ -14,13 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.depi.moviex.ui.theme.screens.splash.SplashScreen
-import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
+import com.depi.moviex.ui.screens.SplashScreen
+import com.depi.moviex.ui.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.MovieXTheme
-import com.depi.moviex.ui.theme.screens.auth.LoginScreen
-import com.depi.moviex.ui.theme.screens.auth.SignUpScreen
-import com.depi.moviex.ui.theme.screens.home.HomeScreen
+import com.depi.moviex.ui.theme.screens.LoginScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,34 +71,17 @@ fun AppNavigation() {
                         popUpTo("login") { inclusive = true }
                     }
                 },
-                onSignUpClick = {
-                    navController.navigate("signup")
-                }
-            )
-        }
-
-        composable("signup") {
-            SignUpScreen(
-                onSignUpSuccess = {
-                    navController.navigate("home") {
-                        popUpTo("signup") { inclusive = true }
-                    }
-                },
-                onLoginClick = {
-                    navController.navigate("login") {
-                        popUpTo("signup") { inclusive = true }
-                    }
-                },
-                onGuestLogin = {
-                    navController.navigate("home") {
-                        popUpTo("signup") { inclusive = true }
-                    }
-                }
+                onSignUpClick = { /* ودى لصفحة الساين اب */ }
             )
         }
 
         composable("home") {
-            HomeScreen()
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Welcome to MovieX Home", color = Color.White)
+            }
         }
     }
 }

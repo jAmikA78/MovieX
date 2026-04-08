@@ -41,6 +41,7 @@ Complete guide for setting up, building, and running MovieX locally.
 ### SDK Manager Setup
 
 Open Android Studio → **SDK Manager** → install:
+
 - Android 14 (API 35) SDK Platform
 - Android 15 (API 36) SDK Platform *(compileSdk target)*
 - Android SDK Build-Tools 36+
@@ -129,6 +130,7 @@ export TMDB_API_KEY="your_key"
 **Android Studio → Device Manager → Create Device**:
 
 Recommended config:
+
 - **Device**: Pixel 7 or Pixel 8
 - **System image**: API 35 (Android 14, x86_64)
 - **RAM**: 2 GB+
@@ -189,6 +191,7 @@ adb connect 192.168.1.XXX:5555
 ```
 
 **Troubleshooting**: If you see `device unauthorized`, re-accept the RSA key on your phone or:
+
 ```bash
 adb kill-server && adb start-server
 ```
@@ -277,6 +280,7 @@ adb run-as com.depi.moviex
 | Change Hilt bindings | `di/` modules |
 | Modify theme/colors | `presentation/theme/` |
 | Update Gradle deps | `gradle/libs.versions.toml` |
+
 ---
 
 ## 9. Debugging

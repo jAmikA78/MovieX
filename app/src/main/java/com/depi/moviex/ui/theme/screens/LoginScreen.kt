@@ -21,7 +21,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.BorderStroke
 import com.depi.moviex.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,7 +115,11 @@ fun LoginScreen(
                 onClick = onGuestLogin,
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(2.dp, Color(0xFFE54E3C))
+                border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color(0xFFE54E3C), Color(0xFF8A30B1).copy(alpha = 0.5f))
+                    )
+                )
             ) {
                 Text(
                     text = "CONTINUE AS GUEST",

@@ -33,4 +33,44 @@ class MovieRepositoryImpl(
     }.catch { e ->
         emit(Response.Error(e))
     }
+
+    override fun fetchTvShows(): Flow<Response<List<Movie>>> = flow {
+        emit(Response.Loading())
+        val movieDto = movieApiService.fetchTvShows()
+        apiMapper.mapToDomain(movieDto).apply {
+            emit(Response.Success(this))
+        }
+    }.catch { e ->
+        emit(Response.Error(e))
+    }
+
+    override fun fetchActionMovies(): Flow<Response<List<Movie>>> = flow {
+        emit(Response.Loading())
+        val movieDto = movieApiService.fetchActionMovies()
+        apiMapper.mapToDomain(movieDto).apply {
+            emit(Response.Success(this))
+        }
+    }.catch { e ->
+        emit(Response.Error(e))
+    }
+
+    override fun fetchDramaMovies(): Flow<Response<List<Movie>>> = flow {
+        emit(Response.Loading())
+        val movieDto = movieApiService.fetchDramaMovies()
+        apiMapper.mapToDomain(movieDto).apply {
+            emit(Response.Success(this))
+        }
+    }.catch { e ->
+        emit(Response.Error(e))
+    }
+
+    override fun fetchComedyMovies(): Flow<Response<List<Movie>>> = flow {
+        emit(Response.Loading())
+        val movieDto = movieApiService.fetchComedyMovies()
+        apiMapper.mapToDomain(movieDto).apply {
+            emit(Response.Success(this))
+        }
+    }.catch { e ->
+        emit(Response.Error(e))
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.jetmovie.movie_detail.data.repo_impl
+package com.depi.moviex.movie_detail.data.repo_impl
 
 
 import com.depi.moviex.common.data.ApiMapper
@@ -7,8 +7,8 @@ import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
 import com.depi.moviex.utils.Response
-import com.example.jetmovie.movie_detail.domain.models.MovieDetail
-import com.example.jetmovie.movie_detail.domain.repository.MovieDetailRepository
+import com.depi.moviex.movie_detail.domain.models.MovieDetail
+import com.depi.moviex.movie_detail.domain.repository.MovieDetailRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow

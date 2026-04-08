@@ -7,9 +7,9 @@ import com.depi.moviex.movie_detail.data.mapper_impl.MovieDetailMapperImpl
 import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
 import com.depi.moviex.utils.K
-import com.example.jetmovie.movie_detail.data.repo_impl.MovieDetailRepositoryImpl
-import com.example.jetmovie.movie_detail.domain.models.MovieDetail
-import com.example.jetmovie.movie_detail.domain.repository.MovieDetailRepository
+import com.depi.moviex.movie_detail.data.repo_impl.MovieDetailRepositoryImpl
+import com.depi.moviex.movie_detail.domain.models.MovieDetail
+import com.depi.moviex.movie_detail.domain.repository.MovieDetailRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides

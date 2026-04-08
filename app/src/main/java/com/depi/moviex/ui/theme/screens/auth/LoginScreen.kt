@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -129,14 +128,13 @@ fun LoginScreen(
             ) {
                 Text(
                     text = "CONTINUE AS GUEST",
-                    color = Color(0xFFE54E3C), // لون مميز للضيف
+                    color = Color(0xFFE54E3C),//guest color
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
 
-        // 8. Sign Up رابط أسفل الشاشة
         TextButton(
             onClick = onSignUpClick,
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)

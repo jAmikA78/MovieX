@@ -10,6 +10,11 @@ object K {
     const val MOVIE_ID ="id"
     const val ACTOR_ID ="id"
 
+    // Auth endpoints
+    const val AUTH_TOKEN_ENDPOINT = "authentication/token/new"
+    const val AUTH_TOKEN_VALIDATE_ENDPOINT = "authentication/token/validate_with_login"
+    const val AUTH_SESSION_ENDPOINT = "authentication/session/new"
+
     // Genre endpoints
     const val TV_SHOW_ENDPOINT = "discover/tv"
     const val ACTION_ENDPOINT = "discover/movie"

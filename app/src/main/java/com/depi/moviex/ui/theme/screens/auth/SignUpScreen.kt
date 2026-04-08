@@ -19,8 +19,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depi.moviex.ui.theme.screens.auth.viewModel.SignUpState
+import com.depi.moviex.ui.theme.screens.auth.viewModel.SignUpViewModel
 
 @Preview
 @Composable
@@ -28,7 +31,8 @@ private fun SignUpScreenPreview() {
     SignUpScreen(
         onSignUpSuccess = {},
         onLoginClick = {},
-        onGuestLogin = {}
+        onGuestLogin = {},
+        signUpViewModel = hiltViewModel()
     )
 }
 
@@ -36,12 +40,25 @@ private fun SignUpScreenPreview() {
 fun SignUpScreen(
     onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit,
-    onGuestLogin: () -> Unit
+    onGuestLogin: () -> Unit,
+    signUpViewModel: SignUpViewModel = hiltViewModel()
 ) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+
+    val signUpState by signUpViewModel.signUpState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(signUpState) {
+        when (signUpState) {
+            is SignUpState.MessageShown -> {
+                onSignUpSuccess()
+                signUpViewModel.resetState()
+            }
+            else -> { }
+        }
+    }
 
     val signUpButtonGradient = Brush.linearGradient(
         colors = listOf(
@@ -105,10 +122,18 @@ fun SignUpScreen(
                 isPassword = true
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // TMDB does not support signup via API
+            Text(
+                text = "TMDB does not support signup via API.\nPlease create an account at themoviedb.org",
+                color = Color.Gray,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
             Button(
-                onClick = onSignUpSuccess,
+                onClick = { signUpViewModel.onSignUpClick() },
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -131,7 +156,10 @@ fun SignUpScreen(
         }
 
         TextButton(
-            onClick = onLoginClick,
+            onClick = {
+                signUpViewModel.onGuestLogin()
+                onGuestLogin()
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp)

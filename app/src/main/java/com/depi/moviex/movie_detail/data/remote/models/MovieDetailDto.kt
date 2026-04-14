@@ -3,9 +3,11 @@ package com.depi.moviex.movie_detail.data.remote.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
 @Serializable
 data class MovieDetailDto(
+
     @SerialName("adult")
     val adult: Boolean? = null,
     @SerialName("backdrop_path")
@@ -63,3 +65,21 @@ data class MovieDetailDto(
     @SerialName("vote_count")
     val voteCount: Int? = null
 )
+
+@Serializable
+data class MovieGenre(
+    @SerialName("id") val id: Int?,
+    @SerialName("name") val name: String?
+)
+
+@Serializable
+data class MovieCredits(
+    @SerialName("cast") val cast: List<CastMember>?
+)
+
+@Serializable
+data class CastMember(
+    @SerialName("name") val name: String?,
+    @SerialName("profile_path") val profilePath: String?
+)
+

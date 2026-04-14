@@ -16,6 +16,9 @@ import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.depi.moviex.ui.theme.screens.MovieDetails.MovieDetailsScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -114,6 +117,18 @@ fun AppNavigation() {
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(
+            route = "movie_detail/{movieId}",
+            arguments = listOf(
+                navArgument("movieId") { type = NavType.IntType } // تعريف المتغير ونوعه
+            )
+        ) { backStackEntry ->
+
+            val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
+
+            MovieDetailsScreen(movieId = movieId)
         }
     }
 }

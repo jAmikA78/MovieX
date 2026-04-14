@@ -12,17 +12,18 @@ private const val MOVIE_ID = "movie_id"
 
 interface MovieDetailApiService {
 
+
     @GET("${K.MOVIE_DETAIL_ENDPOINT}/{$MOVIE_ID}")
     suspend fun fetchMovieDetail(
-        @Path(MOVIE_ID) movieId:Int,
+        @Path(MOVIE_ID) movieId: Int,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("append_to_response") appendToResponse: String = "credits,reviews"
-    ):MovieDetailDto
+    ): MovieDetailDto
+
 
     @GET(K.MOVIE_ENDPOINT)
     suspend fun fetchMovie(
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
-        @Query("include_adult") includeAdult: Boolean = false
+        @Query("include_adult") include_adult: Boolean = false
     ): MovieDto
-
 }

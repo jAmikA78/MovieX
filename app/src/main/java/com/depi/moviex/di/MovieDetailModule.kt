@@ -20,15 +20,14 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 object MovieDetailModule {
+
     private val json = Json {
         coerceInputValues = true
         ignoreUnknownKeys = true
     }
-
 
     @Provides
     @Singleton
@@ -44,7 +43,7 @@ object MovieDetailModule {
 
     @Provides
     @Singleton
-    fun provideMovieMapper(): ApiMapper<MovieDetail, MovieDetailDto> = MovieDetailMapperImpl()
+    fun provideMovieDetailMapper(): ApiMapper<MovieDetail, MovieDetailDto> = MovieDetailMapperImpl()
 
     @Provides
     @Singleton
@@ -56,8 +55,4 @@ object MovieDetailModule {
             .build()
             .create(MovieDetailApiService::class.java)
     }
-
-
-
-
 }

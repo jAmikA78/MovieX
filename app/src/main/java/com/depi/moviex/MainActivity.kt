@@ -5,13 +5,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.depi.moviex.ui.theme.MovieXTheme
 import com.depi.moviex.ui.theme.screens.auth.LoginScreen
 import com.depi.moviex.ui.theme.screens.auth.SignUpScreen
 import com.depi.moviex.ui.theme.screens.home.HomeScreen
+import com.depi.moviex.ui.theme.screens.moviedetail.MovieDetailScreen
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
@@ -113,6 +116,15 @@ fun AppNavigation() {
                 onBack = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable(
+            route = "movie_detail/{movieId}",
+            arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+        ) {
+            MovieDetailScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

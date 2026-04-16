@@ -1,81 +1,68 @@
-# Future Enhancements — MovieX
+# Future Enhancements
 
-Structured backlog of planned improvements and scalability additions.
+Planned improvements and scalability additions for MovieX.
 
 ---
 
-## Near-Term (Next Sprint)
+## Near-Term
 
-### Pagination with Paging 3
-
-- Use `Pager` + `PagingSource` for seamless infinite scroll on movie lists
-- `RemoteMediator` to combine network + Room cache
-- Replace `List<Movie>` in ViewModels with `PagingData<Movie>`
+### Search Feature
+- Implement search screen with debounce input
+- Connect to `GET /search/movie` and `GET /search/tv` endpoints
+- Display search results in a list
+- Add empty and loading states
 
 ### Favorites Feature
+- Set up Room database
+- Create FavoriteEntity and DAO
+- Implement FavoritesRepository
+- Add toggle favorite functionality on movie cards
+- Create dedicated Favorites screen
 
-- Room entity `FavoriteEntity`, DAO, and `FavoritesRepository`
-- Toggle favorite from any movie card or detail screen
-- Dedicated Favorites tab in bottom navigation
-
-### Splash → Routing Logic
-
-- Persist "onboarding seen" flag in `DataStore<Preferences>`
-- On launch: check flag → route to Home (returning user) or Onboarding (new user)
+### Onboarding Persistence
+- Store "onboarding seen" flag in DataStore
+- On launch: check flag and route to appropriate screen
 
 ---
 
 ## Medium-Term
 
 ### Offline Caching
-
-- Cache trending/popular responses in Room
+- Cache API responses in Room
 - Serve cached data when offline
-- Use `RemoteMediator` to handle cache invalidation
+- Implement cache invalidation
 
-### Genres & Filters
-
+### Genre Filtering
 - Load genre list from `GET /genre/movie/list`
-- Allow filtering home feed by genre chips
-- Persist selected genre in ViewModel `SavedStateHandle`
+- Add genre filter chips to home screen
+- Filter movies by selected genre
 
-### TV Shows Tab
-
-- Separate tab for trending TV shows
-- TV detail screen with seasons/episodes overview
-- TV search integrated into the Search screen
-
-### Ratings & User Reviews
-
-- `GET /movie/{id}/reviews` endpoint
-- Reviews list in Detail screen
-- Average rating breakdown
+### TV Shows Enhancement
+- Separate TV shows section
+- TV detail screen with seasons/episodes
+- Integrated TV search
 
 ---
 
 ## Long-Term
 
-### User Authentication (TMDB Account)
-
-- TMDB v3 auth token flow (Request Token → Session ID)
-- Login screen
-- Synced watchlist & favorites across devices
+### User Authentication
+- TMDB account authentication
+- Synced watchlist across devices
+- User profile management
 
 ### Push Notifications
-
 - FCM integration for new release alerts
-- User opt-in per movie
+- Customizable notification preferences
 
-### Multi-Language Support (i18n)
-
-- Pass `language` query param from device locale
-- String resources for Arabic, English (and others)
-- RTL layout support (already partially covered by `supportsRtl=true`)
+### Internationalization
+- Support multiple languages
+- RTL layout support
+- Localized strings
 
 ### Modularization
 
-Split into Gradle modules for scalability:
-
+Split into Gradle modules:
 ```
 :app
 :core:network
@@ -89,33 +76,29 @@ Split into Gradle modules for scalability:
 :domain
 ```
 
-Benefits: faster incremental builds, parallel feature development, strict dependency enforcement.
-
 ### CI/CD Pipeline
-
-- GitHub Actions workflow for:
-  - PR checks: `./gradlew test lint`
-  - Main branch: Docker build + artifact upload
-  - Release: signed AAB → Google Play via Fastlane
+- GitHub Actions for PR checks
+- Automated Docker builds
+- Release automation with Fastlane
 
 ---
 
-## Performance Improvements
+## Performance
 
-| Optimization | Approach |
-|---|---|
-| Image caching | Coil disk cache + memory cache sizing |
-| Compose recomposition | `remember`, `derivedStateOf`, stable data classes |
-| Network | OkHttp response caching on `Cache-Control` |
-| Startup time | App Startup library, lazy Hilt injection |
+| Area | Optimization |
+|------|---------------|
+| Images | Coil disk + memory caching |
+| Compose | `remember`, `derivedStateOf`, stable data classes |
+| Network | OkHttp response caching |
+| Startup | App Startup, lazy injection |
 
 ---
 
 ## Security
 
 | Concern | Mitigation |
-|---|---|
-| API key exposure | `BuildConfig` + `local.properties` (never committed) |
-| Deep links | Verify intent filters, use `https://` scheme |
-| ProGuard/R8 | Enable for release builds |
-| Certificate pinning | `OkHttp CertificatePinner` for TMDB domain |
+|---------|------------|
+| API Key | BuildConfig + local.properties (not committed) |
+| Deep Links | Verify intent filters, use https scheme |
+| Release | Enable ProGuard/R8 |
+| Certificates | OkHttp CertificatePinner for TMDB |

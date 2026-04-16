@@ -1,52 +1,14 @@
-# Code Samples — MovieX
+# Code Samples
 
-Minimal, production-ready code examples for each architectural layer.
-
----
-
-## 1. Dependency Injection — Network Module
-
-```kotlin
-// di/NetworkModule.kt
-@Module
-@InstallIn(SingletonComponent::class)
-object NetworkModule {
-
-    @Provides @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(ApiKeyInterceptor(BuildConfig.TMDB_API_KEY))
-            .apply {
-                if (BuildConfig.DEBUG) {
-                    addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BODY
-                    })
-                }
-            }
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .build()
-
-    @Provides @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(BuildConfig.TMDB_BASE_URL)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-    @Provides @Singleton
-    fun provideTmdbApiService(retrofit: Retrofit): TmdbApiService =
-        retrofit.create(TmdbApiService::class.java)
-}
-```
+Production-ready code examples demonstrating Clean Architecture patterns in MovieX.
 
 ---
 
-## 2. Domain Model
+## 1. Domain Models
 
+### Movie Model
 ```kotlin
-// domain/model/Movie.kt
+// movie/domain/models/Movie.kt
 data class Movie(
     val id: Int,
     val title: String,
@@ -59,194 +21,323 @@ data class Movie(
 )
 ```
 
+### MovieDetail Model
+```kotlin
+// movie_detail/domain/models/MovieDetail.kt
+data class MovieDetail(
+    val backdropPath: String,
+    val genreIds: List<String>,
+    val id: Int,
+    val originalLanguage: String,
+    val originalTitle: String,
+    val overview: String,
+    val popularity: Double,
+    val posterPath: String,
+    val releaseDate: String,
+    val title: String,
+    val voteAverage: Double,
+    val voteCount: Int,
+    val video: Boolean,
+    val cast: List<Cast>,
+    val language: List<String>,
+    val productionCountry: List<String>,
+    val reviews: List<Review>,
+    val runTime: String
+)
+
+data class Cast(
+    val id: Int,
+    val name: String,
+    val genderRole: String,
+    val character: String,
+    val profilePath: String?,
+) {
+    val firstName: String get() = name.split(" ", limit = 2)[0]
+    val lastName: String get() = name.split(" ", limit = 2).getOrNull(1) ?: ""
+}
+```
+
 ---
 
-## 3. Repository Interface + Implementation
+## 2. Repository Interface
 
 ```kotlin
-// domain/repository/MovieRepository.kt
+// movie/domain/repository/MovieRepository.kt
 interface MovieRepository {
-    fun getTrendingMovies(page: Int = 1): Flow<NetworkResult<List<Movie>>>
-    fun getMovieDetails(id: Int): Flow<NetworkResult<MovieDetail>>
-    fun searchMovies(query: String, page: Int = 1): Flow<NetworkResult<List<Movie>>>
+    fun fetchDiscoverMovies(): Flow<Response<List<Movie>>>
+    fun fetchTrendingMovies(): Flow<Response<List<Movie>>>
+    fun fetchTvShows(): Flow<Response<List<Movie>>>
+    fun fetchActionMovies(): Flow<Response<List<Movie>>>
+    fun fetchDramaMovies(): Flow<Response<List<Movie>>>
+    fun fetchComedyMovies(): Flow<Response<List<Movie>>>
+}
+```
+
+---
+
+## 3. Response Wrapper
+
+```kotlin
+// utils/Response.kt
+sealed class Response<out T> {
+    data class Success<T>(val data: T) : Response<T>()
+    data class Error(val message: String, val code: Int? = null) : Response<T>()
+    object Loading : Response<Nothing>()
 }
 
-// data/repository/MovieRepositoryImpl.kt
+// utils/Ext.kt
+fun <T> Flow<Response<T>>.collectAndHandle(
+    onError: (Throwable?) -> Unit = {},
+    onLoading: () -> Unit = {},
+    onSuccess: (T) -> Unit
+) = this.collect { response ->
+    when (response) {
+        is Response.Success -> onSuccess(response.data)
+        is Response.Error -> onError(Throwable(response.message))
+        is Response.Loading -> onLoading()
+    }
+}
+```
+
+---
+
+## 4. API Service
+
+```kotlin
+// movie/data/remote/api/MovieApiService.kt
+interface MovieApiService {
+    @GET("discover/movie")
+    suspend fun getDiscoverMovies(@Query("page") page: Int = 1): MovieDto
+
+    @GET("trending/movie/week")
+    suspend fun getTrendingMovies(@Query("page") page: Int = 1): MovieDto
+
+    @GET("trending/tv/week")
+    suspend fun getTrendingTvShows(@Query("page") page: Int = 1): MovieDto
+
+    @GET("discover/movie")
+    suspend fun getMoviesByGenre(
+        @Query("with_genres") genreId: Int,
+        @Query("page") page: Int = 1
+    ): MovieDto
+}
+```
+
+---
+
+## 5. Repository Implementation
+
+```kotlin
+// movie/data/repository_impl/MovieRepositoryImpl.kt
 @Singleton
 class MovieRepositoryImpl @Inject constructor(
-    private val api: TmdbApiService
+    private val apiService: MovieApiService,
+    private val mapper: ApiMapper<List<Movie>, MovieDto>
 ) : MovieRepository {
 
-    override fun getTrendingMovies(page: Int) = flow<NetworkResult<List<Movie>>> {
-        emit(NetworkResult.Loading)
+    override fun fetchDiscoverMovies(): Flow<Response<List<Movie>>> = flow {
+        emit(Response.Loading)
         try {
-            val response = api.getTrendingMovies(page)
-            emit(NetworkResult.Success(response.results.map { it.toDomain() }))
-        } catch (e: HttpException) {
-            emit(NetworkResult.Error(e.code(), e.message()))
-        } catch (e: IOException) {
-            emit(NetworkResult.Error(null, "No internet connection"))
-        }
-    }
-
-    override fun searchMovies(query: String, page: Int) = flow<NetworkResult<List<Movie>>> {
-        emit(NetworkResult.Loading)
-        try {
-            val response = api.searchMovies(query, page)
-            emit(NetworkResult.Success(response.results.map { it.toDomain() }))
+            val response = apiService.getDiscoverMovies()
+            val movies = mapper.map(response)
+            emit(Response.Success(movies))
         } catch (e: Exception) {
-            emit(NetworkResult.Error(null, e.message ?: "Unknown error"))
+            emit(Response.Error(e.message ?: "Unknown error"))
         }
     }
 
-    override fun getMovieDetails(id: Int) = flow<NetworkResult<MovieDetail>> {
-        emit(NetworkResult.Loading)
+    override fun fetchTrendingMovies(): Flow<Response<List<Movie>>> = flow {
+        emit(Response.Loading)
         try {
-            val detail = api.getMovieDetails(id)
-            emit(NetworkResult.Success(detail.toDomain()))
-        } catch (e: HttpException) {
-            emit(NetworkResult.Error(e.code(), e.message()))
+            val response = apiService.getTrendingMovies()
+            val movies = mapper.map(response)
+            emit(Response.Success(movies))
+        } catch (e: Exception) {
+            emit(Response.Error(e.message ?: "Unknown error"))
         }
+    }
+
+    // Similar implementations for other methods...
+}
+```
+
+---
+
+## 6. Hilt Module
+
+```kotlin
+// di/MovieModule.kt
+@Module
+@InstallIn(SingletonComponent::class)
+object MovieModule {
+
+    @Provides
+    @Singleton
+    fun provideMovieRepository(
+        apiService: MovieApiService,
+        mapper: ApiMapper<List<Movie>, MovieDto>
+    ): MovieRepository = MovieRepositoryImpl(apiService, mapper)
+
+    @Provides
+    @Singleton
+    fun provideMovieApiService(): MovieApiService {
+        val json = Json { ignoreUnknownKeys = true }
+        val contentType = "application/json".toMediaType()
+        return Retrofit.Builder()
+            .baseUrl(K.BASE_URL)
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+            .create(MovieApiService::class.java)
     }
 }
 ```
 
 ---
 
-## 4. Use Case
+## 7. ViewModel
 
 ```kotlin
-// domain/usecase/GetTrendingMoviesUseCase.kt
-class GetTrendingMoviesUseCase @Inject constructor(
-    private val repository: MovieRepository
-) {
-    operator fun invoke(page: Int = 1): Flow<NetworkResult<List<Movie>>> =
-        repository.getTrendingMovies(page)
-}
-```
-
----
-
-## 5. ViewModel
-
-```kotlin
-// presentation/home/HomeViewModel.kt
+// ui/theme/screens/home/HomeViewModel.kt
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getTrendingMovies: GetTrendingMoviesUseCase
+    private val repository: MovieRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    private val _homeState = MutableStateFlow(HomeState())
+    val homeState = _homeState.asStateFlow()
 
-    init { load() }
+    init {
+        fetchDiscoverMovie()
+        fetchTrendingMovie()
+        fetchTvShows()
+        fetchActionMovies()
+        fetchDramaMovies()
+        fetchComedyMovies()
+    }
 
-    fun load() {
-        viewModelScope.launch {
-            getTrendingMovies().collect { result ->
-                _uiState.value = when (result) {
-                    is NetworkResult.Loading -> HomeUiState.Loading
-                    is NetworkResult.Success -> HomeUiState.Success(result.data)
-                    is NetworkResult.Error   -> HomeUiState.Error(result.message)
-                }
+    private fun fetchDiscoverMovie() = viewModelScope.launch {
+        repository.fetchDiscoverMovies().collectAndHandle(
+            onError = { error ->
+                _homeState.update { it.copy(isLoading = false, error = error?.message) }
+            },
+            onLoading = {
+                _homeState.update { it.copy(isLoading = true, error = null) }
             }
+        ) { movie ->
+            _homeState.update { it.copy(isLoading = false, error = null, discoverMovies = movie) }
         }
     }
+    // ... other fetch methods
 }
 
-sealed class HomeUiState {
-    object Loading : HomeUiState()
-    object Empty : HomeUiState()
-    data class Success(val movies: List<Movie>) : HomeUiState()
-    data class Error(val message: String) : HomeUiState()
-}
+data class HomeState(
+    val message: String = "Welcome to MovieX",
+    val discoverMovies: List<Movie> = emptyList(),
+    val trendingMovies: List<Movie> = emptyList(),
+    val tvShows: List<Movie> = emptyList(),
+    val actionMovies: List<Movie> = emptyList(),
+    val dramaMovies: List<Movie> = emptyList(),
+    val comedyMovies: List<Movie> = emptyList(),
+    val error: String? = null,
+    val isLoading: Boolean = false
+)
 ```
 
 ---
 
-## 6. Compose Screen
+## 8. Compose Screen
 
 ```kotlin
-// presentation/home/HomeScreen.kt
+// ui/theme/screens/home/HomeScreen.kt
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
-    onMovieClick: (Int) -> Unit
+    modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    onMovieClick: (id: Int) -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val state by homeViewModel.homeState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = { HomeTopBar() },
-        containerColor = BackgroundDark
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            when (val state = uiState) {
-                is HomeUiState.Loading -> LoadingView()
-                is HomeUiState.Error   -> ErrorView(
-                    message = state.message,
-                    onRetry = viewModel::load
-                )
-                is HomeUiState.Empty   -> EmptyView()
-                is HomeUiState.Success -> MovieGrid(
-                    movies = state.movies,
-                    onMovieClick = onMovieClick
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun MovieCard(movie: Movie, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .width(140.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(BackgroundDark)
+            .verticalScroll(rememberScrollState())
     ) {
-        AsyncImage(
-            model = ImageUrlBuilder.poster(movie.posterPath),
-            contentDescription = movie.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth().height(210.dp)
-        )
-        Text(
-            text = movie.title,
-            style = MaterialTheme.typography.labelMedium,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(8.dp)
-        )
+        // Header with settings
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 50.dp, start = 16.dp, end = 8.dp)
+        ) {
+            HeaderSection(message = state.message)
+            // Settings button...
+        }
+
+        SearchBar()
+
+        when {
+            state.isLoading -> LoadingIndicator()
+            state.error != null -> ErrorSection(error = state.error!!)
+            else -> CategoryRows(categories = listOf(...), onMovieClick = onMovieClick)
+        }
     }
 }
 ```
 
 ---
 
-## 7. DTO → Domain Mapper
+## 9. Navigation
 
 ```kotlin
-// data/remote/dto/MovieDto.kt
-data class MovieDto(
-    @SerializedName("id") val id: Int,
-    @SerializedName("title") val title: String,
-    @SerializedName("overview") val overview: String,
-    @SerializedName("poster_path") val posterPath: String?,
-    @SerializedName("backdrop_path") val backdropPath: String?,
-    @SerializedName("vote_average") val voteAverage: Double,
-    @SerializedName("release_date") val releaseDate: String,
-    @SerializedName("genre_ids") val genreIds: List<Int>
-)
+// MainActivity.kt
+@Composable
+fun AppNavigation() {
+    val navController = rememberNavController()
 
-fun MovieDto.toDomain() = Movie(
-    id = id,
-    title = title,
-    overview = overview,
-    posterPath = posterPath,
-    backdropPath = backdropPath,
-    voteAverage = voteAverage,
-    releaseDate = releaseDate,
-    genreIds = genreIds
-)
+    NavHost(navController = navController, startDestination = "splash") {
+        composable("splash") { SplashScreen(...) }
+        composable("home") {
+            HomeScreen(
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                }
+            )
+        }
+        composable(
+            route = "movie_detail/{movieId}",
+            arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+        ) {
+            MovieDetailScreen(onBackClick = { navController.popBackStack() })
+        }
+    }
+}
+```
+
+---
+
+## 10. Image Loading
+
+```kotlin
+// Using Coil with Compose
+@Composable
+fun MovieCoverImage(movie: Movie, onMovieClick: (Int) -> Unit) {
+    val imgRequest = ImageRequest.Builder(LocalContext.current)
+        .data("${K.BASE_IMAGE_URL}${movie.posterPath}")
+        .crossfade(true)
+        .build()
+
+    Box(
+        modifier = Modifier
+            .size(width = 150.dp, height = 250.dp)
+            .clickable { onMovieClick(movie.id) }
+    ) {
+        AsyncImage(
+            model = imgRequest,
+            contentDescription = movie.title,
+            modifier = Modifier.clip(MaterialTheme.shapes.medium),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
 ```

@@ -1,6 +1,6 @@
-# Architecture — MovieX
+# Architecture
 
-MovieX follows **MVVM + Clean Architecture**, separating concerns into three layers with strict dependency rules.
+MovieX follows **Clean Architecture** combined with **MVVM** pattern, creating a clear separation of concerns across three main layers. This architecture ensures testability, maintainability, and scalability.
 
 ---
 
@@ -11,42 +11,41 @@ MovieX follows **MVVM + Clean Architecture**, separating concerns into three lay
 │           Presentation Layer               │
 │  Compose Screens · ViewModels · UI State   │
 ├────────────────────────────────────────────┤
-│             Domain Layer                   │
+│             Domain Layer                    │
 │    Use Cases · Repository Interfaces       │
-│       Domain Models (pure Kotlin)          │
+│       Domain Models (pure Kotlin)           │
 ├────────────────────────────────────────────┤
-│              Data Layer                    │
-│  Repository Impl · Retrofit · Room · DTOs  │
+│              Data Layer                     │
+│  Repository Impl · Retrofit · DTOs         │
 └────────────────────────────────────────────┘
 ```
 
-**Dependency rule**: outer layers depend inward. `Presentation` → `Domain` ← `Data`.  
-`Domain` knows nothing about Android or Retrofit.
+**Dependency Rule**: Outer layers depend inward. `Presentation` → `Domain` ← `Data`. The `Domain` layer knows nothing about Android or Retrofit.
 
 ---
 
 ## Data Flow
 
 ```
-User Action
-    │
-    ▼
+User Interaction
+       │
+       ▼
 Compose Screen
-    │  calls
-    ▼
-ViewModel  ──────────────── emits UiState (StateFlow)
-    │  calls
-    ▼
-UseCase (domain)
-    │  calls
-    ▼
-Repository Interface (domain)
-    │  implemented by
-    ▼
-RepositoryImpl (data)
-    │  calls
-    ├──▶ TMDB API (Retrofit)  ──▶ DTO  ──▶ Domain Model
-    └──▶ Room Database         ──▶ Entity ──▶ Domain Model
+       │ calls
+       ▼
+ViewModel ──────────── Emits UI State (StateFlow)
+       │ calls
+       ▼
+Use Case (Domain)
+       │ calls
+       ▼
+Repository Interface (Domain)
+       │ implemented by
+       ▼
+Repository Implementation (Data)
+       │ calls
+       ├──▶ TMDB API (Retrofit) ──▶ DTO ──▶ Domain Model
+       └──▶ Local Storage (Future)
 ```
 
 ---
@@ -56,78 +55,187 @@ RepositoryImpl (data)
 ```
 com.depi.moviex/
 │
-├── core/
-│   ├── base/           # BaseViewModel, BaseUseCase
-│   ├── network/        # OkHttp client, interceptors, NetworkResult sealed class
-│   └── extensions/     # Kotlin extension functions
+├── MainActivity.kt            # Navigation setup
+├── MovieApplication.kt        # Hilt Application
 │
-├── data/
-│   ├── remote/
-│   │   ├── api/        # TmdbApiService (Retrofit interface)
-│   │   └── dto/        # Data Transfer Objects (MovieDto, etc.)
-│   ├── local/
-│   │   ├── dao/        # Room DAOs
-│   │   └── entity/     # Room entities
-│   └── repository/     # RepositoryImpl classes
+├── auth/                      # Authentication feature
+│   ├── data/                  # Repository impl, API, models
+│   │   ├── remote/
+│   │   │   ├── api/
+│   │   │   └── models/
+│   │   └── repository/
+│   ├── di/                    # Hilt module
+│   └── domain/
+│       ├── models/
+│       ├── repository/
+│       └── usecase/
 │
-├── domain/
-│   ├── model/          # Domain models (Movie, TvShow, etc.)
-│   ├── repository/     # Repository interfaces
-│   └── usecase/        # Use case classes (one action per class)
+├── movie/                     # Movie listing feature
+│   ├── data/
+│   │   ├── remote/
+│   │   │   ├── api/
+│   │   │   ├── models/
+│   │   │   └── mapper_impl/
+│   │   └── repository_impl/
+│   └── domain/
+│       ├── models/
+│       └── repository/
 │
-├── presentation/
-│   ├── navigation/     # NavHost, routes, AppNavigation.kt
-│   ├── splash/
-│   ├── onboarding/
-│   ├── home/           # HomeScreen, HomeViewModel
-│   ├── search/         # SearchScreen, SearchViewModel
-│   ├── detail/         # DetailScreen, DetailViewModel
-│   └── favorites/      # FavoritesScreen, FavoritesViewModel [TBD]
+├── movie_detail/              # Movie detail feature
+│   ├── data/
+│   │   ├── remote/
+│   │   │   ├── api/
+│   │   │   └── models/
+│   │   ├── mapper_impl/
+│   │   └── repo_impl/
+│   └── domain/
+│       ├── models/
+│       └── repository/
 │
-├── di/
-│   ├── NetworkModule.kt
-│   ├── DatabaseModule.kt
-│   └── RepositoryModule.kt
+├── di/                        # Hilt modules
+│   ├── MovieModule.kt
+│   └── MovieDetailModule.kt
 │
-└── utils/
-    ├── DateFormatter.kt
-    ├── ImageUrlBuilder.kt
-    └── Constants.kt
+├── ui/theme/                  # Compose theme
+│   ├── Color.kt
+│   ├── Theme.kt
+│   ├── Type.kt
+│   └── screens/
+│       ├── splash/
+│       ├── onboarding/
+│       ├── auth/
+│       ├── home/
+│       ├── moviedetail/
+│       └── settings/
+│
+└── utils/                     # Helpers
+    ├── K.kt                   # Constants
+    ├── Ext.kt                 # Extensions
+    ├── GenreConstants.kt
+    └── Response.kt            # Result wrapper
 ```
 
 ---
 
 ## UI State Pattern
 
-Each screen has a sealed `UiState`:
+Each screen follows a consistent state management pattern using `StateFlow`:
 
+### State Class
 ```kotlin
-sealed class HomeUiState {
-    object Loading : HomeUiState()
-    data class Success(val movies: List<Movie>) : HomeUiState()
-    data class Error(val message: String) : HomeUiState()
-    object Empty : HomeUiState()
+data class HomeState(
+    val discoverMovies: List<Movie> = emptyList(),
+    val trendingMovies: List<Movie> = emptyList(),
+    val tvShows: List<Movie> = emptyList(),
+    val actionMovies: List<Movie> = emptyList(),
+    val dramaMovies: List<Movie> = emptyList(),
+    val comedyMovies: List<Movie> = emptyList(),
+    val error: String? = null,
+    val isLoading: Boolean = false
+)
+```
+
+### ViewModel
+```kotlin
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repository: MovieRepository
+) : ViewModel() {
+
+    private val _homeState = MutableStateFlow(HomeState())
+    val homeState = _homeState.asStateFlow()
+
+    // State updates via collectAndHandle utility
 }
 ```
 
-ViewModel exposes:
-
+### Compose Screen
 ```kotlin
-private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+@Composable
+fun HomeScreen(
+    homeViewModel: HomeViewModel = hiltViewModel()
+) {
+    val state by homeViewModel.homeState.collectAsStateWithLifecycle()
+
+    when {
+        state.isLoading -> LoadingIndicator()
+        state.error != null -> ErrorSection(error = state.error!!)
+        else -> Content(movies = state.discoverMovies)
+    }
+}
 ```
 
 ---
 
-## NetworkResult Wrapper
+## Response Wrapper
 
-All repository calls return a `NetworkResult<T>`:
+All repository calls return a `Response<T>` sealed class:
 
 ```kotlin
-sealed class NetworkResult<out T> {
-    data class Success<T>(val data: T) : NetworkResult<T>()
-    data class Error(val code: Int?, val message: String) : NetworkResult<Nothing>()
-    object Loading : NetworkResult<Nothing>()
+sealed class Response<out T> {
+    data class Success<T>(val data: T) : Response<T>()
+    data class Error(val message: String, val code: Int? = null) : Response<T>()
+    object Loading : Response<Nothing>()
+}
+```
+
+Usage:
+```kotlin
+repository.fetchMovies().collectAndHandle(
+    onError = { error -> /* handle error */ },
+    onLoading = { /* show loading */ },
+    onSuccess = { movies -> /* show data */ }
+)
+```
+
+---
+
+## Dependency Injection
+
+MovieX uses **Hilt** for dependency injection. Modules are defined in the `di/` package.
+
+### Example Module
+```kotlin
+@Module
+@InstallIn(SingletonComponent::class)
+object MovieModule {
+
+    @Provides
+    @Singleton
+    fun provideMovieRepository(
+        apiService: MovieApiService,
+        mapper: ApiMapper<Movie, MovieDto>
+    ): MovieRepository = MovieRepositoryImpl(apiService, mapper)
+
+    @Provides
+    @Singleton
+    fun provideMovieApiService(): MovieApiService {
+        // Retrofit setup
+    }
+}
+```
+
+---
+
+## Navigation
+
+Navigation is handled via **Jetpack Navigation Compose**:
+
+```kotlin
+NavHost(
+    navController = navController,
+    startDestination = "splash"
+) {
+    composable("splash") { SplashScreen(...) }
+    composable("home") {
+        HomeScreen(onMovieClick = { movieId ->
+            navController.navigate("movie_detail/$movieId")
+        })
+    }
+    composable(
+        route = "movie_detail/{movieId}",
+        arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+    ) { MovieDetailScreen(...) }
 }
 ```
 
@@ -136,9 +244,20 @@ sealed class NetworkResult<out T> {
 ## Scalability Considerations
 
 | Concern | Approach |
-|---|---|
-| Feature growth | Split into Gradle modules per feature |
-| State complexity | Adopt MVI with `Orbit` or `MVI Kotlin` |
-| Offline | Room + `RemoteMediator` (Paging 3) |
-| Multi-module | `:core`, `:feature:home`, `:feature:search`, `:data` |
+|---------|----------|
+| Feature Growth | Split into Gradle modules per feature |
+| State Complexity | Adopt MVI with Orbit or custom implementation |
+| Offline Support | Room + RemoteMediator (Paging 3) |
+| Multi-module | `:core`, `:feature:home`, `:data` |
 | Testing | Use cases are plain Kotlin → easily unit tested |
+| Large Codebase | Feature-based package structure |
+
+---
+
+## Key Principles
+
+1. **Single Responsibility** - Each class has one clear purpose
+2. **Dependency Inversion** - Depend on abstractions, not concretions
+3. **Testability** - Domain layer has no Android dependencies
+4. **Consistency** - Same pattern across all features
+5. **Separation of Concerns** - UI, business logic, and data are separate

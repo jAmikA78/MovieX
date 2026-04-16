@@ -1,52 +1,52 @@
-# Setup & Development Guide — MovieX
+# Setup & Development Guide
 
-Complete guide for setting up, building, and running MovieX locally.
+This guide covers everything needed to set up, build, and run MovieX locally.
 
 ---
 
 ## Table of Contents
 
-1. [Environment Setup](#1-environment-setup)
+1. [Environment Requirements](#1-environment-requirements)
 2. [Installation](#2-installation)
-3. [API Key Configuration](#3-api-key-configuration)
-4. [Build Variants](#4-build-variants)
+3. [API Key Setup](#3-api-key-setup)
+4. [Building the App](#4-building-the-app)
 5. [Running the App](#5-running-the-app)
-6. [Install on Physical Device (ADB)](#6-install-on-physical-device-adb)
-7. [Docker Build Support](#7-docker-build-support)
-8. [Code Navigation Guide](#8-code-navigation-guide)
+6. [ADB Installation](#6-adb-installation)
+7. [Docker Build](#7-docker-build)
+8. [Code Navigation](#8-code-navigation)
 9. [Debugging](#9-debugging)
 10. [Troubleshooting](#10-troubleshooting)
 
 ---
 
-## 1. Environment Setup
+## 1. Environment Requirements
 
 ### Required Tools
 
-| Tool | Minimum Version | Notes |
-|---|---|---|
-| Android Studio | Meerkat (2024.3.1) | [Download](https://developer.android.com/studio) |
-| JDK | 11 (bundled) | Use Studio's bundled JDK |
-| Android SDK | API 36 (compileSdk) | Install via SDK Manager |
-| Android SDK min | API 24 | Covers 99%+ devices |
-| Git | Any modern | |
-| Docker | 20+ | Optional — for CI/headless builds |
+| Tool | Version | Notes |
+|------|---------|-------|
+| Android Studio | Meerkat (2024.3.1+) | Recommended IDE |
+| JDK | 11+ | Bundled with Android Studio |
+| Android SDK | API 36 | `compileSdk` target |
+| Android SDK Min | API 24 | Covers 99%+ devices |
+| Gradle | 8.2+ | Included in wrapper |
+| Git | Any recent | |
 
-### Recommended Android Studio Plugins
+### SDK Setup
 
-- **Kotlin** (bundled)
-- **Compose Multiplatform** (for Compose preview performance)
-- **GitToolBox** (inline git blame)
-
-### SDK Manager Setup
-
-Open Android Studio → **SDK Manager** → install:
+In Android Studio's **SDK Manager**, install:
 
 - Android 14 (API 35) SDK Platform
-- Android 15 (API 36) SDK Platform *(compileSdk target)*
+- Android 15 (API 36) SDK Platform
 - Android SDK Build-Tools 36+
 - Android Emulator
 - Android SDK Platform-Tools
+
+### Recommended Plugins
+
+- Kotlin (bundled)
+- Compose Multiplatform
+- GitToolBox
 
 ---
 
@@ -54,36 +54,34 @@ Open Android Studio → **SDK Manager** → install:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/MovieX.git
+git clone https://github.com/jAmikA78/MovieX.git
 cd MovieX
+
+# Open in Android Studio
+# File → Open → select MovieX folder
 ```
 
-Open in Android Studio: **File → Open → select `MovieX/` folder**.
-
-Wait for Gradle sync to complete (first time downloads dependencies).
+Wait for Gradle sync to complete (first run downloads dependencies).
 
 ---
 
-## 3. API Key Configuration
+## 3. API Key Setup
 
-> **Important**: Never commit secrets. `local.properties` is git-ignored.
+> **Important**: Never commit API keys. The `local.properties` file is git-ignored.
 
-Create or edit `local.properties` in the project root:
+Add your TMDB API key to `local.properties` in the project root:
 
 ```properties
-# Android SDK path (auto-generated — do not share)
+# Android SDK path (auto-generated)
 sdk.dir=/path/to/your/Android/Sdk
 
 # TMDB API credentials
 TMDB_API_KEY=your_tmdb_api_key_here
-TMDB_BASE_URL=https://api.themoviedb.org/3/
 ```
 
-Get a free TMDB key: [themoviedb.org → Settings → API](https://www.themoviedb.org/settings/api)
+Get a free key at [themoviedb.org → Settings → API](https://www.themoviedb.org/settings/api).
 
-### Shared Team Setup (without committing keys)
-
-Each developer adds their own `local.properties`. For CI environments, pass as environment variables:
+### CI/Environment Variable Approach
 
 ```bash
 export TMDB_API_KEY="your_key"
@@ -92,28 +90,38 @@ export TMDB_API_KEY="your_key"
 
 ---
 
-## 4. Build Variants
+## 4. Building the App
 
-| Variant | Description | Output |
-|---|---|---|
-| `debug` | Development build, debuggable, logging on | `app-debug.apk` |
-| `release` | Production build, minified, signed | `app-release.aab` |
+### Build Commands
 
 ```bash
 # Debug APK
 ./gradlew assembleDebug
 
-# Release APK (requires signing config)
+# Release APK (requires signing)
 ./gradlew assembleRelease
 
 # Release AAB (Google Play)
 ./gradlew bundleRelease
 
-# Run all unit tests
+# Run tests
 ./gradlew test
 
 # Run lint
 ./gradlew lint
+```
+
+### Build Variants
+
+| Variant | Purpose | Output |
+|---------|---------|--------|
+| debug | Development, debuggable | `app-debug.apk` |
+| release | Production, minified | `app-release.aab` |
+
+### Output Location
+
+```
+app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ---
@@ -122,180 +130,160 @@ export TMDB_API_KEY="your_key"
 
 ### Android Studio
 
-1. Select a device/emulator from the toolbar dropdown
-2. Click **Run ▶** or press `Shift+F10`
+1. Select a device/emulator from the toolbar
+2. Click **Run** or press `Shift+F10`
 
 ### Emulator Setup
 
-**Android Studio → Device Manager → Create Device**:
+**Device Manager → Create Device**:
 
-Recommended config:
+- Device: Pixel 7 or Pixel 8
+- System Image: API 35 (Android 14, x86_64)
+- RAM: 2 GB+
+- Storage: 4 GB+
 
-- **Device**: Pixel 7 or Pixel 8
-- **System image**: API 35 (Android 14, x86_64)
-- **RAM**: 2 GB+
-- **Storage**: 4 GB+
-
-### CLI
+### Command Line
 
 ```bash
-# Build and install to connected device
+# Install to connected device
 ./gradlew installDebug
 
-# Build only
-./gradlew assembleDebug
-# → app/build/outputs/apk/debug/app-debug.apk
+# Or manually install
+adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ---
 
-## 6. Install on Physical Device (ADB)
+## 6. ADB Installation
 
 ### Prerequisites
 
-- Enable **Developer Options** on your phone:  
-  Settings → About phone → tap **Build number** 7 times
-- Enable **USB Debugging** in Developer Options
-- Install ADB: [platform-tools](https://developer.android.com/tools/releases/platform-tools)
-- Add `platform-tools/` to your `PATH`
+1. Enable **Developer Options** on device: Settings → About phone → tap Build number 7 times
+2. Enable **USB Debugging** in Developer Options
+3. Install [platform-tools](https://developer.android.com/tools/releases/platform-tools)
+4. Add to PATH
 
-### Connect & Install via USB
+### USB Installation
 
 ```bash
-# 1. Verify connection
+# Verify connection
 adb devices
 
-# 2. Uninstall previous version (if any)
+# Uninstall previous version
 adb uninstall com.depi.moviex
 
-# 3. Install new build
+# Install new build
 adb install app/build/outputs/apk/debug/app-debug.apk
 
-# 4. (Optional) Launch immediately
+# Launch
 adb shell am start -n "com.depi.moviex/.MainActivity"
 ```
 
 ### Wireless ADB (Android 11+)
 
 ```bash
-# 1. Connect via USB once and enable TCP
+# Enable TCP mode
 adb tcpip 5555
 
-# 2. Disconnect USB
-# 3. Find your device IP (Settings → About → Status → IP address)
+# Find device IP: Settings → About → Status → IP address
 
-# 4. Connect wirelessly
+# Connect wirelessly
 adb connect 192.168.1.XXX:5555
 
-# 5. Install wirelessly (same install command as above)
+# Install
+adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-**Troubleshooting**: If you see `device unauthorized`, re-accept the RSA key on your phone or:
+### Troubleshooting
 
-```bash
-adb kill-server && adb start-server
-```
+- Device unauthorized: Re-accept RSA key on device
+- Issues: Run `adb kill-server && adb start-server`
 
 ---
 
-## 7. Docker Build Support
+## 7. Docker Build
 
-Use Docker to build without installing Android SDK locally. This is ideal for CI pipelines and teammates without Android Studio.
+Build without local Android SDK using Docker.
 
-### Build Debug APK
+### Basic Build
 
 ```bash
-# macOS / Linux
+# macOS/Linux
 docker run --rm -v $(pwd):/project mingc/android-build-box:latest \
   bash -c 'cd /project && ./gradlew assembleDebug'
 
-# Windows (PowerShell)
+# Windows PowerShell
 docker run --rm -v ${PWD}:/project mingc/android-build-box:latest \
   bash -c 'cd /project && ./gradlew assembleDebug'
-
-# Windows (Command Prompt)
-docker run --rm -v "%cd%:/project" mingc/android-build-box:latest \
-  bash -c 'cd /project && ./gradlew assembleDebug'
 ```
 
-Output: `app/build/outputs/apk/debug/app-debug.apk`
-
-### Other Docker Build Commands
+### With Gradle Cache (Faster)
 
 ```bash
-# Release AAB (Google Play)
-docker run --rm -v $(pwd):/project mingc/android-build-box:latest \
-  bash -c 'cd /project && ./gradlew bundleRelease'
-
-# Run tests inside Docker
-docker run --rm -v $(pwd):/project mingc/android-build-box:latest \
-  bash -c 'cd /project && ./gradlew test'
-
-# Interactive shell (inspect or run any Gradle task)
-docker run -it --rm -v $(pwd):/project mingc/android-build-box:latest bash -l
-```
-
-### Faster Repeated Builds — Gradle Cache
-
-```bash
-# Create a directory for the Gradle cache (For first time only)
+# Create cache directory
 mkdir -p ~/.gradle-docker-cache
 
-# Build the app
+# Build with cache
 docker run --rm \
   -v $(pwd):/project \
   -v ~/.gradle-docker-cache:/root/.gradle \
   mingc/android-build-box:latest \
   bash -c 'cd /project && ./gradlew assembleDebug --no-daemon'
-# Uninstall and install the app
-adb uninstall com.depi.moviex
-# Install the app
-adb install app/build/outputs/apk/debug/app-debug.apk
-# Run the app
-adb shell am start -n "com.depi.moviex/.MainActivity"
 ```
 
-### Docker Limitations
+### Other Commands
 
-| Limitation | Notes |
-|---|---|
-| Emulator | Android emulator **cannot run inside Docker** (requires KVM/hardware virtualization) |
-| UI preview | No Compose preview inside Docker |
-| Workaround | Use Docker only for builds & tests; run/debug via Android Studio or ADB |
+```bash
+# Release AAB
+docker run --rm -v $(pwd):/project mingc/android-build-box:latest \
+  bash -c 'cd /project && ./gradlew bundleRelease'
 
-adb uninstall com.depi.moviex
-adb install app/build/outputs/apk/debug/app-debug.apk
+# Run tests
+docker run --rm -v $(pwd):/project mingc/android-build-box:latest \
+  bash -c 'cd /project && ./gradlew test'
 
-adb run-as com.depi.moviex
+# Interactive shell
+docker run -it --rm -v $(pwd):/project mingc/android-build-box:latest bash -l
+```
+
+### Limitations
+
+| Limitation | Note |
+|------------|------|
+| Emulator | Cannot run inside Docker (requires KVM) |
+| Preview | No Compose preview in Docker |
+| Use | Use for builds/tests only |
 
 ---
 
-## 8. Code Navigation Guide
+## 8. Code Navigation
 
-| You want to... | Go to... |
-|---|---|
-| Change a screen's UI | `presentation/<feature>/` |
-| Add/modify API call | `data/remote/api/TmdbApiService.kt` |
-| Add business logic | `domain/usecase/<Feature>UseCase.kt` |
-| Change Hilt bindings | `di/` modules |
-| Modify theme/colors | `presentation/theme/` |
-| Update Gradle deps | `gradle/libs.versions.toml` |
+| Task | Location |
+|------|----------|
+| Change screen UI | `ui/theme/screens/<feature>/` |
+| Modify API call | `data/remote/api/` |
+| Add business logic | `domain/usecase/` |
+| Update DI bindings | `di/` |
+| Change theme/colors | `ui/theme/` |
+| Update dependencies | `gradle/libs.versions.toml` |
 
 ---
 
 ## 9. Debugging
 
-### Logcat Filters
+### Logcat
 
 ```bash
 # All MovieX logs
 adb logcat -s MovieX
 
-# Retrofit request/response
+# Network logs
 adb logcat | grep OkHttp
 ```
 
-Enable HTTP logging in `NetworkModule.kt` (debug builds only):
+### Enable HTTP Logging
+
+In `di/` module (debug builds only):
 
 ```kotlin
 if (BuildConfig.DEBUG) {
@@ -305,19 +293,19 @@ if (BuildConfig.DEBUG) {
 }
 ```
 
-### Compose Layout Inspector
+### Layout Inspector
 
-Android Studio → **View → Tool Windows → Layout Inspector** — works with running Compose apps for live inspection.
+Android Studio → **View → Tool Windows → Layout Inspector**
 
 ---
 
 ## 10. Troubleshooting
 
 | Problem | Solution |
-|---|---|
+|---------|----------|
 | Gradle sync fails | Delete `.gradle/` folder, re-sync |
-| `TMDB_API_KEY` empty | Verify `local.properties` has key; rebuild project |
-| Device not listed in ADB | Enable USB debugging, accept RSA key on device |
-| Compose previews not loading | Invalidate caches: **File → Invalidate Caches → Restart** |
-| `401 Unauthorized` from API | TMDB key is wrong or expired — regenerate at TMDB settings |
-| Docker build fails | Ensure Docker daemon is running; check volume mount path |
+| API key not found | Verify `local.properties`, rebuild |
+| Device not in ADB | Enable USB debugging, accept RSA key |
+| Preview not loading | File → Invalidate Caches → Restart |
+| 401 Unauthorized | Check TMDB key validity |
+| Docker fails | Ensure daemon running, check volume path |

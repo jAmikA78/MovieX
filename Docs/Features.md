@@ -1,214 +1,278 @@
-# Features — MovieX
+# Features
 
-Each feature maps to a `presentation/<feature>/` package with its own screen, ViewModel, and UI state.
+MovieX includes multiple features organized by functionality. Each feature follows Clean Architecture with its own screen, ViewModel, and data layer.
 
 ---
 
-## Feature Map
+## Feature Overview
 
 | Feature | Status | Screen | ViewModel |
-|---|---|---|---|
-| Splash | ✅ Done | `SplashScreen` | — |
-| Onboarding | ✅ Done | `OnboardingScreen` | — |
-| Trending / Home | 🚧 In Progress | `HomeScreen` | `HomeViewModel` |
-| Search | 📋 Planned | `SearchScreen` | `SearchViewModel` |
-| Movie Detail | 📋 Planned | `DetailScreen` | `DetailViewModel` |
-| Favorites | 📋 Planned | `FavoritesScreen` | `FavoritesViewModel` |
+|---------|--------|--------|-----------|
+| Splash | Done | `SplashScreen` | - |
+| Onboarding | Done | `OnboardingScreen` | - |
+| Authentication | Done | `LoginScreen`, `SignUpScreen` | `LoginViewModel`, `SignUpViewModel` |
+| Home | Done | `HomeScreen` | `HomeViewModel` |
+| Movie Detail | Done | `MovieDetailScreen` | `MovieDetailViewModel` |
+| Settings | Done | `SettingsScreen` | - |
+| Search | Planned | `SearchScreen` | `SearchViewModel` |
+| Favorites | Planned | `FavoritesScreen` | `FavoritesViewModel` |
 
 ---
 
-## 1. Splash Screen ✅
+## 1. Splash Screen
 
-**Purpose**: Brand intro → navigates to Onboarding (first launch) or Home.
+**Status**: Done
 
-**UI Components**:
-- App logo (`moviex_logo`)
-- App name "MovieX" in brand red
+**Purpose**: Display app branding on launch and navigate to the appropriate screen based on user state.
+
+**Components**:
+- App logo
+- App name in brand color
 - Tagline text
+- 2-second delay using `kotlinx.coroutines.delay`
 
-**Logic**:
-- 1.5-second delay via `LaunchedEffect` + `kotlinx.coroutines.delay`
-- Navigates and clears back stack
+**Navigation**:
+- First launch → Onboarding
+- Returning user → Login
 
-**Data Sources**: none
+**File**: `ui/theme/screens/splash/SplashScreen.kt`
 
 ---
 
-## 2. Onboarding Screen ✅
+## 2. Onboarding Screen
 
-**Purpose**: First-time user education (4 slides).
+**Status**: Done
 
-**UI Components**:
+**Purpose**: Guide first-time users through the app's main features.
+
+**Components**:
 - `HorizontalPager` with 4 pages
-- Icon, title, description per page
-- Dot indicator
-- Skip / Next / Start buttons
+- Page indicator dots
+- Skip, Next, and Get Started buttons
 
-**Slides**:
+**Pages**:
 1. Find your next movie (search icon)
-2. Upcoming releases (calendar icon)
-3. Watchlist & history (watchlist icon)
-4. Ready to explore? (play icon)
+2. Explore trending content (trending icon)
+3. View details and reviews (info icon)
+4. Start exploring (play icon)
 
-**Logic**:
-- State: pager position via `rememberPagerState`
-- On last page: calls `onFinish` → navigate to Home
+**State Management**:
+- Uses `rememberPagerState` for page tracking
+- `LaunchedEffect` for animation timing
 
-**Data Sources**: none (static content)
+**Persistence** [Planned]: Store onboarding completion flag in DataStore.
 
-**Persistence** `[TBD]`:
-- Store "onboarding seen" flag in `DataStore` so it only shows once
+**File**: `ui/theme/screens/onboarding/OnboardingScreen.kt`
 
 ---
 
-## 3. Home / Trending Screen 🚧
+## 3. Authentication
 
-**Purpose**: Main feed showing trending & popular content.
+**Status**: Done
 
-**UI Components**:
-- `TopAppBar` with logo + search icon
-- Featured movie banner (large card)
-- Horizontal scroll rows: "Trending", "Popular", "Top Rated"
-- Movie card (poster, title, rating)
+**Screens**:
+- `LoginScreen` - Email/password login
+- `SignUpScreen` - New user registration
 
-**ViewModel: `HomeViewModel`**
+**Components**:
+- Email input field
+- Password input field with visibility toggle
+- Login/Signup button
+- Guest login option
+- Navigation between screens
 
+**ViewModel**: `LoginViewModel`, `SignUpViewModel`
+
+**State**:
+- Loading state
+- Error handling
+- Navigation on success
+
+**Files**:
+- `ui/theme/screens/auth/LoginScreen.kt`
+- `ui/theme/screens/auth/SignUpScreen.kt`
+- `ui/theme/screens/auth/viewModel/LoginViewModel.kt`
+- `ui/theme/screens/auth/viewModel/SignUpViewModel.kt`
+
+---
+
+## 4. Home Screen
+
+**Status**: Done
+
+**Purpose**: Main feed displaying categorized movie content.
+
+**Components**:
+- Header with welcome message
+- Settings icon button
+- Search bar
+- Category rows with horizontal scrolling:
+  - Trending Now
+  - Most Watched
+  - TV Shows
+  - Action
+  - Drama
+  - Comedy
+
+**ViewModel**: `HomeViewModel`
+
+**Data Fetched**:
+- Discover movies
+- Trending movies
+- TV shows
+- Action movies
+- Drama movies
+- Comedy movies
+
+**State**:
 ```kotlin
-@HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val getTrendingMoviesUseCase: GetTrendingMoviesUseCase
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
-    init { loadTrending() }
-
-    fun loadTrending() {
-        viewModelScope.launch {
-            _uiState.value = HomeUiState.Loading
-            getTrendingMoviesUseCase().collect { result ->
-                _uiState.value = when (result) {
-                    is NetworkResult.Success -> HomeUiState.Success(result.data)
-                    is NetworkResult.Error   -> HomeUiState.Error(result.message)
-                    else -> HomeUiState.Loading
-                }
-            }
-        }
-    }
-}
+data class HomeState(
+    val message: String = "Welcome to MovieX",
+    val discoverMovies: List<Movie> = emptyList(),
+    val trendingMovies: List<Movie> = emptyList(),
+    val tvShows: List<Movie> = emptyList(),
+    val actionMovies: List<Movie> = emptyList(),
+    val dramaMovies: List<Movie> = emptyList(),
+    val comedyMovies: List<Movie> = emptyList(),
+    val error: String? = null,
+    val isLoading: Boolean = false
+)
 ```
 
-**Use Case**: `GetTrendingMoviesUseCase` → `MovieRepository` → `TmdbApiService`
-
-**Data Sources**:
-- `GET /trending/movie/week`
-- `GET /movie/popular`
-
----
-
-## 4. Search Screen 📋
-
-**Purpose**: Real-time search across movies and TV shows.
-
-**UI Components**:
-- Search `TextField` with debounce
-- Results `LazyColumn` with movie cards
-- Empty state illustration + text
-- Loading skeleton
-
-**ViewModel: `SearchViewModel`**
-
-```kotlin
-@HiltViewModel
-class SearchViewModel @Inject constructor(
-    private val searchMoviesUseCase: SearchMoviesUseCase
-) : ViewModel() {
-
-    private val _query = MutableStateFlow("")
-    val query: StateFlow<String> = _query.asStateFlow()
-
-    val results: StateFlow<SearchUiState> = _query
-        .debounce(400)
-        .filter { it.length >= 2 }
-        .flatMapLatest { q -> searchMoviesUseCase(q) }
-        .map { SearchUiState.Success(it) }
-        .catch { emit(SearchUiState.Error(it.message ?: "Unknown error")) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SearchUiState.Idle)
-
-    fun onQueryChange(q: String) { _query.value = q }
-}
-```
-
-**Data Sources**: `GET /search/movie?query=`, `GET /search/tv?query=`
+**Files**:
+- `ui/theme/screens/home/HomeScreen.kt`
+- `ui/theme/screens/home/HomeViewModel.kt`
+- `ui/theme/screens/home/components/CategoryRows.kt`
+- `ui/theme/screens/home/components/MovieCoverImage.kt`
 
 ---
 
-## 5. Movie Detail Screen 📋
+## 5. Movie Detail Screen
 
-**Purpose**: Full movie information page.
+**Status**: Done
 
-**UI Components**:
-- Backdrop image (full width, parallax scroll)
-- Poster thumbnail
-- Title, tagline, rating (star chips)
-- Overview text
+**Purpose**: Display comprehensive information about a selected movie.
+
+**Components**:
+- Backdrop image with gradient overlay
+- Back button (top-left)
+- Title
+- Rating with star icon
+- Release year
+- Runtime
 - Genre chips
-- Cast horizontal scroll row
-- "Add to Favorites" button
+- Overview section
+- Cast horizontal scroll list
+- Reviews section
 
-**ViewModel: `DetailViewModel`**
+**ViewModel**: `MovieDetailViewModel`
 
+**State**:
 ```kotlin
-@HiltViewModel
-class DetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val getMovieDetailsUseCase: GetMovieDetailsUseCase
-) : ViewModel() {
-    private val movieId: Int = checkNotNull(savedStateHandle["movieId"])
-
-    private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
-    val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
-
-    init { loadDetails() }
-
-    private fun loadDetails() {
-        viewModelScope.launch {
-            _uiState.value = DetailUiState.Loading
-            getMovieDetailsUseCase(movieId).collect { result ->
-                _uiState.value = when (result) {
-                    is NetworkResult.Success -> DetailUiState.Success(result.data)
-                    is NetworkResult.Error -> DetailUiState.Error(result.message)
-                    else -> DetailUiState.Loading
-                }
-            }
-        }
-    }
-}
+data class MovieDetailState(
+    val movieDetail: MovieDetail? = null,
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
 ```
 
-**Data Sources**: `GET /movie/{id}`, `GET /movie/{id}/credits`
+**Data Model**:
+```kotlin
+data class MovieDetail(
+    val backdropPath: String,
+    val genreIds: List<String>,
+    val id: Int,
+    val originalLanguage: String,
+    val originalTitle: String,
+    val overview: String,
+    val popularity: Double,
+    val posterPath: String,
+    val releaseDate: String,
+    val title: String,
+    val voteAverage: Double,
+    val voteCount: Int,
+    val video: Boolean,
+    val cast: List<Cast>,
+    val language: List<String>,
+    val productionCountry: List<String>,
+    val reviews: List<Review>,
+    val runTime: String
+)
+```
+
+**Files**:
+- `ui/theme/screens/moviedetail/MovieDetailScreen.kt`
+- `ui/theme/screens/moviedetail/MovieDetailViewModel.kt`
 
 ---
 
-## 6. Favorites Screen 📋
+## 6. Settings Screen
 
-> [TBD: Favorites Feature]
->
-> - **Description**: Allow users to save movies locally and view them offline
-> - **Expected behavior**: Heart icon on any movie card toggles favorite state; Favorites tab shows saved list
-> - **Required APIs**: Local Room database only (no network call)
-> - **UI notes**: Empty state with CTA to browse
-> - **Implementation notes**: Room Entity + DAO + FavoritesRepository; `FavoritesViewModel` with `Flow<List<Movie>>` from DB
+**Status**: Done
+
+**Purpose**: Provide user settings and sign out functionality.
+
+**Components**:
+- Settings options
+- Sign out button
+
+**Navigation**: Returns to login screen on sign out.
+
+**File**: `ui/theme/screens/settings/SettingsScreen.kt`
 
 ---
 
-## Error & Loading States (All Screens)
+## 7. Search Screen
+
+**Status**: Planned
+
+**Purpose**: Search for movies and TV shows by title.
+
+**Components**:
+- Search text field with debounce
+- Results list
+- Empty state
+- Loading state
+
+**ViewModel**: `SearchViewModel` (planned)
+
+**Data Source**: `GET /search/movie?query=`
+
+---
+
+## 8. Favorites Screen
+
+**Status**: Planned
+
+**Purpose**: Save and manage favorite movies locally.
+
+**Components**:
+- Favorite movies list
+- Empty state with browse CTA
+- Remove from favorites functionality
+
+**Implementation**:
+- Room database for local storage
+- FavoritesRepository
+- FavoritesViewModel with Flow
+
+---
+
+## Error Handling
 
 | State | UI Treatment |
-|---|---|
-| Loading | `CircularProgressIndicator` centred |
-| Network error | Illustrated error card + "Retry" button |
-| Empty results | Illustration + contextual message |
-| Rate limited (429) | Toast / Snackbar "Too many requests, try again shortly" |
-| Offline | Banner "No internet connection" |
+|-------|---------------|
+| Loading | `CircularProgressIndicator` centered |
+| Network Error | Error card with message and retry option |
+| Empty Results | Illustration with contextual message |
+| API Error (429) | Snackbar with rate limit message |
+
+---
+
+## Loading States
+
+All screens follow consistent loading patterns:
+- Initial load shows loading indicator
+- Subsequent loads may show inline loading
+- Error states are displayed with retry options
+- Empty states have appropriate messaging

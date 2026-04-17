@@ -1,6 +1,7 @@
 package com.depi.moviex.ui.theme.screens.moviedetail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +55,8 @@ fun MovieDetailScreen(
     modifier: Modifier = Modifier,
     movieDetailViewModel: MovieDetailViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
-    onCastClick: (Int, String) -> Unit = { _, _ -> }
+    onCastClick: (Int, String) -> Unit = { _, _ -> },
+    onCastMemberClick: (Int) -> Unit = {}
 ) {
     val state by movieDetailViewModel.movieDetailState.collectAsStateWithLifecycle()
 
@@ -87,7 +89,8 @@ fun MovieDetailScreen(
                 MovieDetailContent(
                     movieDetail = state.movieDetail!!,
                     onBackClick = onBackClick,
-                    onCastClick = onCastClick
+                    onCastClick = onCastClick,
+                    onCastMemberClick = onCastMemberClick
                 )
             }
         }
@@ -98,7 +101,8 @@ fun MovieDetailScreen(
 private fun MovieDetailContent(
     movieDetail: MovieDetail,
     onBackClick: () -> Unit,
-    onCastClick: (Int, String) -> Unit
+    onCastClick: (Int, String) -> Unit,
+    onCastMemberClick: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -260,7 +264,10 @@ private fun MovieDetailContent(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     movieDetail.cast.take(10).forEach { castMember ->
-                        CastItem(cast = castMember)
+                        CastItem(
+                            cast = castMember,
+                            onCastMemberClick = onCastMemberClick
+                        )
                     }
                 }
             }
@@ -287,10 +294,15 @@ private fun MovieDetailContent(
 }
 
 @Composable
-private fun CastItem(cast: Cast) {
+private fun CastItem(
+    cast: Cast,
+    onCastMemberClick: (Int) -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(80.dp)
+        modifier = Modifier
+            .width(80.dp)
+            .clickable { onCastMemberClick(cast.id) }
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)

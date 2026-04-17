@@ -1,6 +1,7 @@
 package com.depi.moviex.ui.theme.screens.cast
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,7 +52,8 @@ fun CastScreen(
     castViewModel: CastViewModel = hiltViewModel(),
     movieId: Int = 0,
     movieTitle: String = "",
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onCastMemberClick: (Int) -> Unit = {}
 ) {
     val state by castViewModel.castState.collectAsStateWithLifecycle()
 
@@ -84,7 +86,8 @@ fun CastScreen(
                 CastContent(
                     cast = state.cast,
                     movieTitle = movieTitle,
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    onCastMemberClick = onCastMemberClick
                 )
             }
         }
@@ -95,7 +98,8 @@ fun CastScreen(
 private fun CastContent(
     cast: List<Cast>,
     movieTitle: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onCastMemberClick: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -159,7 +163,10 @@ private fun CastContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(cast) { castMember ->
-                    CastGridItem(cast = castMember)
+                    CastGridItem(
+                        cast = castMember,
+                        onCastMemberClick = onCastMemberClick
+                    )
                 }
             }
         }
@@ -167,10 +174,15 @@ private fun CastContent(
 }
 
 @Composable
-private fun CastGridItem(cast: Cast) {
+private fun CastGridItem(
+    cast: Cast,
+    onCastMemberClick: (Int) -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCastMemberClick(cast.id) }
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)

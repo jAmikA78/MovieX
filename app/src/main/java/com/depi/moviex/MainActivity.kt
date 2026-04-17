@@ -19,6 +19,7 @@ import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import com.depi.moviex.ui.theme.screens.cast.CastScreen
+import com.depi.moviex.ui.theme.screens.cast_member.CastMemberScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -128,6 +129,9 @@ fun AppNavigation() {
                 onBackClick = { navController.popBackStack() },
                 onCastClick = { movieId, movieTitle ->
                     navController.navigate("cast/$movieId?movieTitle=$movieTitle")
+                },
+                onCastMemberClick = { personId ->
+                    navController.navigate("cast_member/$personId")
                 }
             )
         }
@@ -148,6 +152,20 @@ fun AppNavigation() {
             CastScreen(
                 movieId = movieId,
                 movieTitle = movieTitle,
+                onBackClick = { navController.popBackStack() },
+                onCastMemberClick = { personId ->
+                    navController.navigate("cast_member/$personId")
+                }
+            )
+        }
+
+        composable(
+            route = "cast_member/{personId}",
+            arguments = listOf(
+                navArgument("personId") { type = NavType.IntType }
+            )
+        ) {
+            CastMemberScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }

@@ -6,18 +6,31 @@ MovieX follows **Well-Architected** design combined with **MVVM** pattern, creat
 
 ## Layer Overview
 
-```
-┌────────────────────────────────────────────┐
-│           Presentation Layer               │
-│  Compose Screens · ViewModels · UI State   │
-├────────────────────────────────────────────┤
-│             Domain Layer                    │
-│    Use Cases · Repository Interfaces       │
-│       Domain Models (pure Kotlin)           │
-├────────────────────────────────────────────┤
-│              Data Layer                     │
-│  Repository Impl · Retrofit · DTOs         │
-└────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph Presentation Layer
+        A[Compose Screens]
+        B[ViewModels]
+        C[UI State]
+    end
+
+    subgraph Domain Layer
+        D[Use Cases]
+        E[Repository Interfaces]
+        F[Domain Models]
+    end
+
+    subgraph Data Layer
+        G[Repository Impl]
+        H[Retrofit DTOs]
+    end
+
+    A --> B
+    B --> D
+    D --> E
+    E --> G
+    G --> H
+    G --> |Future| I[(Room)]
 ```
 
 **Dependency Rule**: Outer layers depend inward. `Presentation` → `Domain` ← `Data`. The `Domain` layer knows nothing about Android or Retrofit.
@@ -26,93 +39,48 @@ MovieX follows **Well-Architected** design combined with **MVVM** pattern, creat
 
 ## Data Flow
 
-```
-User Interaction
-       │
-       ▼
-Compose Screen
-       │ calls
-       ▼
-ViewModel ──────────── Emits UI State (StateFlow)
-       │ calls
-       ▼
-Use Case (Domain)
-       │ calls
-       ▼
-Repository Interface (Domain)
-       │ implemented by
-       ▼
-Repository Implementation (Data)
-       │ calls
-       ├──▶ TMDB API (Retrofit) ──▶ DTO ──▶ Domain Model
-       └──▶ Local Storage (Future)
+```mermaid
+flowchart LR
+    A[User Interaction] --> B[Compose Screen]
+    B --> C[ViewModel]
+    C -.->|Emits| D[UI State StateFlow]
+    C --> E[Use Case]
+    E --> F[Repository Interface]
+    F --> G[Repository Impl]
+    G --> H[TMDB API]
+    H --> I[DTO]
+    I --> J[Domain Model]
+    G --> |Future| K[Local Storage]
 ```
 
 ---
 
 ## Package Structure
 
-```
-com.depi.moviex/
-│
-├── MainActivity.kt            # Navigation setup
-├── MovieApplication.kt        # Hilt Application
-│
-├── auth/                      # Authentication feature
-│   ├── data/                  # Repository impl, API, models
-│   │   ├── remote/
-│   │   │   ├── api/
-│   │   │   └── models/
-│   │   └── repository/
-│   ├── di/                    # Hilt module
-│   └── domain/
-│       ├── models/
-│       ├── repository/
-│       └── usecase/
-│
-├── movie/                     # Movie listing feature
-│   ├── data/
-│   │   ├── remote/
-│   │   │   ├── api/
-│   │   │   ├── models/
-│   │   │   └── mapper_impl/
-│   │   └── repository_impl/
-│   └── domain/
-│       ├── models/
-│       └── repository/
-│
-├── movie_detail/              # Movie detail feature
-│   ├── data/
-│   │   ├── remote/
-│   │   │   ├── api/
-│   │   │   └── models/
-│   │   ├── mapper_impl/
-│   │   └── repo_impl/
-│   └── domain/
-│       ├── models/
-│       └── repository/
-│
-├── di/                        # Hilt modules
-│   ├── MovieModule.kt
-│   └── MovieDetailModule.kt
-│
-├── ui/theme/                  # Compose theme
-│   ├── Color.kt
-│   ├── Theme.kt
-│   ├── Type.kt
-│   └── screens/
-│       ├── splash/
-│       ├── onboarding/
-│       ├── auth/
-│       ├── home/
-│       ├── moviedetail/
-│       └── settings/
-│
-└── utils/                     # Helpers
-    ├── K.kt                   # Constants
-    ├── Ext.kt                 # Extensions
-    ├── GenreConstants.kt
-    └── Response.kt            # Result wrapper
+```mermaid
+graph TD
+    ROOT[com.depi.moviex] --> MAIN[MainActivity.kt]
+    ROOT --> APP[MovieApplication.kt]
+    ROOT --> AUTH[auth/]
+    ROOT --> MOVIE[movie/]
+    ROOT --> DETAIL[movie_detail/]
+    ROOT --> SEARCH[search/]
+    ROOT --> FAVORITES[favorites/]
+    ROOT --> DI[di/]
+    ROOT --> UI[ui/theme/]
+    ROOT --> UTILS[utils/]
+
+    AUTH --> AUTH_DATA[data/]
+    AUTH --> AUTH_DI[di/]
+    AUTH --> AUTH_DOMAIN[domain/]
+
+    MOVIE --> MOVIE_DATA[data/]
+    MOVIE --> MOVIE_DOMAIN[domain/]
+
+    DETAIL --> DETAIL_DATA[data/]
+    DETAIL --> DETAIL_DOMAIN[domain/]
+
+    UI --> UI_SCREENS[screens/]
 ```
 
 ---

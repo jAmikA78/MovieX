@@ -2,16 +2,11 @@
 
 MovieX is developed and maintained by the following team members.
 
-- Ahmed Ibrahim Abd ElGhany Emam
+- Ahmed Ibrahim Abd ElGhany Emam (Team Lead)
 - Ahmed Mohamed Hamed ElKatatny
 - Areeg Ismail Youssef
 - Kareem Khaled
 
----
-
-## Lead Developer
-
-- **jAmikA78** - Lead Developer and Project Maintainer
 
 ---
 

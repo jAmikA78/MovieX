@@ -11,7 +11,7 @@ Milestones for the MovieX Android application development.
 - Set up Gradle configuration
 - Configure Android SDK
 - Add dependencies (Compose, Hilt, Retrofit, Coil)
-- Create project structure following Clean Architecture
+- Create project structure following Well-Architected design
 - Verify empty shell builds successfully
 
 ### 1.2 Core Infrastructure

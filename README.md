@@ -16,7 +16,7 @@ MovieX is a native Android app built with modern Android development practices. 
 |----------|------------|
 | Language | Kotlin |
 | UI Framework | Jetpack Compose |
-| Architecture | MVVM + Clean Architecture |
+| Architecture | MVVM + Well-Architected |
 | Networking | Retrofit 2 + OkHttp |
 | Dependency Injection | Hilt |
 | Async Operations | Coroutines + Flow |
@@ -122,11 +122,12 @@ app/src/main/java/com/depi/moviex/
 | Document | Description |
 |----------|-------------|
 | [Setup & Development](Docs/Setup%26Development.md) | Environment setup, build, ADB, Docker |
-| [Architecture](Docs/Architecture.md) | Clean Architecture layers and patterns |
+| [Architecture](Docs/Architecture.md) | Well-Architected layers and patterns |
 | [Features](Docs/Features.md) | Feature breakdown and implementation details |
 | [API Integration](Docs/API.md) | TMDB API endpoints and integration |
 | [Checklist](Docs/Checklist.md) | Development checklist |
 | [Milestones](Docs/Milestone.md) | Project milestones |
+| [Team](Docs/Team.md) | Project team Memper |
 
 ---
 

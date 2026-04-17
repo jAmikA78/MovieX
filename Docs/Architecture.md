@@ -1,6 +1,6 @@
 # Architecture
 
-MovieX follows **Clean Architecture** combined with **MVVM** pattern, creating a clear separation of concerns across three main layers. This architecture ensures testability, maintainability, and scalability.
+MovieX follows **Well-Architected** design combined with **MVVM** pattern, creating a clear separation of concerns across three main layers. This architecture ensures testability, maintainability, and scalability.
 
 ---
 

@@ -1,6 +1,6 @@
 # Code Samples
 
-Production-ready code examples demonstrating Clean Architecture patterns in MovieX.
+Production-ready code examples demonstrating Well-Architected design patterns in MovieX.
 
 ---
 

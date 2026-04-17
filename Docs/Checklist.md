@@ -112,7 +112,7 @@ A comprehensive checklist for developing and maintaining MovieX.
 ## Technical Tasks
 
 ### Architecture
-- [ ] Clean Architecture implementation
+- [ ] Well-Architected implementation
 - [ ] MVVM pattern
 - [ ] Repository pattern
 - [ ] Use cases for business logic

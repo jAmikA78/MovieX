@@ -1,6 +1,6 @@
 # Features
 
-MovieX includes multiple features organized by functionality. Each feature follows Clean Architecture with its own screen, ViewModel, and data layer.
+MovieX includes multiple features organized by functionality. Each feature follows Well-Architected design with its own screen, ViewModel, and data layer.
 
 ---
 

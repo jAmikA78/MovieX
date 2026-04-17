@@ -4,6 +4,8 @@ import com.depi.moviex.common.data.ApiMapper
 import com.depi.moviex.movie.data.remote.api.MovieApiService
 import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
+import com.depi.moviex.movie.domain.repository.MovieRepository
+import com.depi.moviex.movie_detail.data.remote.models.MovieResponse
 import com.depi.moviex.utils.Response
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -71,5 +73,14 @@ class MovieRepositoryImpl(
         }
     }.catch { e ->
         emit(Response.Error(e))
+    }
+
+    override suspend fun searchMovies(query: String): Result<MovieResponse> {
+        return try {
+            val response = movieApiService.searchMovies(query = query)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

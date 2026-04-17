@@ -1,6 +1,7 @@
 package com.depi.moviex.ui.theme.screens.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +22,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -31,6 +33,7 @@ fun SearchBar(
                 color = Color(0xFF1E1E2E),
                 shape = RoundedCornerShape(12.dp)
             )
+            .clickable { onClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

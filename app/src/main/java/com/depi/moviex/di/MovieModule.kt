@@ -32,9 +32,7 @@ object MovieModule {
     fun provideMovieRepository(
         movieApiService: MovieApiService,
         mapper: ApiMapper<List<Movie>, MovieDto>
-    ): MovieRepository = MovieRepositoryImpl(
-        movieApiService, mapper
-    )
+    ): MovieRepository = MovieRepositoryImpl(movieApiService, mapper)
 
     @Provides
     @Singleton
@@ -50,6 +48,5 @@ object MovieModule {
             .build()
             .create(MovieApiService::class.java)
     }
-
 
 }

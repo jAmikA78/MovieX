@@ -6,7 +6,7 @@ import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie.domain.repository.MovieRepository
 import com.depi.moviex.utils.collectAndHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

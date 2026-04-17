@@ -104,6 +104,9 @@ fun AppNavigation() {
                 },
                 onSettingsClick = {
                     navController.navigate("settings")
+                },
+                onSearchClick = {
+                    navController.navigate("search_screen")
                 }
             )
         }
@@ -167,6 +170,14 @@ fun AppNavigation() {
         ) {
             CastMemberScreen(
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("search_screen") {
+            com.depi.moviex.ui.theme.screens.home.SearchScreen(
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                }
             )
         }
     }

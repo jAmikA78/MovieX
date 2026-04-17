@@ -44,7 +44,7 @@ object MovieDetailModule {
 
     @Provides
     @Singleton
-    fun provideMovieMapper(): ApiMapper<MovieDetail, MovieDetailDto> = MovieDetailMapperImpl()
+    fun provideMovieDetailMapper(): ApiMapper<MovieDetail, MovieDetailDto> = MovieDetailMapperImpl()
 
     @Provides
     @Singleton
@@ -56,8 +56,5 @@ object MovieDetailModule {
             .build()
             .create(MovieDetailApiService::class.java)
     }
-
-
-
 
 }

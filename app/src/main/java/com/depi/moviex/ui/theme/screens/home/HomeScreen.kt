@@ -39,7 +39,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
     onMovieClick: (id: Int) -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {}
 ) {
     val state by homeViewModel.homeState.collectAsStateWithLifecycle()
 
@@ -71,7 +72,7 @@ fun HomeScreen(
             }
         }
 
-        SearchBar()
+        SearchBar(onClick = onSearchClick)
 
         Spacer(modifier = Modifier.height(24.dp))
 

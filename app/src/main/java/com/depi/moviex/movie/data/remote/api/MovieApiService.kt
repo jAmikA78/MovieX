@@ -1,6 +1,7 @@
 package com.depi.moviex.movie.data.remote.api
 
 import com.depi.moviex.movie.data.remote.models.MovieDto
+import com.depi.moviex.movie_detail.data.remote.models.MovieResponse
 import com.depi.moviex.BuildConfig
 import com.depi.moviex.utils.K
 import retrofit2.http.GET
@@ -46,4 +47,10 @@ interface MovieApiService {
         @Query("with_genres") genreId: String = K.GENRE_COMEDY.toString(),
         @Query("include_adult") includeAdult: Boolean = false
     ): MovieDto
+
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("query") query: String
+    ): MovieResponse
 }

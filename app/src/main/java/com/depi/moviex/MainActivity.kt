@@ -18,6 +18,7 @@ import com.depi.moviex.ui.theme.screens.moviedetail.MovieDetailScreen
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
+import com.depi.moviex.ui.theme.screens.cast.CastScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -124,6 +125,29 @@ fun AppNavigation() {
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })
         ) {
             MovieDetailScreen(
+                onBackClick = { navController.popBackStack() },
+                onCastClick = { movieId, movieTitle ->
+                    navController.navigate("cast/$movieId?movieTitle=$movieTitle")
+                }
+            )
+        }
+
+        composable(
+            route = "cast/{movieId}?movieTitle={movieTitle}",
+            arguments = listOf(
+                navArgument("movieId") { type = NavType.IntType },
+                navArgument("movieTitle") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
+            val movieTitle = backStackEntry.arguments?.getString("movieTitle") ?: ""
+            CastScreen(
+                movieId = movieId,
+                movieTitle = movieTitle,
                 onBackClick = { navController.popBackStack() }
             )
         }

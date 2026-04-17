@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,7 +53,8 @@ import com.depi.moviex.utils.K
 fun MovieDetailScreen(
     modifier: Modifier = Modifier,
     movieDetailViewModel: MovieDetailViewModel = hiltViewModel(),
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onCastClick: (Int, String) -> Unit = { _, _ -> }
 ) {
     val state by movieDetailViewModel.movieDetailState.collectAsStateWithLifecycle()
 
@@ -83,7 +86,8 @@ fun MovieDetailScreen(
             state.movieDetail != null -> {
                 MovieDetailContent(
                     movieDetail = state.movieDetail!!,
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    onCastClick = onCastClick
                 )
             }
         }
@@ -93,7 +97,8 @@ fun MovieDetailScreen(
 @Composable
 private fun MovieDetailContent(
     movieDetail: MovieDetail,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onCastClick: (Int, String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -222,12 +227,33 @@ private fun MovieDetailContent(
             Spacer(modifier = Modifier.height(24.dp))
 
             if (movieDetail.cast.isNotEmpty()) {
-                Text(
-                    text = "Cast",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Cast",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    androidx.compose.material3.TextButton(
+                        onClick = { onCastClick(movieDetail.id, movieDetail.title) }
+                    ) {
+                        Text(
+                            text = "See All",
+                            color = PrimaryRed,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = PrimaryRed,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.horizontalScroll(rememberScrollState()),

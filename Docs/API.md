@@ -131,7 +131,7 @@ AsyncImage(
 | `GET /movie/{id}/credits` | Cast and crew | Done |
 | `GET /movie/{id}/reviews` | Movie reviews | Done |
 | `GET /discover/movie` | Discover by genre | Done |
-| `GET /search/movie` | Search movies | Planned |
+| `GET /search/movie` | Search movies | Done |
 
 ### TV Shows
 
@@ -139,7 +139,14 @@ AsyncImage(
 |----------|-------------|--------|
 | `GET /trending/tv/week` | Weekly trending TV | Done |
 | `GET /tv/popular` | Popular TV shows | Done |
-| `GET /search/tv` | Search TV shows | Planned |
+| `GET /search/tv` | Search TV shows | Done |
+
+### Person/Cast
+
+| Endpoint | Description | Status |
+|----------|-------------|--------|
+| `GET /person/{person_id}` | Person details | Planned |
+| `GET /person/{person_id}/movie_credits` | Known for movies | Planned |
 
 ### Genres
 

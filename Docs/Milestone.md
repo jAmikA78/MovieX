@@ -82,12 +82,7 @@ Milestones for the MovieX Android application development.
 - Display search results
 - Add empty and loading states
 
-### 4.2 Genre Filtering
-- Implement genre-based filtering
-- Add genre selection UI
-- Connect discover API for filtering
-
-**Status**: Planned
+**Status**: Completed
 
 ---
 
@@ -104,6 +99,21 @@ Milestones for the MovieX Android application development.
 - Create user profile screen
 - Display account information
 - Add settings options
+
+### 5.3 Cast Screen
+- Create cast detail screen
+- Display actor biography
+- Show known for movies
+
+### 5.4 Theme Support
+- Implement dark/light mode toggle
+- Persist theme preference
+- Dynamic color support
+
+### 5.5 Multi-language
+- Add string resources for multiple languages
+- Implement RTL support
+- Language selection in settings
 
 **Status**: Planned
 

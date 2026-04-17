@@ -73,11 +73,11 @@ A comprehensive checklist for developing and maintaining MovieX.
 ## Planned Features
 
 ### Search
-- [ ] Search screen
-- [ ] Search input with debounce
-- [ ] Results list
-- [ ] Empty state
-- [ ] Loading state
+- [x] Search screen
+- [x] Search input with debounce
+- [x] Results list
+- [x] Empty state
+- [x] Loading state
 
 ### Favorites
 - [ ] Room database setup
@@ -86,6 +86,26 @@ A comprehensive checklist for developing and maintaining MovieX.
 - [ ] Remove from favorites
 - [ ] Favorites screen
 - [ ] Persist across app restarts
+
+### Cast Screen
+- [ ] Cast screen with actor details
+- [ ] Biography section
+- [ ] Known for movies section
+
+### Dark/Light Mode
+- [ ] Theme toggle in settings
+- [ ] Persist theme preference
+- [ ] Dynamic color support
+
+### Profile Screen
+- [ ] Profile screen UI
+- [ ] User information display
+- [ ] Account settings
+
+### Multi-language
+- [ ] String resources setup
+- [ ] RTL support
+- [ ] Language selection in settings
 
 ---
 

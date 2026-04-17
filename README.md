@@ -35,10 +35,14 @@ MovieX is a native Android app built with modern Android development practices. 
 | Onboarding | First-time user introduction flow | Done |
 | Home Screen | Browse trending, popular, and categorized movies | Done |
 | Movie Detail | Full movie info with cast, reviews, and ratings | Done |
-| Search | Search movies and TV shows by title | Planned |
+| Search | Search movies and TV shows by title | Done |
 | Favorites | Save and manage favorite movies locally | Planned |
 | Authentication | User login and signup | Done |
 | Settings | App settings and sign out | Done |
+| Cast Screen | Detailed cast member information | Planned |
+| Dark/Light Mode | Theme toggle with system support | Planned |
+| Profile Screen | User profile and account settings | Planned |
+| Multi-language | Support for multiple languages | Planned |
 
 ---
 
@@ -49,7 +53,10 @@ MovieX is a native Android app built with modern Android development practices. 
 - **Login/Signup** - Authentication screens
 - **Home** - Category-based movie browsing (Trending, Most Watched, TV Shows, Action, Drama, Comedy)
 - **Movie Detail** - Backdrop image, title, rating, genres, overview, cast, reviews
+- **Search** - Search movies and TV shows by title
 - **Settings** - Sign out functionality
+- **Profile** (Planned) - User profile and preferences
+- **Favorites** (Planned) - Saved movies
 
 ---
 

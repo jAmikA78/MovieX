@@ -6,11 +6,11 @@ Planned improvements and scalability additions for MovieX.
 
 ## Near-Term
 
-### Search Feature
-- Implement search screen with debounce input
-- Connect to `GET /search/movie` and `GET /search/tv` endpoints
-- Display search results in a list
-- Add empty and loading states
+### Search Feature (Done)
+- [x] Implement search screen with debounce input
+- [x] Connect to `GET /search/movie` and `GET /search/tv` endpoints
+- [x] Display search results in a list
+- [x] Add empty and loading states
 
 ### Favorites Feature
 - Set up Room database
@@ -45,6 +45,26 @@ Planned improvements and scalability additions for MovieX.
 ---
 
 ## Long-Term
+
+### Cast Screen
+- Actor detail page with biography
+- Known for movies section
+- Filmography
+
+### Dark/Light Mode
+- Theme toggle in settings
+- Persist preference in DataStore
+- Dynamic color support (Android 12+)
+
+### Profile Screen
+- User profile display
+- Account settings
+- Theme and language preferences
+
+### Multi-language Support
+- String resources for multiple languages
+- RTL layout support
+- Language selection in settings
 
 ### User Authentication
 - TMDB account authentication

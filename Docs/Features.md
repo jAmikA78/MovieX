@@ -14,8 +14,12 @@ MovieX includes multiple features organized by functionality. Each feature follo
 | Home | Done | `HomeScreen` | `HomeViewModel` |
 | Movie Detail | Done | `MovieDetailScreen` | `MovieDetailViewModel` |
 | Settings | Done | `SettingsScreen` | - |
-| Search | Planned | `SearchScreen` | `SearchViewModel` |
+| Search | Done | `SearchScreen` | `SearchViewModel` |
 | Favorites | Planned | `FavoritesScreen` | `FavoritesViewModel` |
+| Cast Screen | Planned | `CastScreen` | `CastViewModel` |
+| Dark/Light Mode | Planned | Theme toggle | - |
+| Profile Screen | Planned | `ProfileScreen` | `ProfileViewModel` |
+| Multi-language | Planned | i18n support | - |
 
 ---
 
@@ -224,17 +228,17 @@ data class MovieDetail(
 
 ## 7. Search Screen
 
-**Status**: Planned
+**Status**: Done
 
 **Purpose**: Search for movies and TV shows by title.
 
 **Components**:
 - Search text field with debounce
-- Results list
+- Results list with movie cards
 - Empty state
 - Loading state
 
-**ViewModel**: `SearchViewModel` (planned)
+**ViewModel**: `SearchViewModel`
 
 **Data Source**: `GET /search/movie?query=`
 
@@ -255,6 +259,66 @@ data class MovieDetail(
 - Room database for local storage
 - FavoritesRepository
 - FavoritesViewModel with Flow
+
+---
+
+## 9. Cast Screen
+
+**Status**: Planned
+
+**Purpose**: Display detailed information about cast members.
+
+**Components**:
+- Cast member profile images
+- Actor/actress names
+- Character names
+- Biography
+- Known for movies
+
+**Data Source**: `GET /person/{person_id}`
+
+---
+
+## 10. Dark/Light Mode
+
+**Status**: Planned
+
+**Purpose**: Provide user preference for theme.
+
+**Implementation**:
+- Theme toggle in Settings
+- Persist preference in DataStore
+- Dynamic color support (Android 12+)
+
+---
+
+## 11. Profile Screen
+
+**Status**: Planned
+
+**Purpose**: Display user profile and settings.
+
+**Components**:
+- User avatar
+- Username/email
+- Account settings
+- Theme preference
+- Language preference
+- Sign out option
+
+---
+
+## 12. Multi-language Support
+
+**Status**: Planned
+
+**Purpose**: Support multiple languages for global users.
+
+**Implementation**:
+- String resources externalized
+- RTL layout support
+- Language selection in settings
+- TMDB API language parameter
 
 ---
 

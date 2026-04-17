@@ -15,6 +15,7 @@ data class MovieDetail(
     val voteCount: Int,
     val video: Boolean,
     val cast: List<Cast>,
+    val crew: List<Crew>,
     val language: List<String>,
     val productionCountry: List<String>,
     val reviews: List<Review>,
@@ -29,8 +30,8 @@ data class Cast(
     val profilePath: String?,
 ) {
     private val nameParts = name.split(" ", limit = 2)
-    val firstName = nameParts[0]
-    val lastName = nameParts[1]
+    val firstName = nameParts.getOrElse(0) { "" }
+    val lastName = nameParts.getOrElse(1) { "" }
 }
 
 data class Review(
@@ -39,4 +40,12 @@ data class Review(
     val id: String,
     val createdAt: String,
     val rating:Double
+)
+
+data class Crew(
+    val id: Int,
+    val name: String,
+    val job: String,
+    val department: String,
+    val profilePath: String?
 )

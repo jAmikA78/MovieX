@@ -2,8 +2,10 @@ package com.depi.moviex.movie_detail.data.mapper_impl
 
 import com.depi.moviex.common.data.ApiMapper
 import com.depi.moviex.movie_detail.data.remote.models.CastDto
+import com.depi.moviex.movie_detail.data.remote.models.Crew
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
 import com.depi.moviex.movie_detail.domain.models.Cast
+import com.depi.moviex.movie_detail.domain.models.Crew as DomainCrew
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Review
 import java.text.SimpleDateFormat
@@ -26,6 +28,7 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
             voteCount = apiDto.voteCount ?: 0,
             video = apiDto.video ?: false,
             cast = formatCast(apiDto.credits?.cast),
+            crew = formatCrew(apiDto.credits?.crew),
             language = apiDto.spokenLanguages?.map { formatEmptyValue(it?.englishName) }
                 ?: emptyList(),
             productionCountry = apiDto.productionCountries?.map { formatEmptyValue(it?.name) }
@@ -80,6 +83,18 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
                 name = formatEmptyValue(it?.name),
                 genderRole = genderRole,
                 character = formatEmptyValue(it?.character),
+                profilePath = it?.profilePath
+            )
+        } ?: emptyList()
+    }
+
+    private fun formatCrew(crewDto: List<Crew?>?): List<DomainCrew> {
+        return crewDto?.map {
+            DomainCrew(
+                id = it?.id ?: 0,
+                name = formatEmptyValue(it?.name),
+                job = formatEmptyValue(it?.job),
+                department = formatEmptyValue(it?.department),
                 profilePath = it?.profilePath
             )
         } ?: emptyList()

@@ -39,12 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.depi.moviex.movie_detail.domain.models.Cast
+import com.depi.moviex.movie_detail.domain.models.Crew
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.ui.theme.BackgroundDark
 import com.depi.moviex.ui.theme.PrimaryRed
@@ -274,6 +276,30 @@ private fun MovieDetailContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            if (movieDetail.crew.isNotEmpty()) {
+                val keyJobs = listOf("Director", "Writer", "Producer", "Screenplay", "Original Music")
+                val filteredCrew = movieDetail.crew.filter { it.job in keyJobs }.take(5)
+                if (filteredCrew.isNotEmpty()) {
+                    Text(
+                        text = "Crew",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        filteredCrew.forEach { crewMember ->
+                            CrewItem(crew = crewMember)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             if (movieDetail.reviews.isNotEmpty()) {
                 Text(
                     text = "Reviews",
@@ -327,6 +353,41 @@ private fun CastItem(
             style = MaterialTheme.typography.labelSmall,
             color = Color.White.copy(alpha = 0.6f),
             maxLines = 1
+        )
+    }
+}
+
+@Composable
+private fun CrewItem(crew: Crew) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(80.dp)
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(crew.profilePath?.let { "${K.BASE_IMAGE_URL}$it" })
+                .crossfade(true)
+                .build(),
+            contentDescription = crew.name,
+            modifier = Modifier
+                .size(70.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = crew.name,
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.White,
+            maxLines = 1,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = crew.job,
+            style = MaterialTheme.typography.labelSmall,
+            color = PrimaryRed,
+            maxLines = 1,
+            textAlign = TextAlign.Center
         )
     }
 }

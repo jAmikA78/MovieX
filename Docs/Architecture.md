@@ -57,30 +57,67 @@ flowchart LR
 
 ## Package Structure
 
-```mermaid
-graph TD
-    ROOT[com.depi.moviex] --> MAIN[MainActivity.kt]
-    ROOT --> APP[MovieApplication.kt]
-    ROOT --> AUTH[auth/]
-    ROOT --> MOVIE[movie/]
-    ROOT --> DETAIL[movie_detail/]
-    ROOT --> SEARCH[search/]
-    ROOT --> FAVORITES[favorites/]
-    ROOT --> DI[di/]
-    ROOT --> UI[ui/theme/]
-    ROOT --> UTILS[utils/]
-
-    AUTH --> AUTH_DATA[data/]
-    AUTH --> AUTH_DI[di/]
-    AUTH --> AUTH_DOMAIN[domain/]
-
-    MOVIE --> MOVIE_DATA[data/]
-    MOVIE --> MOVIE_DOMAIN[domain/]
-
-    DETAIL --> DETAIL_DATA[data/]
-    DETAIL --> DETAIL_DOMAIN[domain/]
-
-    UI --> UI_SCREENS[screens/]
+```
+com.depi.moviex/
+│
+├── MainActivity.kt            # Navigation setup
+├── MovieApplication.kt        # Hilt Application
+│
+├── auth/                      # Authentication feature
+│   ├── data/                  # Repository impl, API, models
+│   │   ├── remote/
+│   │   │   ├── api/
+│   │   │   └── models/
+│   │   └── repository/
+│   ├── di/                    # Hilt module
+│   └── domain/
+│       ├── models/
+│       ├── repository/
+│       └── usecase/
+│
+├── movie/                     # Movie listing feature
+│   ├── data/
+│   │   ├── remote/
+│   │   │   ├── api/
+│   │   │   ├── models/
+│   │   │   └── mapper_impl/
+│   │   └── repository_impl/
+│   └── domain/
+│       ├── models/
+│       └── repository/
+│
+├── movie_detail/              # Movie detail feature
+│   ├── data/
+│   │   ├── remote/
+│   │   │   ├── api/
+│   │   │   └── models/
+│   │   ├── mapper_impl/
+│   │   └── repo_impl/
+│   └── domain/
+│       ├── models/
+│       └── repository/
+│
+├── di/                        # Hilt modules
+│   ├── MovieModule.kt
+│   └── MovieDetailModule.kt
+│
+├── ui/theme/                  # Compose theme
+│   ├── Color.kt
+│   ├── Theme.kt
+│   ├── Type.kt
+│   └── screens/
+│       ├── splash/
+│       ├── onboarding/
+│       ├── auth/
+│       ├── home/
+│       ├── moviedetail/
+│       └── settings/
+│
+└── utils/                     # Helpers
+    ├── K.kt                   # Constants
+    ├── Ext.kt                 # Extensions
+    ├── GenreConstants.kt
+    └── Response.kt            # Result wrapper
 ```
 
 ---

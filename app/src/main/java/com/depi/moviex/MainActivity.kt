@@ -127,5 +127,14 @@ fun AppNavigation() {
                 onBackClick = { navController.popBackStack() }
             )
         }
+
+        composable("search_screen") {
+
+            com.depi.moviex.ui.theme.screens.home.SearchScreen(
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                }
+            )
+        }
     }
 }

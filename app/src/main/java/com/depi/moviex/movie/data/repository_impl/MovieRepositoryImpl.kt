@@ -4,7 +4,6 @@ import com.depi.moviex.common.data.ApiMapper
 import com.depi.moviex.movie.data.remote.api.MovieApiService
 import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
-import com.depi.moviex.movie.domain.repository.MovieRepository
 import com.depi.moviex.utils.Response
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

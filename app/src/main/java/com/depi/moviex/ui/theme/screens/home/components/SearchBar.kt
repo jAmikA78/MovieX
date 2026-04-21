@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -30,7 +29,7 @@ fun SearchBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .background(
-                color = Color(0xFF1E1E2E),
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onClick() }
@@ -40,14 +39,14 @@ fun SearchBar(
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = "Search",
-            tint = Color.Gray,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = "Search movies...",
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

@@ -4,12 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +24,7 @@ fun HeaderSection(
         Text(
             text = "Welcome back",
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -35,7 +33,7 @@ fun HeaderSection(
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             ),
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }

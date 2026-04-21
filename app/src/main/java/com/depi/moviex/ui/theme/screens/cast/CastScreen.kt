@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -42,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.depi.moviex.movie_detail.domain.models.Cast
-import com.depi.moviex.ui.theme.BackgroundDark
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
 
@@ -60,7 +56,7 @@ fun CastScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         when {
             state.isLoading -> {
@@ -78,7 +74,7 @@ fun CastScreen(
                 ) {
                     Text(
                         text = state.error!!,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -108,7 +104,7 @@ private fun CastContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .background(BackgroundDark)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             IconButton(
                 onClick = onBackClick,
@@ -116,12 +112,12 @@ private fun CastContent(
                     .padding(top = 40.dp, start = 8.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -134,12 +130,12 @@ private fun CastContent(
                     text = "Cast",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = movieTitle,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
             }
         }
@@ -151,7 +147,7 @@ private fun CastContent(
             ) {
                 Text(
                     text = "No cast information available",
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
             }
         } else {
@@ -200,7 +196,7 @@ private fun CastGridItem(
             text = cast.name,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center

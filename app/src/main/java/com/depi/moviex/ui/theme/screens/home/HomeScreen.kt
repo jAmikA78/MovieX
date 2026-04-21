@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.depi.moviex.ui.theme.BackgroundDark
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.home.components.CategoryRows
 import com.depi.moviex.ui.theme.screens.home.components.ErrorSection
@@ -47,7 +47,7 @@ fun HomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
         Row(
@@ -62,12 +62,12 @@ fun HomeScreen(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF1E1E2E))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Icon(
                     imageVector = Icons.Default.Settings,
                     contentDescription = "Settings",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

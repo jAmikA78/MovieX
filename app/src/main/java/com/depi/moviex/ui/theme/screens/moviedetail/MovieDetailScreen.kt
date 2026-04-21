@@ -48,7 +48,6 @@ import coil.request.ImageRequest
 import com.depi.moviex.movie_detail.domain.models.Cast
 import com.depi.moviex.movie_detail.domain.models.Crew
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
-import com.depi.moviex.ui.theme.BackgroundDark
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
 
@@ -65,7 +64,7 @@ fun MovieDetailScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         when {
             state.isLoading -> {
@@ -83,7 +82,7 @@ fun MovieDetailScreen(
                 ) {
                     Text(
                         text = state.error!!,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -133,8 +132,8 @@ private fun MovieDetailContent(
                         Brush.verticalGradient(
                             colors = listOf(
                                 Color.Transparent,
-                                BackgroundDark.copy(alpha = 0.8f),
-                                BackgroundDark
+                                MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                                MaterialTheme.colorScheme.background
                             )
                         )
                     )
@@ -146,12 +145,12 @@ private fun MovieDetailContent(
                     .padding(top = 40.dp, start = 8.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -164,7 +163,7 @@ private fun MovieDetailContent(
                     text = movieDetail.title,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -179,18 +178,18 @@ private fun MovieDetailContent(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = String.format("%.1f", movieDetail.voteAverage),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = movieDetail.releaseDate.take(4),
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = movieDetail.runTime,
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -221,13 +220,13 @@ private fun MovieDetailContent(
                 text = "Overview",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = movieDetail.overview.ifEmpty { "No overview available." },
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.8f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -242,9 +241,9 @@ private fun MovieDetailContent(
                         text = "Cast",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    androidx.compose.material3.TextButton(
+                    TextButton(
                         onClick = { onCastClick(movieDetail.id, movieDetail.title) }
                     ) {
                         Text(
@@ -284,7 +283,7 @@ private fun MovieDetailContent(
                         text = "Crew",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
@@ -305,7 +304,7 @@ private fun MovieDetailContent(
                     text = "Reviews",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 movieDetail.reviews.take(3).forEach { review ->
@@ -345,14 +344,16 @@ private fun CastItem(
         Text(
             text = cast.name,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White,
-            maxLines = 1
+            color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 1,
+            textAlign = TextAlign.Center
         )
         Text(
             text = cast.character,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White.copy(alpha = 0.6f),
-            maxLines = 1
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            maxLines = 1,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -378,7 +379,7 @@ private fun CrewItem(crew: Crew) {
         Text(
             text = crew.name,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             maxLines = 1,
             textAlign = TextAlign.Center
         )
@@ -396,7 +397,7 @@ private fun CrewItem(crew: Crew) {
 private fun ReviewItem(review: com.depi.moviex.movie_detail.domain.models.Review) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = Color.White.copy(alpha = 0.05f),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
@@ -415,20 +416,20 @@ private fun ReviewItem(review: com.depi.moviex.movie_detail.domain.models.Review
                 Icon(
                     imageVector = Icons.Filled.Star,
                     contentDescription = null,
-                    tint = Color.Yellow,
+                    tint = Color(0xFFFFC107),
                     modifier = Modifier.size(14.dp)
                 )
                 Text(
                     text = String.format("%.1f", review.rating),
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = review.content,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 4
             )
         }

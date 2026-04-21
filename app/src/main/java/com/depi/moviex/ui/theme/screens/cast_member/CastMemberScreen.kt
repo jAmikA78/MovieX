@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +46,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.depi.moviex.cast_member.domain.models.CastMember
 import com.depi.moviex.cast_member.domain.models.KnownForMovie
-import com.depi.moviex.ui.theme.BackgroundDark
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
 
@@ -62,7 +60,7 @@ fun CastMemberScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         when {
             state.isLoading -> {
@@ -80,7 +78,7 @@ fun CastMemberScreen(
                 ) {
                     Text(
                         text = state.error!!,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -125,9 +123,9 @@ private fun CastMemberContent(
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                Color.Black.copy(alpha = 0.3f),
-                                Color.Transparent,
-                                BackgroundDark
+                                androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f),
+                                androidx.compose.ui.graphics.Color.Transparent,
+                                MaterialTheme.colorScheme.background
                             )
                         )
                     )
@@ -139,12 +137,12 @@ private fun CastMemberContent(
                     .padding(top = 40.dp, start = 8.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -157,7 +155,7 @@ private fun CastMemberContent(
                     text = castMember.name,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = castMember.knownForDepartment,
@@ -198,13 +196,13 @@ private fun CastMemberContent(
                 text = "Biography",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = castMember.biography.ifEmpty { "No biography available." },
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -213,7 +211,7 @@ private fun CastMemberContent(
                 text = "Known For",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -243,13 +241,13 @@ private fun InfoItem(
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
         Text(
             text = value.ifEmpty { "Unknown" },
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
     }
@@ -263,7 +261,7 @@ private fun KnownForItem(movie: KnownForMovie) {
             .height(180.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Black.copy(alpha = 0.3f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
         Column {
@@ -287,7 +285,7 @@ private fun KnownForItem(movie: KnownForMovie) {
             Text(
                 text = movie.title,
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)

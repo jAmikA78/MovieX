@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.depi.moviex.movie.data.remote.models.Result
-import com.depi.moviex.ui.theme.BackgroundDark
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
 
@@ -36,7 +35,7 @@ fun SearchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         OutlinedTextField(
@@ -45,20 +44,31 @@ fun SearchScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            placeholder = { Text("Search for movies...", color = Color.Gray) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
+            placeholder = { 
+                Text(
+                    text = "Search for movies...", 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant 
+                ) 
+            },
+            leadingIcon = { 
+                Icon(
+                    imageVector = Icons.Default.Search, 
+                    contentDescription = null, 
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                ) 
+            },
             shape = RoundedCornerShape(16.dp),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedContainerColor = Color(0xFF1E1E2E),
-                unfocusedContainerColor = Color(0xFF1E1E2E),
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 focusedBorderColor = PrimaryRed,
                 unfocusedBorderColor = Color.Transparent,
                 cursorColor = PrimaryRed,
                 focusedLabelColor = PrimaryRed,
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
 
@@ -66,7 +76,10 @@ fun SearchScreen(
 
         if (movies.isEmpty() && searchQuery.length > 2) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No movies found", color = Color.White)
+                Text(
+                    text = "No movies found", 
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
         } else {
             LazyVerticalGrid(
@@ -90,7 +103,9 @@ fun MovieItem(movie: Result, onClick: () -> Unit) {
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E2E)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
@@ -107,7 +122,7 @@ fun MovieItem(movie: Result, onClick: () -> Unit) {
                 text = movie.title ?: "Unknown",
                 modifier = Modifier.padding(12.dp),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

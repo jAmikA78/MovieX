@@ -10,47 +10,44 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-
-
-
 import androidx.compose.ui.graphics.Color
 
-
-// Program colours
+// Program colors
 val BackgroundDark = Color(0xFF13131D)
+val BackgroundLight = Color(0xFFF5F5F7)
+val SurfaceDark = Color(0xFF1E1E2E)
+val SurfaceLight = Color(0xFFFFFFFF)
+
 val PrimaryRed = Color(0xFFE54E3C)
 val OnboardingIconColor = Color(0xFFF78F78)
 val TextColorWhite = Color(0xFFFFFFFF)
+val TextColorBlack = Color(0xFF13131D)
 val PagerIndicatorInactive = Color(0xFF53535F)
 
-
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = PrimaryRed,
+    background = BackgroundDark,
+    surface = SurfaceDark,
+    onBackground = Color.White,
+    onSurface = Color.White,
+    surfaceVariant = Color(0xFF2B2B3D),
+    onSurfaceVariant = Color.Gray
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = PrimaryRed,
+    background = BackgroundLight,
+    surface = SurfaceLight,
+    onBackground = TextColorBlack,
+    onSurface = TextColorBlack,
+    surfaceVariant = Color(0xFFE0E0E0),
+    onSurfaceVariant = Color.DarkGray
 )
 
 @Composable
 fun MovieXTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -58,7 +55,6 @@ fun MovieXTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

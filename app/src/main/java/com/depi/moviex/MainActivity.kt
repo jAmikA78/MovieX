@@ -5,6 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +24,8 @@ import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import com.depi.moviex.ui.theme.screens.cast.CastScreen
 import com.depi.moviex.ui.theme.screens.cast_member.CastMemberScreen
+import com.depi.moviex.ui.theme.screens.settings.DevelopersScreen
+import com.depi.moviex.ui.theme.screens.settings.SupportScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,15 +34,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MovieXTheme {
-                AppNavigation()
+            var isDarkMode by remember { mutableStateOf(true) }
+
+            MovieXTheme(darkTheme = isDarkMode) {
+                AppNavigation(
+                    isDarkMode = isDarkMode,
+                    onThemeChange = { isDarkMode = it }
+                )
             }
         }
     }
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    isDarkMode: Boolean,
+    onThemeChange: (Boolean) -> Unit
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -113,6 +127,8 @@ fun AppNavigation() {
 
         composable("settings") {
             SettingsScreen(
+                isDarkMode = isDarkMode,
+                onThemeChange = onThemeChange,
                 onSignOut = {
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
@@ -120,8 +136,24 @@ fun AppNavigation() {
                 },
                 onBack = {
                     navController.popBackStack()
+                },
+                onSupportClick = {
+                    navController.navigate("support")
+                },
+                onDevelopersClick = {
+                    navController.navigate("developers")
                 }
             )
+        }
+
+        composable("support") {
+            SupportScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("developers") {
+            DevelopersScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

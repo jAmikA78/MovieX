@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -38,24 +40,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
-import com.depi.moviex.ui.theme.BackgroundDark
 import com.depi.moviex.ui.theme.PrimaryRed
 
 @Composable
 fun SettingsScreen(
+    isDarkMode: Boolean,
+    onThemeChange: (Boolean) -> Unit,
     onSignOut: () -> Unit,
     onBack: () -> Unit,
+    onSupportClick: () -> Unit,
+    onDevelopersClick: () -> Unit,
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var isDarkMode by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp)
     ) {
         Column(
@@ -69,7 +72,7 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = "Settings",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
@@ -85,7 +88,7 @@ fun SettingsScreen(
                 trailing = {
                     Switch(
                         checked = isDarkMode,
-                        onCheckedChange = { isDarkMode = it },
+                        onCheckedChange = { onThemeChange(it) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = PrimaryRed,
                             checkedTrackColor = PrimaryRed.copy(alpha = 0.5f)
@@ -108,7 +111,23 @@ fun SettingsScreen(
                 onClick = { }
             )
 
+            SettingsItem(
+                icon = Icons.Default.Email,
+                title = "Support",
+                subtitle = "Contact us for help or feedback",
+                onClick = { onSupportClick() }
+
+            )
+
+            SettingsItem(
+                icon = Icons.Default.Person,
+                title = "Developers",
+                subtitle = "Meet the team behind MovieX",
+                onClick = { onDevelopersClick() }
+            )
+
             Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             SettingsItem(
                 icon = Icons.AutoMirrored.Filled.ExitToApp,
@@ -117,6 +136,7 @@ fun SettingsScreen(
                 titleColor = PrimaryRed,
                 onClick = { showLogoutDialog = true }
             )
+            Spacer(modifier = Modifier.height(25.dp))
         }
     }
 
@@ -141,9 +161,9 @@ fun SettingsScreen(
                     Text("Cancel")
                 }
             },
-            containerColor = Color(0xFF1E1E2E),
-            titleContentColor = Color.White,
-            textContentColor = Color.Gray
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -154,7 +174,7 @@ private fun SettingsItem(
     title: String,
     subtitle: String,
     onClick: () -> Unit = { },
-    titleColor: Color = Color.White,
+    titleColor: Color = MaterialTheme.colorScheme.onBackground,
     trailing: @Composable (() -> Unit)? = null
 ) {
     Row(
@@ -168,13 +188,13 @@ private fun SettingsItem(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF1E1E2E)),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = titleColor,
+                tint = if (titleColor == PrimaryRed) PrimaryRed else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -192,7 +212,7 @@ private fun SettingsItem(
             )
             Text(
                 text = subtitle,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall
             )
         }

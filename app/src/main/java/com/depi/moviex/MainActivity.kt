@@ -121,6 +121,9 @@ fun AppNavigation(
                 },
                 onSearchClick = {
                     navController.navigate("search_screen")
+                },
+                onSeeAllClick = { category ->
+                    navController.navigate("all_movies/$category")
                 }
             )
         }

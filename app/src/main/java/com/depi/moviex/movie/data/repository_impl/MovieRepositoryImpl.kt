@@ -1,6 +1,10 @@
 package com.depi.moviex.movie.data.repository_impl
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.depi.moviex.common.data.ApiMapper
+import com.depi.moviex.movie.data.paging.MoviePagingSource
 import com.depi.moviex.movie.data.remote.api.MovieApiService
 import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
@@ -82,5 +86,14 @@ class MovieRepositoryImpl(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override fun fetchTrendingMoviesPaged(category: String): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, prefetchDistance = 2),
+            pagingSourceFactory = {
+                MoviePagingSource(movieApiService, apiMapper, category)
+            }
+        ).flow
     }
 }

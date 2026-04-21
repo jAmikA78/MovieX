@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.home.components.CategoryRows
 import com.depi.moviex.ui.theme.screens.home.components.ErrorSection
+import com.depi.moviex.ui.theme.screens.home.components.FeaturedBanner
 import com.depi.moviex.ui.theme.screens.home.components.HeaderSection
 import com.depi.moviex.ui.theme.screens.home.components.SearchBar
 
@@ -40,7 +41,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onMovieClick: (id: Int) -> Unit = {},
     onSettingsClick: () -> Unit = {},
-    onSearchClick: () -> Unit = {}
+    onSearchClick: () -> Unit = {},
+    onSeeAllClick: (String) -> Unit = {}
 ) {
     val state by homeViewModel.homeState.collectAsStateWithLifecycle()
 
@@ -74,6 +76,11 @@ fun HomeScreen(
 
         SearchBar(onClick = onSearchClick)
 
+        FeaturedBanner(
+            featuredMovies = state.trendingMovies.take(20),
+            onMovieClick = onMovieClick
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
 
         when {
@@ -100,9 +107,11 @@ fun HomeScreen(
                         CategoryItem("Drama", state.dramaMovies),
                         CategoryItem("Comedy", state.comedyMovies)
                     ),
-                    onMovieClick = onMovieClick
+                    onMovieClick = onMovieClick,
+                    onSeeAllClick = onSeeAllClick
                 )
             }
         }
     }
 }
+

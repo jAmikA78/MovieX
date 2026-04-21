@@ -1,5 +1,6 @@
 package com.depi.moviex.ui.theme.screens.home.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +26,7 @@ fun CategoryRow(
     title: String,
     movies: List<Movie>,
     onMovieClick: (Int) -> Unit,
+    onSeeAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -45,7 +47,8 @@ fun CategoryRow(
             Text(
                 text = "See All",
                 style = MaterialTheme.typography.bodyMedium,
-                color = PrimaryRed
+                color = PrimaryRed,
+                modifier = Modifier.clickable { onSeeAllClick(title) }
             )
         }
 

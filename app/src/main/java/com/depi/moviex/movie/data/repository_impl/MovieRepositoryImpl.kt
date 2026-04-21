@@ -90,7 +90,10 @@ class MovieRepositoryImpl(
 
     override fun fetchTrendingMoviesPaged(category: String): Flow<PagingData<Movie>> {
         return Pager(
-            config = PagingConfig(pageSize = 20, prefetchDistance = 2),
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false
+            ),
             pagingSourceFactory = {
                 MoviePagingSource(movieApiService, apiMapper, category)
             }

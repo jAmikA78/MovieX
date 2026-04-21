@@ -1,5 +1,6 @@
 package com.depi.moviex.movie.data.repository
 
+import androidx.paging.PagingData
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie.domain.repository.MovieRepository
 import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
@@ -42,5 +43,9 @@ class MovieRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override fun fetchTrendingMoviesPaged(category: String): Flow<PagingData<Movie>> {
+        TODO("Not yet implemented")
     }
 }

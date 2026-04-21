@@ -215,5 +215,22 @@ fun AppNavigation(
                 }
             )
         }
+
+        composable(
+            route = "all_movies/{categoryTitle}",
+            arguments = listOf(
+                navArgument("categoryTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val categoryTitle = backStackEntry.arguments?.getString("categoryTitle") ?: ""
+
+            com.depi.moviex.ui.theme.screens.home.components.SeeAllScreen(
+                categoryTitle = categoryTitle,
+                onBackClick = { navController.popBackStack() },
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                }
+            )
+        }
     }
 }

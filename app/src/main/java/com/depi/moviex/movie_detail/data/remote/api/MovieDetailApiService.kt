@@ -4,6 +4,7 @@ import com.depi.moviex.BuildConfig
 import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
 import com.depi.moviex.movie_detail.data.remote.models.MovieResponse
+import com.depi.moviex.movie_detail.data.remote.models.VideosResponse
 import com.depi.moviex.utils.K
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -19,6 +20,12 @@ interface MovieDetailApiService {
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("append_to_response") appendToResponse: String = "credits,reviews"
     ):MovieDetailDto
+
+    @GET("${K.MOVIE_DETAIL_ENDPOINT}/{$MOVIE_ID}/videos")
+    suspend fun fetchMovieVideos(
+        @Path(MOVIE_ID) movieId: Int,
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY
+    ): VideosResponse
 
     @GET(K.MOVIE_ENDPOINT)
     suspend fun fetchMovie(

@@ -42,7 +42,8 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
                     rating = it?.authorDetails?.rating ?: 0.0
                 )
             } ?: emptyList(),
-            runTime = convertMinutesToHours(apiDto.runtime ?: 0)
+            runTime = convertMinutesToHours(apiDto.runtime ?: 0),
+            videos = emptyList()
         )
 
     }

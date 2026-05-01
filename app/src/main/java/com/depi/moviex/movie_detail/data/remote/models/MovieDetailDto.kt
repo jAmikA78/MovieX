@@ -61,5 +61,23 @@ data class MovieDetailDto(
     @SerialName("vote_average")
     val voteAverage: Double? = null,
     @SerialName("vote_count")
-    val voteCount: Int? = null
+    val voteCount: Int? = null,
+    @SerialName("videos")
+    val videos: VideosDto? = null
+)
+
+@Serializable
+data class VideosDto(
+    @SerialName("results")
+    val results: List<VideoDto?>? = null
+)
+
+@Serializable
+data class VideoDto(
+    @SerialName("key")
+    val key: String? = null,
+    @SerialName("site")
+    val site: String? = null,
+    @SerialName("type")
+    val type: String? = null
 )

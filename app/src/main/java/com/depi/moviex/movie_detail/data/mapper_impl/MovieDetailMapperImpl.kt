@@ -27,6 +27,9 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
             voteAverage = apiDto.voteAverage ?: 0.0,
             voteCount = apiDto.voteCount ?: 0,
             video = apiDto.video ?: false,
+            videoUrl = apiDto.videos?.results?.firstOrNull {
+                it?.site == "YouTube" && it.type == "Trailer"
+            }?.key?.let { "https://www.youtube.com/watch?v=$it" },
             cast = formatCast(apiDto.credits?.cast),
             crew = formatCrew(apiDto.credits?.crew),
             language = apiDto.spokenLanguages?.map { formatEmptyValue(it?.englishName) }
@@ -48,20 +51,29 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
     }
 
     private fun formatTimeStamp(pattern: String = "dd.MM.yy", time: String): String {
-        val inputDateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        val inputFormats = listOf(
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+        )
 
         val outputDateFormatter = SimpleDateFormat(
             pattern,
             Locale.getDefault()
         )
 
-        // Parse the input date string
-        val date = inputDateFormatter.parse(time)
+        // Try parsing with each format
+        for (formatter in inputFormats) {
+            try {
+                val date = formatter.parse(time)
+                if (date != null) {
+                    return outputDateFormatter.format(date)
+                }
+            } catch (e: Exception) {
+                // Try next format
+            }
+        }
 
-        // Format the parsed date to the desired pattern
-        val formattedDate = date?.let { outputDateFormatter.format(it) } ?: time
-
-        return formattedDate
+        return time
     }
 
     private fun convertMinutesToHours(minutes: Int): String {

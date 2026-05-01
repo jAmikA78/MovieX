@@ -4,17 +4,35 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.depi.moviex.ui.theme.MovieXTheme
+import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.auth.LoginScreen
 import com.depi.moviex.ui.theme.screens.auth.SignUpScreen
 import com.depi.moviex.ui.theme.screens.home.HomeScreen
@@ -24,8 +42,10 @@ import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import com.depi.moviex.ui.theme.screens.cast.CastScreen
 import com.depi.moviex.ui.theme.screens.cast_member.CastMemberScreen
+import com.depi.moviex.ui.theme.screens.profile.ProfileScreen
 import com.depi.moviex.ui.theme.screens.settings.DevelopersScreen
 import com.depi.moviex.ui.theme.screens.settings.SupportScreen
+import com.depi.moviex.ui.theme.screens.watchlist.WatchlistScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -46,191 +66,260 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
+    object Home : BottomNavItem("home", Icons.Default.Home, "Home")
+    object Watchlist : BottomNavItem("watchlist", Icons.Default.List, "Watchlist")
+    object Profile : BottomNavItem("profile", Icons.Default.Person, "Profile")
+}
+
+val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Watchlist, BottomNavItem.Profile)
+
 @Composable
 fun AppNavigation(
     isDarkMode: Boolean,
     onThemeChange: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    NavHost(
-        navController = navController,
-        startDestination = "splash"
-    ) {
-        composable("splash") {
-            SplashScreen(onTimeout = {
-                navController.navigate("onboarding") {
-                    popUpTo("splash") { inclusive = true }
-                }
-            })
-        }
+    val showBottomBar = currentRoute in listOf("home", "watchlist", "profile")
 
-        composable("onboarding") {
-            OnboardingScreen(
-                onFinish = {
-                    navController.navigate("login") {
-                        popUpTo("onboarding") { inclusive = true }
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ) {
+                    bottomNavItems.forEach { item ->
+                        NavigationBarItem(
+                            selected = currentRoute == item.route,
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            label = { Text(item.label) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = PrimaryRed,
+                                selectedTextColor = PrimaryRed,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                indicatorColor = Color.Transparent
+                            )
+                        )
                     }
                 }
-            )
+            }
         }
-
-        composable("login") {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                },
-                onGuestLogin = {
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                },
-                onSignUpClick = {
-                    navController.navigate("signup")
-                }
-            )
-        }
-
-        composable("signup") {
-            SignUpScreen(
-                onSignUpSuccess = {
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                },
-                onLoginClick = {
-                    navController.navigate("login")
-                },
-                onGuestLogin = {
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                },
-            )
-        }
-
-        composable("home") {
-            HomeScreen(
-                onMovieClick = { movieId ->
-                    navController.navigate("movie_detail/$movieId")
-                },
-                onSettingsClick = {
-                    navController.navigate("settings")
-                },
-                onSearchClick = {
-                    navController.navigate("search_screen")
-                },
-                onSeeAllClick = { category ->
-                    navController.navigate("all_movies/$category")
-                }
-            )
-        }
-
-        composable("settings") {
-            SettingsScreen(
-                isDarkMode = isDarkMode,
-                onThemeChange = onThemeChange,
-                onSignOut = {
-                    navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
-                onBack = {
-                    navController.popBackStack()
-                },
-                onSupportClick = {
-                    navController.navigate("support")
-                },
-                onDevelopersClick = {
-                    navController.navigate("developers")
-                }
-            )
-        }
-
-        composable("support") {
-            SupportScreen(
-                onBack = { navController.popBackStack() }
-            )
-        }
-
-        composable("developers") {
-            DevelopersScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(
-            route = "movie_detail/{movieId}",
-            arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "splash",
+            modifier = Modifier.padding(innerPadding)
         ) {
-            MovieDetailScreen(
-                onBackClick = { navController.popBackStack() },
-                onCastClick = { movieId, movieTitle ->
-                    navController.navigate("cast/$movieId?movieTitle=$movieTitle")
-                },
-                onCastMemberClick = { personId ->
-                    navController.navigate("cast_member/$personId")
-                }
-            )
-        }
+            composable("splash") {
+                SplashScreen(onTimeout = {
+                    navController.navigate("onboarding") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                })
+            }
 
-        composable(
-            route = "cast/{movieId}?movieTitle={movieTitle}",
-            arguments = listOf(
-                navArgument("movieId") { type = NavType.IntType },
-                navArgument("movieTitle") {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = ""
-                }
-            )
-        ) { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
-            val movieTitle = backStackEntry.arguments?.getString("movieTitle") ?: ""
-            CastScreen(
-                movieId = movieId,
-                movieTitle = movieTitle,
-                onBackClick = { navController.popBackStack() },
-                onCastMemberClick = { personId ->
-                    navController.navigate("cast_member/$personId")
-                }
-            )
-        }
+            composable("onboarding") {
+                OnboardingScreen(
+                    onFinish = {
+                        navController.navigate("login") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
+                    }
+                )
+            }
 
-        composable(
-            route = "cast_member/{personId}",
-            arguments = listOf(
-                navArgument("personId") { type = NavType.IntType }
-            )
-        ) {
-            CastMemberScreen(
-                onBackClick = { navController.popBackStack() }
-            )
-        }
+            composable("login") {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    },
+                    onGuestLogin = {
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    },
+                    onSignUpClick = {
+                        navController.navigate("signup")
+                    }
+                )
+            }
 
-        composable("search_screen") {
-            com.depi.moviex.ui.theme.screens.home.SearchScreen(
-                onMovieClick = { movieId ->
-                    navController.navigate("movie_detail/$movieId")
-                }
-            )
-        }
+            composable("signup") {
+                SignUpScreen(
+                    onSignUpSuccess = {
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    },
+                    onLoginClick = {
+                        navController.navigate("login")
+                    },
+                    onGuestLogin = {
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    },
+                )
+            }
 
-        composable(
-            route = "all_movies/{categoryTitle}",
-            arguments = listOf(
-                navArgument("categoryTitle") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val categoryTitle = backStackEntry.arguments?.getString("categoryTitle") ?: ""
+            composable("home") {
+                HomeScreen(
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    },
+                    onSettingsClick = {
+                        navController.navigate("settings")
+                    },
+                    onSearchClick = {
+                        navController.navigate("search_screen")
+                    },
+                    onSeeAllClick = { category ->
+                        navController.navigate("all_movies/$category")
+                    }
+                )
+            }
 
-            com.depi.moviex.ui.theme.screens.home.components.SeeAllScreen(
-                categoryTitle = categoryTitle,
-                onBackClick = { navController.popBackStack() },
-                onMovieClick = { movieId ->
-                    navController.navigate("movie_detail/$movieId")
-                }
-            )
+            composable("watchlist") {
+                WatchlistScreen(
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    }
+                )
+            }
+
+            composable("profile") {
+                ProfileScreen(
+                    onSettingsClick = {
+                        navController.navigate("settings")
+                    },
+                    onSignOut = {
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable("settings") {
+                SettingsScreen(
+                    isDarkMode = isDarkMode,
+                    onThemeChange = onThemeChange,
+                    onSignOut = {
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    onSupportClick = {
+                        navController.navigate("support")
+                    },
+                    onDevelopersClick = {
+                        navController.navigate("developers")
+                    }
+                )
+            }
+
+            composable("support") {
+                SupportScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable("developers") {
+                DevelopersScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(
+                route = "movie_detail/{movieId}",
+                arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+            ) {
+                MovieDetailScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onCastClick = { movieId, movieTitle ->
+                        navController.navigate("cast/$movieId?movieTitle=$movieTitle")
+                    },
+                    onCastMemberClick = { personId ->
+                        navController.navigate("cast_member/$personId")
+                    }
+                )
+            }
+
+            composable(
+                route = "cast/{movieId}?movieTitle={movieTitle}",
+                arguments = listOf(
+                    navArgument("movieId") { type = NavType.IntType },
+                    navArgument("movieTitle") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = ""
+                    }
+                )
+            ) { backStackEntry ->
+                val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
+                val movieTitle = backStackEntry.arguments?.getString("movieTitle") ?: ""
+                CastScreen(
+                    movieId = movieId,
+                    movieTitle = movieTitle,
+                    onBackClick = { navController.popBackStack() },
+                    onCastMemberClick = { personId ->
+                        navController.navigate("cast_member/$personId")
+                    }
+                )
+            }
+
+            composable(
+                route = "cast_member/{personId}",
+                arguments = listOf(
+                    navArgument("personId") { type = NavType.IntType }
+                )
+            ) {
+                CastMemberScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable("search_screen") {
+                com.depi.moviex.ui.theme.screens.home.SearchScreen(
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    }
+                )
+            }
+
+            composable(
+                route = "all_movies/{categoryTitle}",
+                arguments = listOf(
+                    navArgument("categoryTitle") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val categoryTitle = backStackEntry.arguments?.getString("categoryTitle") ?: ""
+
+                com.depi.moviex.ui.theme.screens.home.components.SeeAllScreen(
+                    categoryTitle = categoryTitle,
+                    onBackClick = { navController.popBackStack() },
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    }
+                )
+            }
         }
     }
 }

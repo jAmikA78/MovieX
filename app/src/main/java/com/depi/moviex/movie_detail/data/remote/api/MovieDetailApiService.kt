@@ -17,7 +17,7 @@ interface MovieDetailApiService {
     suspend fun fetchMovieDetail(
         @Path(MOVIE_ID) movieId:Int,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
-        @Query("append_to_response") appendToResponse: String = "credits,reviews"
+        @Query("append_to_response") appendToResponse: String = "credits,reviews,videos"
     ):MovieDetailDto
 
     @GET(K.MOVIE_ENDPOINT)

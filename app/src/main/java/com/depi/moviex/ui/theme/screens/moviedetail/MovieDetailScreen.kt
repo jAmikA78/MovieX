@@ -50,6 +50,7 @@ import com.depi.moviex.movie_detail.domain.models.Crew
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
+import com.depi.moviex.ui.theme.screens.moviedetail.YoutubePlayer
 
 @Composable
 fun MovieDetailScreen(
@@ -230,6 +231,11 @@ private fun MovieDetailContent(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            movieDetail.videoUrl?.let { videoUrl ->
+                YoutubePlayer(videoUrl = videoUrl)
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
             if (movieDetail.cast.isNotEmpty()) {
                 Row(

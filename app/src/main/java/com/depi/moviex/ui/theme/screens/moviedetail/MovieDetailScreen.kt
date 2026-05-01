@@ -61,6 +61,7 @@ import com.depi.moviex.movie_detail.domain.models.Crew
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
 import com.depi.moviex.ui.theme.PrimaryRed
+import com.depi.moviex.ui.theme.screens.moviedetail.YoutubePlayer
 import com.depi.moviex.utils.K
 
 @Composable
@@ -120,8 +121,6 @@ private fun MovieDetailContent(
     onCastMemberClick: (Int) -> Unit
 ) {
     val context = LocalContext.current
-    var showVideoPlayer by remember { mutableStateOf(false) }
-
     val trailer = videos.firstOrNull { it.type == "Trailer" && it.site == "YouTube" }
     val teaser = videos.firstOrNull { it.type == "Teaser" && it.site == "YouTube" }
     val videoToShow = trailer ?: teaser
@@ -235,81 +234,8 @@ Column(
         }
 
         if (videoToShow != null) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                if (showVideoPlayer) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(16f / 9f)
-                            .clip(RoundedCornerShape(12.dp))
-                    ) {
-                        AndroidView(
-                            factory = { ctx ->
-                                WebView(ctx).apply {
-                                    layoutParams = ViewGroup.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.MATCH_PARENT
-                                    )
-                                    settings.javaScriptEnabled = true
-                                    settings.loadWithOverviewMode = true
-                                    settings.useWideViewPort = true
-                                    settings.mediaPlaybackRequiresUserGesture = false
-                                    settings.domStorageEnabled = true
-                                    webChromeClient = WebChromeClient()
-                                    webViewClient = WebViewClient()
-                                    loadUrl(
-                                        "https://www.youtube.com/embed/${videoToShow.key}?autoplay=1&fs=1&rel=0&playsinline=1"
-                                    )
-                                }
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(16f / 9f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { showVideoPlayer = true }
-                    ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data("https://img.youtube.com/vi/${videoToShow.key}/maxresdefault.jpg")
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = videoToShow.name,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.4f))
-                        )
-                        Icon(
-                            imageVector = Icons.Filled.PlayArrow,
-                            contentDescription = "Play Trailer",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(60.dp)
-                                .align(Alignment.Center)
-                        )
-                        Text(
-                            text = videoToShow.name,
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(12.dp)
-                        )
-                    }
-                }
-            }
+            val videoUrl = "https://www.youtube.com/watch?v=${videoToShow.key}"
+            YoutubePlayer(videoUrl = videoUrl)
             Spacer(modifier = Modifier.height(16.dp))
         }
 

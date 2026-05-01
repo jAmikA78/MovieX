@@ -38,13 +38,10 @@ import com.depi.moviex.ui.theme.screens.auth.SignUpScreen
 import com.depi.moviex.ui.theme.screens.home.HomeScreen
 import com.depi.moviex.ui.theme.screens.moviedetail.MovieDetailScreen
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
-import com.depi.moviex.ui.theme.screens.settings.SettingsScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import com.depi.moviex.ui.theme.screens.cast.CastScreen
 import com.depi.moviex.ui.theme.screens.cast_member.CastMemberScreen
 import com.depi.moviex.ui.theme.screens.profile.ProfileScreen
-import com.depi.moviex.ui.theme.screens.settings.DevelopersScreen
-import com.depi.moviex.ui.theme.screens.settings.SupportScreen
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -205,9 +202,8 @@ fun AppNavigation(
 
             composable("profile") {
                 ProfileScreen(
-                    onSettingsClick = {
-                        navController.navigate("settings")
-                    },
+                    isDarkMode = isDarkMode,
+                    onThemeChange = onThemeChange,
                     onSignOut = {
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
@@ -217,34 +213,15 @@ fun AppNavigation(
             }
 
             composable("settings") {
-                SettingsScreen(
-                    isDarkMode = isDarkMode,
-                    onThemeChange = onThemeChange,
-                    onSignOut = {
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
-                    onBack = {
-                        navController.popBackStack()
-                    },
-                    onSupportClick = {
-                        navController.navigate("support")
-                    },
-                    onDevelopersClick = {
-                        navController.navigate("developers")
-                    }
-                )
+                // Settings moved to ProfileScreen
             }
 
             composable("support") {
-                SupportScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                // Support moved to ProfileScreen
             }
 
             composable("developers") {
-                DevelopersScreen(onBack = { navController.popBackStack() })
+                // Developers moved to ProfileScreen
             }
 
             composable(

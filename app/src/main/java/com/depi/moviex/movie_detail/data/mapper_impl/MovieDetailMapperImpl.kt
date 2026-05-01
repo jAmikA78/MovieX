@@ -33,9 +33,9 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
             cast = formatCast(apiDto.credits?.cast),
             crew = formatCrew(apiDto.credits?.crew),
             language = apiDto.spokenLanguages?.map { formatEmptyValue(it?.englishName) }
-                ?: emptyList(),
+                ?: emptyList<String>(),
             productionCountry = apiDto.productionCountries?.map { formatEmptyValue(it?.name) }
-                ?: emptyList(),
+                ?: emptyList<String>(),
             reviews = apiDto.reviews?.results?.map {
                 Review(
                     author = formatEmptyValue(it?.author),
@@ -44,9 +44,9 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
                     id = formatEmptyValue(it?.id),
                     rating = it?.authorDetails?.rating ?: 0.0
                 )
-            } ?: emptyList(),
+            } ?: emptyList<Review>(),
             runTime = convertMinutesToHours(apiDto.runtime ?: 0),
-            videos = emptyList()
+            videos = emptyList<com.depi.moviex.movie_detail.domain.models.Video>()
         )
 
     }

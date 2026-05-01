@@ -6,6 +6,7 @@ import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
+import com.depi.moviex.movie_detail.data.remote.models.toDomain
 import com.depi.moviex.utils.Response
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
@@ -32,8 +33,8 @@ class MovieDetailRepositoryImpl(
 
     override fun fetchMovieVideos(movieId: Int): Flow<Response<List<Video>>> = flow {
         emit(Response.Loading())
-        val videosResponse = movieDetailApiService.fetchMovieVideos(movieId)
-        val videos = videosResponse.results?.mapNotNull { it?.toDomain() } ?: emptyList()
+        val movieDetailDto = movieDetailApiService.fetchMovieDetail(movieId)
+        val videos = movieDetailDto.videos?.results?.mapNotNull { (it as? com.depi.moviex.movie_detail.data.remote.models.VideoDto)?.toDomain() } ?: emptyList<Video>()
         emit(Response.Success(videos))
     }.catch { e ->
         e.printStackTrace()

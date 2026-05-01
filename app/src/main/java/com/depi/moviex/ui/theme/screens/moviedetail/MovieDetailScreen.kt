@@ -59,14 +59,9 @@ import coil.request.ImageRequest
 import com.depi.moviex.movie_detail.domain.models.Cast
 import com.depi.moviex.movie_detail.domain.models.Crew
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
-<<<<<<< HEAD
-=======
 import com.depi.moviex.movie_detail.domain.models.Video
-import com.depi.moviex.ui.theme.BackgroundDark
->>>>>>> develop
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
-import com.depi.moviex.ui.theme.screens.moviedetail.YoutubePlayer
 
 @Composable
 fun MovieDetailScreen(
@@ -335,11 +330,6 @@ Column(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            movieDetail.videoUrl?.let { videoUrl ->
-                YoutubePlayer(videoUrl = videoUrl)
-                Spacer(modifier = Modifier.height(24.dp))
-            }
 
             if (movieDetail.cast.isNotEmpty()) {
                 Row(

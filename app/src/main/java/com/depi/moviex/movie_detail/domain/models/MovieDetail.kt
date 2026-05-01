@@ -20,7 +20,17 @@ data class MovieDetail(
     val language: List<String>,
     val productionCountry: List<String>,
     val reviews: List<Review>,
-    val runTime: String
+    val runTime: String,
+    val videos: List<Video>
+)
+
+data class Video(
+    val id: String,
+    val key: String,
+    val name: String,
+    val site: String,
+    val type: String,
+    val isOfficial: Boolean
 )
 
 data class Cast(

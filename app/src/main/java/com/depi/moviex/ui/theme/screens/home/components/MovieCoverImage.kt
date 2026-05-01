@@ -80,7 +80,8 @@ fun MovieCoverImage(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = movie.title, maxLines = 1)
+//                Nedding to be handeld in UI
+//                Text(text = movie.title, maxLines = 1)
             }
         }
     }

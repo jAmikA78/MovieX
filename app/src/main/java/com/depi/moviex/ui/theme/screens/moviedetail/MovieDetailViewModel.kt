@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depi.moviex.utils.Response
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
+import com.depi.moviex.movie_detail.domain.models.Video
 import com.depi.moviex.movie_detail.domain.repository.MovieDetailRepository
 import com.depi.moviex.utils.collectAndHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 data class MovieDetailState(
     val movieDetail: MovieDetail? = null,
+    val videos: List<Video> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -33,6 +35,7 @@ class MovieDetailViewModel @Inject constructor(
 
     init {
         fetchMovieDetail(movieId)
+        fetchMovieVideos(movieId)
     }
 
     private fun fetchMovieDetail(movieId: Int) = viewModelScope.launch {
@@ -50,6 +53,17 @@ class MovieDetailViewModel @Inject constructor(
         ) { movieDetail ->
             _movieDetailState.update {
                 it.copy(isLoading = false, error = null, movieDetail = movieDetail)
+            }
+        }
+    }
+
+    private fun fetchMovieVideos(movieId: Int) = viewModelScope.launch {
+        repository.fetchMovieVideos(movieId).collectAndHandle(
+            onError = { },
+            onLoading = { }
+        ) { videos ->
+            _movieDetailState.update {
+                it.copy(videos = videos)
             }
         }
     }

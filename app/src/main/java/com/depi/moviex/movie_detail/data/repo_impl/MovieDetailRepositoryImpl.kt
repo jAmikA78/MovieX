@@ -8,6 +8,7 @@ import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
 import com.depi.moviex.utils.Response
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
+import com.depi.moviex.movie_detail.domain.models.Video
 import com.depi.moviex.movie_detail.domain.repository.MovieDetailRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -24,6 +25,16 @@ class MovieDetailRepositoryImpl(
         apiDetailMapper.mapToDomain(movieDetailDto).apply {
             emit(Response.Success(this))
         }
+    }.catch { e ->
+        e.printStackTrace()
+        emit(Response.Error(e))
+    }
+
+    override fun fetchMovieVideos(movieId: Int): Flow<Response<List<Video>>> = flow {
+        emit(Response.Loading())
+        val videosResponse = movieDetailApiService.fetchMovieVideos(movieId)
+        val videos = videosResponse.results?.mapNotNull { it?.toDomain() } ?: emptyList()
+        emit(Response.Success(videos))
     }.catch { e ->
         e.printStackTrace()
         emit(Response.Error(e))

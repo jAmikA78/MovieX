@@ -55,6 +55,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -136,6 +137,7 @@ private fun MovieDetailContent(
     
     val isInWatchlist by watchlistViewModel.isInWatchlist(movieDetail.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
+    var isOverviewExpanded by remember { mutableStateOf(false) }
     
     val movie = Movie(
         id = movieDetail.id,
@@ -307,8 +309,23 @@ private fun MovieDetailContent(
             Text(
                 text = movieDetail.overview.ifEmpty { "No overview available." },
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                maxLines = if (isOverviewExpanded) Int.MAX_VALUE else 4,
+                overflow = TextOverflow.Ellipsis
             )
+
+            if (movieDetail.overview.length > 150) {
+                TextButton(
+                    onClick = { isOverviewExpanded = !isOverviewExpanded },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = if (isOverviewExpanded) "Show Less" else "Show More",
+                        color = PrimaryRed,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

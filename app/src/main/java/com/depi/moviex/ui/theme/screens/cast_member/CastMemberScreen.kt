@@ -28,8 +28,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -97,6 +101,8 @@ private fun CastMemberContent(
     castMember: CastMember,
     onBackClick: () -> Unit
 ) {
+    var isBiographyExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -202,8 +208,23 @@ private fun CastMemberContent(
             Text(
                 text = castMember.biography.ifEmpty { "No biography available." },
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                maxLines = if (isBiographyExpanded) Int.MAX_VALUE else 4,
+                overflow = TextOverflow.Ellipsis
             )
+
+            if (castMember.biography.length > 150) {
+                TextButton(
+                    onClick = { isBiographyExpanded = !isBiographyExpanded },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = if (isBiographyExpanded) "Show Less" else "Show More",
+                        color = PrimaryRed,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

@@ -14,14 +14,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -30,7 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
@@ -43,6 +57,7 @@ fun WatchlistScreen(
     onMovieClick: (id: Int) -> Unit = {}
 ) {
     val state by watchlistViewModel.watchlistState.collectAsStateWithLifecycle()
+    var selectedCategory by remember { mutableStateOf("All") }
 
     Column(
         modifier = modifier
@@ -57,6 +72,35 @@ fun WatchlistScreen(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 50.dp, bottom = 16.dp)
         )
+
+        // Category filter chips
+        if (state.availableCategories.size > 1) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                items(state.availableCategories) { category ->
+                    FilterChip(
+                        selected = selectedCategory == category,
+                        onClick = {
+                            selectedCategory = category
+                            if (category == "All") {
+                                watchlistViewModel.loadWatchlistMovies()
+                            } else {
+                                watchlistViewModel.loadMoviesByCategory(category)
+                            }
+                        },
+                        label = { Text(category) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = PrimaryRed.copy(alpha = 0.2f),
+                            selectedLabelColor = PrimaryRed,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
+            }
+        }
 
         when {
             state.isLoading -> {
@@ -95,7 +139,11 @@ fun WatchlistScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(state.watchlistMovies) { movie ->
-                        WatchlistMovieItem(movie = movie, onMovieClick = onMovieClick)
+                        WatchlistMovieItem(
+                            movie = movie,
+                            onMovieClick = { onMovieClick(movie.id) },
+                            watchlistViewModel = watchlistViewModel
+                        )
                     }
                 }
             }
@@ -106,14 +154,18 @@ fun WatchlistScreen(
 @Composable
 fun WatchlistMovieItem(
     movie: Movie,
-    onMovieClick: (id: Int) -> Unit
+    onMovieClick: () -> Unit,
+    watchlistViewModel: WatchlistViewModel = hiltViewModel()
 ) {
+    val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
+    val scope = rememberCoroutineScope()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable { onMovieClick(movie.id) }
+            .clickable { onMovieClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -142,6 +194,25 @@ fun WatchlistMovieItem(
                 text = movie.releaseDate.take(4),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
+            )
+        }
+
+            // Heart icon to remove from watchlist
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        if (isInWatchlist) {
+                            watchlistViewModel.removeFromWatchlist(movie)
+                        }
+                    }
+                },
+            modifier = Modifier.size(40.dp)
+        ) {
+            Icon(
+                imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                contentDescription = "Remove from Watchlist",
+                tint = if (isInWatchlist) PrimaryRed else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp)
             )
         }
     }

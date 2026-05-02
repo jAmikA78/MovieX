@@ -5,12 +5,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -26,6 +34,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.depi.moviex.movie.domain.models.Movie
+import com.depi.moviex.ui.theme.PrimaryRed
+import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 import com.depi.moviex.utils.K
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +44,7 @@ fun SeeAllScreen(
     categoryTitle: String,
     onMovieClick: (Int) -> Unit,
     onBackClick: () -> Unit,
+    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     viewModel: SeeAllViewModel = hiltViewModel()
 ) {
     val movies = viewModel.getPagedMovies(categoryTitle).collectAsLazyPagingItems()
@@ -81,7 +92,9 @@ fun SeeAllScreen(
                     if (movie != null) {
                         MovieGridItem(
                             movie = movie,
-                            onClick = { onMovieClick(movie.id) }
+                            onClick = { onMovieClick(movie.id) },
+                            watchlistViewModel = watchlistViewModel,
+                            categoryTitle = categoryTitle
                         )
                     }
                 }
@@ -108,17 +121,24 @@ fun SeeAllScreen(
 @Composable
 fun MovieGridItem(
     movie: Movie,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    categoryTitle: String = ""
 ) {
+    val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
+    val scope = rememberCoroutineScope()
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(260.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Box {
+        val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
+
+        Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("${K.BASE_IMAGE_URL}${movie.posterPath}")
@@ -151,6 +171,33 @@ fun MovieGridItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+
+            // Heart icon for watchlist
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .clickable {
+                scope.launch {
+                    if (isInWatchlist) {
+                        watchlistViewModel.removeFromWatchlist(movie)
+                    } else {
+                        watchlistViewModel.addToWatchlist(movie, categoryTitle)
+                    }
+                }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = "Toggle Watchlist",
+                    tint = if (isInWatchlist) PrimaryRed else Color.White,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }

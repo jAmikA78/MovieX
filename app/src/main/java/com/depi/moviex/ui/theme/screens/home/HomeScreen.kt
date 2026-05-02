@@ -29,12 +29,15 @@ import com.depi.moviex.ui.theme.screens.home.components.CategoryRows
 import com.depi.moviex.ui.theme.screens.home.components.ErrorSection
 import com.depi.moviex.ui.theme.screens.home.components.FeaturedBanner
 import com.depi.moviex.ui.theme.screens.home.components.HeaderSection
+import com.depi.moviex.ui.theme.screens.home.components.MovieCoverImage
 import com.depi.moviex.ui.theme.screens.home.components.SearchBar
+import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
+    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     onMovieClick: (id: Int) -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -91,7 +94,8 @@ fun HomeScreen(
                         CategoryItem("Comedy", state.comedyMovies)
                     ),
                     onMovieClick = onMovieClick,
-                    onSeeAllClick = onSeeAllClick
+                    onSeeAllClick = onSeeAllClick,
+                    watchlistViewModel = watchlistViewModel
                 )
             }
         }

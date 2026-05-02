@@ -6,11 +6,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,11 +27,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.depi.moviex.movie.data.remote.models.Result
 import com.depi.moviex.ui.theme.PrimaryRed
+import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 import com.depi.moviex.utils.K
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
+    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     onMovieClick: (Int) -> Unit
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -89,7 +97,11 @@ fun SearchScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(movies) { movie ->
-                    MovieItem(movie = movie, onClick = { movie.id?.let { onMovieClick(it) } })
+                    MovieItem(
+                        movie = movie, 
+                        onClick = { movie.id?.let { onMovieClick(it) } },
+                        watchlistViewModel = watchlistViewModel
+                    )
                 }
             }
         }
@@ -97,7 +109,15 @@ fun SearchScreen(
 }
 
 @Composable
-fun MovieItem(movie: Result, onClick: () -> Unit) {
+fun MovieItem(
+    movie: Result, 
+    onClick: () -> Unit,
+    watchlistViewModel: WatchlistViewModel = hiltViewModel()
+) {
+    val movieId = movie.id ?: return
+    val isInWatchlist by watchlistViewModel.isInWatchlist(movieId).collectAsStateWithLifecycle(initialValue = false)
+    val scope = rememberCoroutineScope()
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,24 +128,86 @@ fun MovieItem(movie: Result, onClick: () -> Unit) {
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column {
-            AsyncImage(
-                model = K.BASE_IMAGE_URL + movie.posterPath,
-                contentDescription = movie.title,
+        Box {
+            Column {
+                AsyncImage(
+                    model = K.BASE_IMAGE_URL + movie.posterPath,
+                    contentDescription = movie.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = movie.title ?: "Unknown",
+                    modifier = Modifier.padding(12.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            
+            // Heart icon for watchlist
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = movie.title ?: "Unknown",
-                modifier = Modifier.padding(12.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .clickable {
+                        scope.launch {
+                            if (isInWatchlist) {
+                                watchlistViewModel.removeFromWatchlist(
+                                    com.depi.moviex.movie.domain.models.Movie(
+                                        id = movie.id ?: 0,
+                                        title = movie.title ?: "",
+                                        posterPath = movie.posterPath ?: "",
+                                        backdropPath = movie.backdropPath ?: "",
+                                        releaseDate = movie.releaseDate ?: "",
+                                        voteAverage = movie.voteAverage ?: 0.0,
+                                        voteCount = movie.voteCount ?: 0,
+                                        genreIds = emptyList(),
+                                        originalLanguage = "",
+                                        originalTitle = movie.title ?: "",
+                                        overview = "",
+                                        popularity = 0.0,
+                                        video = false
+                                    )
+                                )
+                            } else {
+                                watchlistViewModel.addToWatchlist(
+                                    com.depi.moviex.movie.domain.models.Movie(
+                                        id = movie.id ?: 0,
+                                        title = movie.title ?: "",
+                                        posterPath = movie.posterPath ?: "",
+                                        backdropPath = movie.backdropPath ?: "",
+                                        releaseDate = movie.releaseDate ?: "",
+                                        voteAverage = movie.voteAverage ?: 0.0,
+                                        voteCount = movie.voteCount ?: 0,
+                                        genreIds = emptyList(),
+                                        originalLanguage = "",
+                                        originalTitle = movie.title ?: "",
+                                        overview = "",
+                                        popularity = 0.0,
+                                        video = false
+                                    ),
+                                    "Search"
+                                )
+                            }
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = "Toggle Watchlist",
+                    tint = if (isInWatchlist) PrimaryRed else Color.White,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }

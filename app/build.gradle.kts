@@ -5,9 +5,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.room)
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-    kotlin("kapt")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
+    id("org.jetbrains.kotlin.kapt") version "2.1.0"
 }
 
 android {
@@ -46,24 +47,36 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
     buildFeatures {
         compose = true
         buildConfig =true
     }
+    
+    packaging {
+        resources {
+            excludes += "META-INF/gradle/incremental.annotation.processors"
+        }
+    }
 }
 
 configurations.all {
     resolutionStrategy.force(
-
         "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0",
     )
+    exclude(group = "com.google.googlejavaformat", module = "google-java-format")
 }
 
 hilt {
-    enableAggregatingTask = false
+    enableAggregatingTask = true
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
@@ -106,4 +119,9 @@ dependencies {
 
     // YouTube Player
     implementation(libs.youtube.player.core)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
 }

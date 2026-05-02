@@ -27,6 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,7 +43,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -53,21 +58,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie_detail.domain.models.Cast
 import com.depi.moviex.movie_detail.domain.models.Crew
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.moviedetail.YoutubePlayer
+import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 import com.depi.moviex.utils.K
 
 @Composable
 fun MovieDetailScreen(
     modifier: Modifier = Modifier,
     movieDetailViewModel: MovieDetailViewModel = hiltViewModel(),
+    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onCastClick: (Int, String) -> Unit = { _, _ -> },
     onCastMemberClick: (Int) -> Unit = {}
@@ -103,6 +110,7 @@ fun MovieDetailScreen(
                 MovieDetailContent(
                     movieDetail = state.movieDetail!!,
                     videos = state.videos,
+                    watchlistViewModel = watchlistViewModel,
                     onBackClick = onBackClick,
                     onCastClick = onCastClick,
                     onCastMemberClick = onCastMemberClick
@@ -116,6 +124,7 @@ fun MovieDetailScreen(
 private fun MovieDetailContent(
     movieDetail: MovieDetail,
     videos: List<Video>,
+    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
     onCastClick: (Int, String) -> Unit,
     onCastMemberClick: (Int) -> Unit
@@ -124,8 +133,27 @@ private fun MovieDetailContent(
     val trailer = videos.firstOrNull { it.type == "Trailer" && it.site == "YouTube" }
     val teaser = videos.firstOrNull { it.type == "Teaser" && it.site == "YouTube" }
     val videoToShow = trailer ?: teaser
+    
+    val isInWatchlist by watchlistViewModel.isInWatchlist(movieDetail.id).collectAsStateWithLifecycle(initialValue = false)
+    val scope = rememberCoroutineScope()
+    
+    val movie = Movie(
+        id = movieDetail.id,
+        title = movieDetail.title,
+        posterPath = movieDetail.posterPath ?: "",
+        backdropPath = movieDetail.backdropPath ?: "",
+        releaseDate = movieDetail.releaseDate,
+        voteAverage = movieDetail.voteAverage,
+        voteCount = movieDetail.voteCount,
+        genreIds = emptyList(),
+        originalLanguage = "",
+        originalTitle = movieDetail.title,
+        overview = movieDetail.overview,
+        popularity = 0.0,
+        video = false
+    )
 
-Column(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
@@ -230,6 +258,33 @@ Column(
                         }
                     }
                 }
+            }
+            
+            // Heart icon for watchlist
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 40.dp, end = 8.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+                    .clickable {
+                scope.launch {
+                    if (isInWatchlist) {
+                        watchlistViewModel.removeFromWatchlist(movie)
+                    } else {
+                        watchlistViewModel.addToWatchlist(movie, "Detail")
+                    }
+                }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = "Toggle Watchlist",
+                    tint = if (isInWatchlist) PrimaryRed else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
 
@@ -371,7 +426,7 @@ private fun CastItem(
             text = cast.name,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 1,
+            maxLines = 2,
             textAlign = TextAlign.Center
         )
         Text(

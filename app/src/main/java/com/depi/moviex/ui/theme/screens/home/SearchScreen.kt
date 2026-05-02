@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -117,6 +119,7 @@ fun MovieItem(
     val movieId = movie.id ?: return
     val isInWatchlist by watchlistViewModel.isInWatchlist(movieId).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
+    var showRemoveDialog by remember { mutableStateOf(false) }
     
     Card(
         modifier = Modifier
@@ -158,46 +161,30 @@ fun MovieItem(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
                     .clickable {
-                        scope.launch {
-                            if (isInWatchlist) {
-                                watchlistViewModel.removeFromWatchlist(
-                                    com.depi.moviex.movie.domain.models.Movie(
-                                        id = movie.id ?: 0,
-                                        title = movie.title ?: "",
-                                        posterPath = movie.posterPath ?: "",
-                                        backdropPath = movie.backdropPath ?: "",
-                                        releaseDate = movie.releaseDate ?: "",
-                                        voteAverage = movie.voteAverage ?: 0.0,
-                                        voteCount = movie.voteCount ?: 0,
-                                        genreIds = emptyList(),
-                                        originalLanguage = "",
-                                        originalTitle = movie.title ?: "",
-                                        overview = "",
-                                        popularity = 0.0,
-                                        video = false
-                                    )
-                                )
-                            } else {
-                                watchlistViewModel.addToWatchlist(
-                                    com.depi.moviex.movie.domain.models.Movie(
-                                        id = movie.id ?: 0,
-                                        title = movie.title ?: "",
-                                        posterPath = movie.posterPath ?: "",
-                                        backdropPath = movie.backdropPath ?: "",
-                                        releaseDate = movie.releaseDate ?: "",
-                                        voteAverage = movie.voteAverage ?: 0.0,
-                                        voteCount = movie.voteCount ?: 0,
-                                        genreIds = emptyList(),
-                                        originalLanguage = "",
-                                        originalTitle = movie.title ?: "",
-                                        overview = "",
-                                        popularity = 0.0,
-                                        video = false
-                                    ),
-                                    "Search"
-                                )
-                            }
-                        }
+                if (isInWatchlist) {
+                    showRemoveDialog = true
+                } else {
+                    scope.launch {
+                        watchlistViewModel.addToWatchlist(
+                            com.depi.moviex.movie.domain.models.Movie(
+                                id = movie.id ?: 0,
+                                title = movie.title ?: "",
+                                posterPath = movie.posterPath ?: "",
+                                backdropPath = movie.backdropPath ?: "",
+                                releaseDate = movie.releaseDate ?: "",
+                                voteAverage = movie.voteAverage ?: 0.0,
+                                voteCount = movie.voteCount ?: 0,
+                                genreIds = emptyList(),
+                                originalLanguage = "",
+                                originalTitle = movie.title ?: "",
+                                overview = "",
+                                popularity = 0.0,
+                                video = false
+                            ),
+                            "Search"
+                        )
+                    }
+                }
                     },
                 contentAlignment = Alignment.Center
             ) {

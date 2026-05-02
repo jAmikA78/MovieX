@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -138,6 +139,7 @@ private fun MovieDetailContent(
     val isInWatchlist by watchlistViewModel.isInWatchlist(movieDetail.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
     var isOverviewExpanded by remember { mutableStateOf(false) }
+    var showRemoveDialog by remember { mutableStateOf(false) }
     
     val movie = Movie(
         id = movieDetail.id,
@@ -271,10 +273,10 @@ private fun MovieDetailContent(
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
                     .clickable {
-                scope.launch {
-                    if (isInWatchlist) {
-                        watchlistViewModel.removeFromWatchlist(movie)
-                    } else {
+                if (isInWatchlist) {
+                    showRemoveDialog = true
+                } else {
+                    scope.launch {
                         watchlistViewModel.addToWatchlist(movie, "Detail")
                     }
                 }
@@ -412,8 +414,36 @@ private fun MovieDetailContent(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-        }
+
+    if (showRemoveDialog) {
+        AlertDialog(
+            onDismissRequest = { showRemoveDialog = false },
+            title = { Text("Remove from Watchlist") },
+            text = { Text("Are you sure you want to remove \"${movieDetail.title}\" from your watchlist?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            watchlistViewModel.removeFromWatchlist(movie)
+                        }
+                        showRemoveDialog = false
+                    }
+                ) {
+                    Text("Remove", color = PrimaryRed)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRemoveDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
+    }
+}
 }
 
 @Composable

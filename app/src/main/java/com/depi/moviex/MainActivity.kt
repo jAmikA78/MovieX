@@ -2,6 +2,7 @@ package com.depi.moviex
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -82,6 +84,13 @@ fun AppNavigation(
 
     val showBottomBar = currentRoute in listOf("home", "watchlist", "profile")
 
+    val context = LocalContext.current
+
+    BackHandler(enabled = showBottomBar) {
+        // On bottom nav screens, pressing back exits the app
+        (context as? ComponentActivity)?.finish()
+    }
+
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
@@ -94,8 +103,10 @@ fun AppNavigation(
                             selected = currentRoute == item.route,
                             onClick = {
                                 navController.navigate(item.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
+                                    // Pop up to home to clear back stack when switching tabs
+                                    popUpTo("home") {
                                         saveState = true
+                                        inclusive = false
                                     }
                                     launchSingleTop = true
                                     restoreState = true

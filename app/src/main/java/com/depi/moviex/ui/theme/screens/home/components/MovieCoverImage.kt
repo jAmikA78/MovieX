@@ -10,14 +10,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,21 +41,24 @@ import com.depi.moviex.utils.K
 fun MovieCoverImage(
     modifier: Modifier = Modifier,
     movie: Movie,
-    onMovieClick:(Int) -> Unit,
+    onMovieClick: (Int) -> Unit,
     isInWatchlist: Boolean = false,
-    onHeartClick: () -> Unit = {}
+    onHeartClick: () -> Unit = {},
+    onRemoveFromWatchlist: (Movie) -> Unit = {}
 ) {
-    val imgRequest = ImageRequest.Builder(LocalContext.current)
-        .data("${K.BASE_IMAGE_URL}${movie.posterPath}")
-        .crossfade(true)
-        .build()
+    var showRemoveDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
             .size(width = 150.dp, height = 250.dp)
             .padding(8.dp)
             .clickable { onMovieClick(movie.id) }
-    ){
+    ) {
+        val imgRequest = ImageRequest.Builder(LocalContext.current)
+            .data("${K.BASE_IMAGE_URL}${movie.posterPath}")
+            .crossfade(true)
+            .build()
+
         AsyncImage(
             model = imgRequest,
             contentDescription = null,
@@ -60,21 +68,29 @@ fun MovieCoverImage(
                 .shadow(elevation = 4.dp),
             contentScale = ContentScale.Crop
         )
+
         Card(
             shape = CircleShape,
             colors = CardDefaults.cardColors(),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(4.dp)
-                .clickable { onHeartClick() }
+                .clickable {
+                    if (isInWatchlist) {
+                        showRemoveDialog = true
+                    } else {
+                        onHeartClick()
+                    }
+                }
         ) {
             Icon(
                 imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = "Add to Watchlist",
+                contentDescription = "Toggle Watchlist",
                 tint = if (isInWatchlist) PrimaryRed else Color.White,
                 modifier = Modifier.padding(4.dp)
             )
         }
+
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -96,4 +112,29 @@ fun MovieCoverImage(
         }
     }
 
+    if (showRemoveDialog) {
+        AlertDialog(
+            onDismissRequest = { showRemoveDialog = false },
+            title = { Text("Remove from Watchlist") },
+            text = { Text("Are you sure you want to remove \"${movie.title}\" from your watchlist?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onRemoveFromWatchlist(movie)
+                        showRemoveDialog = false
+                    }
+                ) {
+                    Text("Remove", color = PrimaryRed)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRemoveDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }

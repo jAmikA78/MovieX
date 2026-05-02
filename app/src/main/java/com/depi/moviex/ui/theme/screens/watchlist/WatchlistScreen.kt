@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -28,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -159,6 +161,7 @@ fun WatchlistMovieItem(
 ) {
     val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
+    var showRemoveDialog by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -199,21 +202,43 @@ fun WatchlistMovieItem(
 
             // Heart icon to remove from watchlist
             IconButton(
-                onClick = {
-                    scope.launch {
-                        if (isInWatchlist) {
-                            watchlistViewModel.removeFromWatchlist(movie)
-                        }
-                    }
-                },
+                onClick = { showRemoveDialog = true },
             modifier = Modifier.size(40.dp)
         ) {
-            Icon(
-                imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = "Remove from Watchlist",
-                tint = if (isInWatchlist) PrimaryRed else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
-            )
-        }
+                Icon(
+                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = "Remove from Watchlist",
+                    tint = if (isInWatchlist) PrimaryRed else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+    }
+
+    if (showRemoveDialog) {
+        AlertDialog(
+            onDismissRequest = { showRemoveDialog = false },
+            title = { Text("Remove from Watchlist") },
+            text = { Text("Are you sure you want to remove \"${movie.title}\" from your watchlist?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            watchlistViewModel.removeFromWatchlist(movie)
+                        }
+                        showRemoveDialog = false
+                    }
+                ) {
+                    Text("Remove", color = PrimaryRed)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRemoveDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }

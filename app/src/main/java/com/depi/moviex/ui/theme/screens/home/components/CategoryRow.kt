@@ -75,11 +75,14 @@ fun CategoryRow(
                     isInWatchlist = isInWatchlist,
                     onHeartClick = {
                         scope.launch {
-                            if (isInWatchlist) {
-                                watchlistViewModel.removeFromWatchlist(movie)
-                            } else {
+                            if (!isInWatchlist) {
                                 watchlistViewModel.addToWatchlist(movie, title)
                             }
+                        }
+                    },
+                    onRemoveFromWatchlist = { movieToRemove ->
+                        scope.launch {
+                            watchlistViewModel.removeFromWatchlist(movieToRemove)
                         }
                     }
                 )

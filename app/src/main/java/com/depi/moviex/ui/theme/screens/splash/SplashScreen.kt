@@ -4,8 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,23 +14,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.layout.ContentScale
+import com.airbnb.lottie.compose.*
 import com.depi.moviex.R
 import kotlinx.coroutines.delay
-
-@Preview
-@Composable
-private fun SplashScreenPreview() {
-    SplashScreen(onTimeout = {})
-}
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
 
-    LaunchedEffect(key1 = true) {
-        delay(1500) // 1.5 ثانية
-        onTimeout()
-    }
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.intro_animation_moviex)
+    )
 
+    val progress by animateLottieCompositionAsState(composition) // بيراقب القيديو لغايه ما يخلص
+
+    if (progress == 1f) {
+        LaunchedEffect(Unit) {
+            delay(1000)
+            onTimeout()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -39,34 +41,43 @@ fun SplashScreen(onTimeout: () -> Unit) {
             .background(Color(0xFF13131D)),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.moviex_logo),
-                contentDescription = "MovieX Logo",
-                modifier = Modifier
-                    .size(150.dp)
-                    .padding(bottom = 30.dp)
+        if (progress < 1f) {
+            LottieAnimation(
+                composition = composition,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds
             )
+        }
+        else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.moviex_logo),
+                    contentDescription = "MovieX Logo",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .padding(bottom = 30.dp)
+                )
 
-            Text(
-                text = "MovieX",
-                color = Color(0xFFE54E3C),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
+                Text(
+                    text = "MovieX",
+                    color = Color(0xFFE54E3C),
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
 
-            Text(
-                text = "Discover. Track. Never miss\na movie",
-                color = Color.White,
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                modifier = Modifier.padding(horizontal = 40.dp)
-            )
+                Text(
+                    text = "Discover. Track. Never miss\na movie",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 24.sp,
+                    modifier = Modifier.padding(horizontal = 40.dp)
+                )
+            }
         }
     }
 }

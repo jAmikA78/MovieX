@@ -94,6 +94,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
 
     // Hilt
     implementation(libs.hilt.android)

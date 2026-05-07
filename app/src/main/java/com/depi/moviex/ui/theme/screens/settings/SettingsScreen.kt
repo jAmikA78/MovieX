@@ -105,13 +105,6 @@ fun SettingsScreen(
             )
 
             SettingsItem(
-                icon = Icons.Default.Info,
-                title = "About",
-                subtitle = "App version 1.0.0",
-                onClick = { }
-            )
-
-            SettingsItem(
                 icon = Icons.Default.Email,
                 title = "Support",
                 subtitle = "Contact us for help or feedback",
@@ -126,6 +119,13 @@ fun SettingsScreen(
                 onClick = { onDevelopersClick() }
             )
 
+            SettingsItem(
+                icon = Icons.Default.Info,
+                title = "About",
+                subtitle = "App version 1.0.0",
+                onClick = { }
+            )
+
             Spacer(modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -137,6 +137,7 @@ fun SettingsScreen(
                 onClick = { showLogoutDialog = true }
             )
             Spacer(modifier = Modifier.height(25.dp))
+
         }
     }
 

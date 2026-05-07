@@ -33,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.depi.moviex.auth.data.repository.AuthManager
 import com.depi.moviex.ui.theme.MovieXTheme
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.auth.LoginScreen
@@ -46,9 +47,12 @@ import com.depi.moviex.ui.theme.screens.cast_member.CastMemberScreen
 import com.depi.moviex.ui.theme.screens.profile.ProfileScreen
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistScreen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var authManager: AuthManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -58,7 +62,8 @@ class MainActivity : ComponentActivity() {
             MovieXTheme(darkTheme = isDarkMode) {
                 AppNavigation(
                     isDarkMode = isDarkMode,
-                    onThemeChange = { isDarkMode = it }
+                    onThemeChange = { isDarkMode = it },
+                    authManager = authManager
                 )
             }
         }
@@ -76,13 +81,18 @@ val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Watchlist, BottomN
 @Composable
 fun AppNavigation(
     isDarkMode: Boolean,
-    onThemeChange: (Boolean) -> Unit
+    onThemeChange: (Boolean) -> Unit,
+    authManager: AuthManager
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     val showBottomBar = currentRoute in listOf("home", "watchlist", "profile")
+
+    val startDestination = remember {
+        if (authManager.isLoggedIn() || authManager.isGuest()) "home" else "splash"
+    }
 
     val context = LocalContext.current
 
@@ -129,7 +139,7 @@ fun AppNavigation(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "splash",
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("splash") {
@@ -215,9 +225,18 @@ fun AppNavigation(
                 ProfileScreen(
                     isDarkMode = isDarkMode,
                     onThemeChange = onThemeChange,
+                    isGuest = authManager.isGuest(),
                     onSignOut = {
+                        authManager.logout()
                         navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
+                            popUpTo("home") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onLoginClick = {
+                        navController.navigate("login") {
+                            popUpTo("home") { inclusive = true }
+                            launchSingleTop = true
                         }
                     }
                 )

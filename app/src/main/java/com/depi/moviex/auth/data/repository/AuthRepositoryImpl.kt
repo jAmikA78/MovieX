@@ -6,6 +6,7 @@ import com.depi.moviex.auth.domain.models.AuthResult
 import com.depi.moviex.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -41,18 +42,32 @@ class AuthRepositoryImpl @Inject constructor(
                 return@flow
             }
 
-            // Step 4: Save session
+            // Step 4: Clear guest flag and save session
+            authManager.clearGuest()
             authManager.saveSession(sessionResponse.sessionId)
             emit(AuthResult(success = true, sessionId = sessionResponse.sessionId))
 
         } catch (e: Exception) {
-            emit(AuthResult(success = false, error = e.message ?: "Unknown error occurred"))
+            val message = when {
+                e is HttpException && e.code() == 401 -> "Invalid username or password"
+                e is HttpException && e.code() == 404 -> "Service not available"
+                e is HttpException && e.code() == 500 -> "Server error. Please try again later"
+                e is HttpException -> "Login failed (${e.code()}). Please try again"
+                else -> "Connection error. Check your internet and try again"
+            }
+            emit(AuthResult(success = false, error = message))
         }
     }
 
     override fun getSession(): String? = authManager.getSession()
 
     override fun isLoggedIn(): Boolean = authManager.isLoggedIn()
+
+    override fun saveGuest() = authManager.saveGuest()
+
+    override fun isGuest(): Boolean = authManager.isGuest()
+
+    override fun clearGuest() = authManager.clearGuest()
 
     override fun logout() = authManager.logout()
 }

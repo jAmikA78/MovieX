@@ -156,7 +156,10 @@ fun LoginScreen(
             )
 
             OutlinedButton(
-                onClick = onGuestLogin,
+                onClick = {
+                    loginViewModel.loginAsGuest()
+                    onGuestLogin()
+                },
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
                 border = BorderStroke(2.dp, Color(0xFFE54E3C))

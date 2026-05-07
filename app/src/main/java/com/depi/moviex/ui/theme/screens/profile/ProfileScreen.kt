@@ -42,20 +42,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.ui.theme.PrimaryRed
-import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     isDarkMode: Boolean = true,
     onThemeChange: (Boolean) -> Unit = {},
-    onSignOut: () -> Unit = {}
+    onSignOut: () -> Unit = {},
+    isGuest: Boolean = false,
+    onLoginClick: () -> Unit = {}
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
-    val loginViewModel: LoginViewModel = hiltViewModel()
 
     Box(
         modifier = modifier
@@ -157,13 +155,23 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            ProfileItem(
-                icon = Icons.AutoMirrored.Filled.ExitToApp,
-                title = "Sign Out",
-                subtitle = "Sign out of your account",
-                titleColor = PrimaryRed,
-                onClick = { showLogoutDialog = true }
-            )
+            if (isGuest) {
+                ProfileItem(
+                    icon = Icons.Default.Person,
+                    title = "Login",
+                    subtitle = "Sign in to your account",
+                    titleColor = PrimaryRed,
+                    onClick = onLoginClick
+                )
+            } else {
+                ProfileItem(
+                    icon = Icons.AutoMirrored.Filled.ExitToApp,
+                    title = "Sign Out",
+                    subtitle = "Sign out of your account",
+                    titleColor = PrimaryRed,
+                    onClick = { showLogoutDialog = true }
+                )
+            }
 
             Spacer(modifier = Modifier.height(25.dp))
         }
@@ -177,7 +185,6 @@ fun ProfileScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        loginViewModel.logout()
                         showLogoutDialog = false
                         onSignOut()
                     }

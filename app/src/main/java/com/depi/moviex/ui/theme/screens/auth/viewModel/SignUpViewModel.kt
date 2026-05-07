@@ -26,7 +26,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onGuestLogin() {
-        authRepository.logout()
+        authRepository.saveGuest()
     }
 
     fun resetState() {

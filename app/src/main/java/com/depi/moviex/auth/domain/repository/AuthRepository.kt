@@ -7,5 +7,8 @@ interface AuthRepository {
     suspend fun login(username: String, password: String): Flow<AuthResult>
     fun getSession(): String?
     fun isLoggedIn(): Boolean
+    fun saveGuest()
+    fun isGuest(): Boolean
+    fun clearGuest()
     fun logout()
 }

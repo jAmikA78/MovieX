@@ -24,12 +24,28 @@ class AuthManager @Inject constructor(
         return getSession() != null
     }
 
+    fun saveGuest() {
+        prefs.edit().putBoolean(KEY_IS_GUEST, true).apply()
+    }
+
+    fun isGuest(): Boolean {
+        return prefs.getBoolean(KEY_IS_GUEST, false)
+    }
+
+    fun clearGuest() {
+        prefs.edit().remove(KEY_IS_GUEST).apply()
+    }
+
     fun logout() {
-        prefs.edit().remove(KEY_SESSION_ID).apply()
+        prefs.edit()
+            .remove(KEY_SESSION_ID)
+            .remove(KEY_IS_GUEST)
+            .apply()
     }
 
     companion object {
         private const val PREFS_NAME = "auth_prefs"
         private const val KEY_SESSION_ID = "session_id"
+        private const val KEY_IS_GUEST = "is_guest"
     }
 }

@@ -2,6 +2,7 @@ package com.depi.moviex.cast_member.data.remote.api
 
 import com.depi.moviex.BuildConfig
 import com.depi.moviex.cast_member.data.remote.models.CastMemberDto
+import com.depi.moviex.cast_member.data.remote.models.CombinedCreditsDto
 import com.depi.moviex.utils.K
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -16,4 +17,10 @@ interface CastMemberApiService {
         @Path(PERSON_ID) personId: Int,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY
     ): CastMemberDto
+
+    @GET("${K.MOVIE_ACTOR_ENDPOINT}/{$PERSON_ID}/combined_credits")
+    suspend fun fetchCombinedCredits(
+        @Path(PERSON_ID) personId: Int,
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY
+    ): CombinedCreditsDto
 }

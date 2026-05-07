@@ -18,7 +18,9 @@ class CastMemberRepositoryImpl @Inject constructor(
         emit(Response.Loading())
         try {
             val dto = apiService.fetchCastMember(personId)
-            val castMember = mapper.toDomain(dto)
+            val creditsDto = apiService.fetchCombinedCredits(personId)
+            val knownFor = mapper.mapKnownFor(creditsDto.cast)
+            val castMember = mapper.toDomain(dto, knownFor)
             emit(Response.Success(castMember))
         } catch (e: Exception) {
             emit(Response.Error(e))

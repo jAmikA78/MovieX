@@ -28,6 +28,12 @@ data class Result(
     val releaseDate: String? = null,
     @SerialName("title")
     val title: String? = null,
+    @SerialName("name")
+    val name: String? = null,
+    @SerialName("original_name")
+    val originalName: String? = null,
+    @SerialName("first_air_date")
+    val firstAirDate: String? = null,
     @SerialName("video")
     val video: Boolean? = null,
     @SerialName("vote_average")

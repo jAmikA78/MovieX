@@ -14,4 +14,5 @@ data class Movie(
     val voteAverage: Double,
     val voteCount: Int,
     val video: Boolean,
+    val mediaType: String = "movie",
 )

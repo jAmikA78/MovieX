@@ -41,7 +41,7 @@ import com.depi.moviex.utils.K
 fun MovieCoverImage(
     modifier: Modifier = Modifier,
     movie: Movie,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     isInWatchlist: Boolean = false,
     onHeartClick: () -> Unit = {},
     onRemoveFromWatchlist: (Movie) -> Unit = {}
@@ -52,7 +52,7 @@ fun MovieCoverImage(
         modifier = modifier
             .size(width = 150.dp, height = 250.dp)
             .padding(8.dp)
-            .clickable { onMovieClick(movie.id) }
+            .clickable { onMovieClick(movie.id, movie.mediaType) }
     ) {
         val imgRequest = ImageRequest.Builder(LocalContext.current)
             .data("${K.BASE_IMAGE_URL}${movie.posterPath}")

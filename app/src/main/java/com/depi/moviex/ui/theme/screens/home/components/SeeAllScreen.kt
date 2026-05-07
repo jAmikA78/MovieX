@@ -42,7 +42,7 @@ import com.depi.moviex.utils.K
 @Composable
 fun SeeAllScreen(
     categoryTitle: String,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     onBackClick: () -> Unit,
     watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     viewModel: SeeAllViewModel = hiltViewModel()
@@ -92,7 +92,7 @@ fun SeeAllScreen(
                     if (movie != null) {
                         MovieGridItem(
                             movie = movie,
-                            onClick = { onMovieClick(movie.id) },
+                            onClick = { onMovieClick(movie.id, movie.mediaType) },
                             watchlistViewModel = watchlistViewModel,
                             categoryTitle = categoryTitle
                         )

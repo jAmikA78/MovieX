@@ -29,6 +29,8 @@ data class MovieDetailDto(
     val originCountry: List<String?>? = null,
     @SerialName("original_language")
     val originalLanguage: String? = null,
+    @SerialName("original_name")
+    val originalName: String? = null,
     @SerialName("original_title")
     val originalTitle: String? = null,
     @SerialName("overview")
@@ -55,6 +57,8 @@ data class MovieDetailDto(
     val status: String? = null,
     @SerialName("tagline")
     val tagline: String? = null,
+    @SerialName("name")
+    val name: String? = null,
     @SerialName("title")
     val title: String? = null,
     @SerialName("video")

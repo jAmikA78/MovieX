@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
     watchlistViewModel: WatchlistViewModel = hiltViewModel(),
-    onMovieClick: (Int) -> Unit
+    onMovieClick: (Int, String) -> Unit
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val movies by viewModel.movies.collectAsState()
@@ -101,7 +101,7 @@ fun SearchScreen(
                 items(movies) { movie ->
                     MovieItem(
                         movie = movie, 
-                        onClick = { movie.id?.let { onMovieClick(it) } },
+                        onClick = { movie.id?.let { onMovieClick(it, "movie") } },
                         watchlistViewModel = watchlistViewModel
                     )
                 }

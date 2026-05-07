@@ -38,7 +38,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
     watchlistViewModel: WatchlistViewModel = hiltViewModel(),
-    onMovieClick: (id: Int) -> Unit = {},
+    onMovieClick: (id: Int, mediaType: String) -> Unit = { _, _ -> },
     onSettingsClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onSeeAllClick: (String) -> Unit = {}

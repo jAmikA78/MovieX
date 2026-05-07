@@ -13,7 +13,7 @@ import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 @Composable
 fun CategoryRows(
     categories: List<CategoryItem>,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     onSeeAllClick: (String) -> Unit,
     watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     modifier: Modifier = Modifier

@@ -198,8 +198,8 @@ fun AppNavigation(
 
             composable("home") {
                 HomeScreen(
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate("movie_detail/$mediaType/$movieId")
                     },
                     onSettingsClick = {
                         navController.navigate("settings")
@@ -215,8 +215,8 @@ fun AppNavigation(
 
             composable("watchlist") {
                 WatchlistScreen(
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate("movie_detail/$mediaType/$movieId")
                     }
                 )
             }
@@ -255,13 +255,16 @@ fun AppNavigation(
             }
 
             composable(
-                route = "movie_detail/{movieId}",
-                arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+                route = "movie_detail/{mediaType}/{movieId}",
+                arguments = listOf(
+                    navArgument("mediaType") { type = NavType.StringType },
+                    navArgument("movieId") { type = NavType.IntType }
+                )
             ) {
                 MovieDetailScreen(
                     onBackClick = { navController.popBackStack() },
-                    onCastClick = { movieId, movieTitle ->
-                        navController.navigate("cast/$movieId?movieTitle=$movieTitle")
+                    onCastClick = { movieId, movieTitle, mediaType ->
+                        navController.navigate("cast/$mediaType/$movieId?movieTitle=$movieTitle")
                     },
                     onCastMemberClick = { personId ->
                         navController.navigate("cast_member/$personId")
@@ -270,8 +273,9 @@ fun AppNavigation(
             }
 
             composable(
-                route = "cast/{movieId}?movieTitle={movieTitle}",
+                route = "cast/{mediaType}/{movieId}?movieTitle={movieTitle}",
                 arguments = listOf(
+                    navArgument("mediaType") { type = NavType.StringType },
                     navArgument("movieId") { type = NavType.IntType },
                     navArgument("movieTitle") {
                         type = NavType.StringType
@@ -280,9 +284,11 @@ fun AppNavigation(
                     }
                 )
             ) { backStackEntry ->
+                val mediaType = backStackEntry.arguments?.getString("mediaType") ?: "movie"
                 val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
                 val movieTitle = backStackEntry.arguments?.getString("movieTitle") ?: ""
                 CastScreen(
+                    mediaType = mediaType,
                     movieId = movieId,
                     movieTitle = movieTitle,
                     onBackClick = { navController.popBackStack() },
@@ -299,14 +305,17 @@ fun AppNavigation(
                 )
             ) {
                 CastMemberScreen(
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate("movie_detail/$mediaType/$movieId")
+                    }
                 )
             }
 
             composable("search_screen") {
                 com.depi.moviex.ui.theme.screens.home.SearchScreen(
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate("movie_detail/$mediaType/$movieId")
                     }
                 )
             }
@@ -322,8 +331,8 @@ fun AppNavigation(
                 com.depi.moviex.ui.theme.screens.home.components.SeeAllScreen(
                     categoryTitle = categoryTitle,
                     onBackClick = { navController.popBackStack() },
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate("movie_detail/$mediaType/$movieId")
                     }
                 )
             }

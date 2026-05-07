@@ -32,7 +32,7 @@ import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 fun CategoryRow(
     title: String,
     movies: List<Movie>,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     onSeeAllClick: (String) -> Unit,
     watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     modifier: Modifier = Modifier

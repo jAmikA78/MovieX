@@ -26,16 +26,17 @@ class CastViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val movieId: Int = checkNotNull(savedStateHandle["movieId"])
+    private val mediaType: String = savedStateHandle["mediaType"] ?: "movie"
 
     private val _castState = MutableStateFlow(CastState())
     val castState = _castState.asStateFlow()
 
     init {
-        fetchCast(movieId)
+        fetchCast(movieId, mediaType)
     }
 
-    private fun fetchCast(movieId: Int) = viewModelScope.launch {
-        repository.fetchMovieDetail(movieId).collectAndHandle(
+    private fun fetchCast(movieId: Int, mediaType: String) = viewModelScope.launch {
+        repository.fetchDetail(movieId, mediaType).collectAndHandle(
             onError = { error ->
                 _castState.update {
                     it.copy(isLoading = false, error = error?.message)

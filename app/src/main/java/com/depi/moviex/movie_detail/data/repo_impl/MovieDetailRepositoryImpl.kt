@@ -20,9 +20,13 @@ class MovieDetailRepositoryImpl(
     private val apiDetailMapper: ApiMapper<MovieDetail, MovieDetailDto>,
     private val apiMovieMapper: ApiMapper<List<Movie>, MovieDto>,
 ) : MovieDetailRepository {
-    override fun fetchMovieDetail(movieId: Int): Flow<Response<MovieDetail>> = flow {
+    override fun fetchDetail(movieId: Int, mediaType: String): Flow<Response<MovieDetail>> = flow {
         emit(Response.Loading())
-        val movieDetailDto = movieDetailApiService.fetchMovieDetail(movieId)
+        val movieDetailDto = if (mediaType == "tv") {
+            movieDetailApiService.fetchTvDetail(movieId)
+        } else {
+            movieDetailApiService.fetchMovieDetail(movieId)
+        }
         apiDetailMapper.mapToDomain(movieDetailDto).apply {
             emit(Response.Success(this))
         }
@@ -31,9 +35,13 @@ class MovieDetailRepositoryImpl(
         emit(Response.Error(e))
     }
 
-    override fun fetchMovieVideos(movieId: Int): Flow<Response<List<Video>>> = flow {
+    override fun fetchVideos(movieId: Int, mediaType: String): Flow<Response<List<Video>>> = flow {
         emit(Response.Loading())
-        val movieDetailDto = movieDetailApiService.fetchMovieDetail(movieId)
+        val movieDetailDto = if (mediaType == "tv") {
+            movieDetailApiService.fetchTvDetail(movieId)
+        } else {
+            movieDetailApiService.fetchMovieDetail(movieId)
+        }
         val videos = movieDetailDto.videos?.results?.mapNotNull { (it as? com.depi.moviex.movie_detail.data.remote.models.VideoDto)?.toDomain() } ?: emptyList<Video>()
         emit(Response.Success(videos))
     }.catch { e ->

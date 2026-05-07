@@ -40,8 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
 import com.depi.moviex.ui.theme.PrimaryRed
+import com.depi.moviex.ui.theme.components.ConfirmDialog
+import com.depi.moviex.ui.theme.components.MenuItemRow
+import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
 
 @Composable
 fun SettingsScreen(
@@ -81,7 +83,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            SettingsItem(
+            MenuItemRow(
                 icon = Icons.Default.Settings,
                 title = "Dark Mode",
                 subtitle = "Enable dark theme",
@@ -97,14 +99,14 @@ fun SettingsScreen(
                 }
             )
 
-            SettingsItem(
+            MenuItemRow(
                 icon = Icons.Default.Notifications,
                 title = "Notifications",
                 subtitle = "Manage notification preferences",
                 onClick = { }
             )
 
-            SettingsItem(
+            MenuItemRow(
                 icon = Icons.Default.Email,
                 title = "Support",
                 subtitle = "Contact us for help or feedback",
@@ -112,14 +114,14 @@ fun SettingsScreen(
 
             )
 
-            SettingsItem(
+            MenuItemRow(
                 icon = Icons.Default.Person,
                 title = "Developers",
                 subtitle = "Meet the team behind MovieX",
                 onClick = { onDevelopersClick() }
             )
 
-            SettingsItem(
+            MenuItemRow(
                 icon = Icons.Default.Info,
                 title = "About",
                 subtitle = "App version 1.0.0",
@@ -129,7 +131,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.height(32.dp))
 
-            SettingsItem(
+            MenuItemRow(
                 icon = Icons.AutoMirrored.Filled.ExitToApp,
                 title = "Sign Out",
                 subtitle = "Sign out of your account",
@@ -142,82 +144,17 @@ fun SettingsScreen(
     }
 
     if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Sign Out") },
-            text = { Text("Are you sure you want to sign out?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        loginViewModel.logout()
-                        showLogoutDialog = false
-                        onSignOut()
-                    }
-                ) {
-                    Text("Sign Out", color = PrimaryRed)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Cancel")
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ConfirmDialog(
+            title = "Sign Out",
+            text = "Are you sure you want to sign out?",
+            confirmLabel = "Sign Out",
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                loginViewModel.logout()
+                showLogoutDialog = false
+                onSignOut()
+            }
         )
     }
 }
 
-@Composable
-private fun SettingsItem(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    onClick: () -> Unit = { },
-    titleColor: Color = MaterialTheme.colorScheme.onBackground,
-    trailing: @Composable (() -> Unit)? = null
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = if (titleColor == PrimaryRed) PrimaryRed else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = title,
-                color = titleColor,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                text = subtitle,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        trailing?.invoke()
-    }
-}

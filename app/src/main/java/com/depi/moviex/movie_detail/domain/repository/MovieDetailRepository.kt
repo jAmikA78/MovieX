@@ -7,7 +7,7 @@ import com.depi.moviex.movie_detail.domain.models.Video
 import kotlinx.coroutines.flow.Flow
 
 interface MovieDetailRepository {
-    fun fetchMovieDetail(movieId: Int): Flow<Response<MovieDetail>>
-    fun fetchMovieVideos(movieId: Int): Flow<Response<List<Video>>>
+    fun fetchDetail(movieId: Int, mediaType: String = "movie"): Flow<Response<MovieDetail>>
+    fun fetchVideos(movieId: Int, mediaType: String = "movie"): Flow<Response<List<Video>>>
     fun fetchMovie(): Flow<Response<List<Movie>>>
 }

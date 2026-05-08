@@ -52,7 +52,7 @@ fun MovieCoverImage(
         modifier = modifier
             .size(width = 150.dp, height = 250.dp)
             .padding(8.dp)
-            .clickable { onMovieClick(movie.id, movie.mediaType) }
+            .clickable { onMovieClick(movie.id, movie.mediaType.value) }
     ) {
         val imgRequest = ImageRequest.Builder(LocalContext.current)
             .data("${K.BASE_IMAGE_URL}${movie.posterPath}")

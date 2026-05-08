@@ -12,31 +12,31 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
-    override fun mapToDomain(apiDto: MovieDetailDto): MovieDetail {
+    override fun mapToDomain(entity: MovieDetailDto): MovieDetail {
         return MovieDetail(
-            backdropPath = formatEmptyValue(apiDto.backdropPath),
-            genreIds = apiDto.genres?.map { formatEmptyValue(it?.name) } ?: emptyList(),
-            id = apiDto.id ?: 0,
-            originalLanguage = formatEmptyValue(apiDto.originalLanguage, "language"),
-            originalTitle = formatEmptyValue(apiDto.originalTitle ?: apiDto.originalName, "title"),
-            overview = formatEmptyValue(apiDto.overview, "overview"),
-            popularity = apiDto.popularity ?: 0.0,
-            posterPath = formatEmptyValue(apiDto.posterPath),
-            releaseDate = formatEmptyValue(apiDto.releaseDate, "date"),
-            title = formatEmptyValue(apiDto.title ?: apiDto.name, "title"),
-            voteAverage = apiDto.voteAverage ?: 0.0,
-            voteCount = apiDto.voteCount ?: 0,
-            video = apiDto.video ?: false,
-            videoUrl = apiDto.videos?.results?.firstOrNull {
+            backdropPath = formatEmptyValue(entity.backdropPath),
+            genreIds = entity.genres?.map { formatEmptyValue(it?.name) } ?: emptyList(),
+            id = entity.id ?: 0,
+            originalLanguage = formatEmptyValue(entity.originalLanguage, "language"),
+            originalTitle = formatEmptyValue(entity.originalTitle ?: entity.originalName, "title"),
+            overview = formatEmptyValue(entity.overview, "overview"),
+            popularity = entity.popularity ?: 0.0,
+            posterPath = formatEmptyValue(entity.posterPath),
+            releaseDate = formatEmptyValue(entity.releaseDate, "date"),
+            title = formatEmptyValue(entity.title ?: entity.name, "title"),
+            voteAverage = entity.voteAverage ?: 0.0,
+            voteCount = entity.voteCount ?: 0,
+            video = entity.video ?: false,
+            videoUrl = entity.videos?.results?.firstOrNull {
                 it?.site == "YouTube" && it.type == "Trailer"
             }?.key?.let { "https://www.youtube.com/watch?v=$it" },
-            cast = formatCast(apiDto.credits?.cast),
-            crew = formatCrew(apiDto.credits?.crew),
-            language = apiDto.spokenLanguages?.map { formatEmptyValue(it?.englishName) }
+            cast = formatCast(entity.credits?.cast),
+            crew = formatCrew(entity.credits?.crew),
+            language = entity.spokenLanguages?.map { formatEmptyValue(it?.englishName) }
                 ?: emptyList<String>(),
-            productionCountry = apiDto.productionCountries?.map { formatEmptyValue(it?.name) }
+            productionCountry = entity.productionCountries?.map { formatEmptyValue(it?.name) }
                 ?: emptyList<String>(),
-            reviews = apiDto.reviews?.results?.map {
+            reviews = entity.reviews?.results?.map {
                 Review(
                     author = formatEmptyValue(it?.author),
                     content = formatEmptyValue(it?.content),
@@ -45,10 +45,9 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
                     rating = it?.authorDetails?.rating ?: 0.0
                 )
             } ?: emptyList<Review>(),
-            runTime = convertMinutesToHours(apiDto.runtime ?: 0),
+            runTime = convertMinutesToHours(entity.runtime ?: 0),
             videos = emptyList<com.depi.moviex.movie_detail.domain.models.Video>()
         )
-
     }
 
     private fun formatTimeStamp(pattern: String = "dd.MM.yy", time: String): String {

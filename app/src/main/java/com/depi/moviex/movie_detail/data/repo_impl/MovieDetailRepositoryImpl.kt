@@ -1,11 +1,10 @@
 package com.depi.moviex.movie_detail.data.repo_impl
 
-
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.common.data.ApiMapper
-import com.depi.moviex.movie.data.remote.models.MovieDto
-import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
+import com.depi.moviex.movie_detail.data.remote.models.VideoDto
 import com.depi.moviex.movie_detail.data.remote.models.toDomain
 import com.depi.moviex.utils.Response
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
@@ -18,11 +17,11 @@ import kotlinx.coroutines.flow.flow
 class MovieDetailRepositoryImpl(
     private val movieDetailApiService: MovieDetailApiService,
     private val apiDetailMapper: ApiMapper<MovieDetail, MovieDetailDto>,
-    private val apiMovieMapper: ApiMapper<List<Movie>, MovieDto>,
 ) : MovieDetailRepository {
-    override fun fetchDetail(movieId: Int, mediaType: String): Flow<Response<MovieDetail>> = flow {
+
+    override fun fetchDetail(movieId: Int, mediaType: MediaType): Flow<Response<MovieDetail>> = flow {
         emit(Response.Loading())
-        val movieDetailDto = if (mediaType == "tv") {
+        val movieDetailDto = if (mediaType == MediaType.TV) {
             movieDetailApiService.fetchTvDetail(movieId)
         } else {
             movieDetailApiService.fetchMovieDetail(movieId)
@@ -35,29 +34,19 @@ class MovieDetailRepositoryImpl(
         emit(Response.Error(e))
     }
 
-    override fun fetchVideos(movieId: Int, mediaType: String): Flow<Response<List<Video>>> = flow {
+    override fun fetchVideos(movieId: Int, mediaType: MediaType): Flow<Response<List<Video>>> = flow {
         emit(Response.Loading())
-        val movieDetailDto = if (mediaType == "tv") {
+        val movieDetailDto = if (mediaType == MediaType.TV) {
             movieDetailApiService.fetchTvDetail(movieId)
         } else {
             movieDetailApiService.fetchMovieDetail(movieId)
         }
-        val videos = movieDetailDto.videos?.results?.mapNotNull { (it as? com.depi.moviex.movie_detail.data.remote.models.VideoDto)?.toDomain() } ?: emptyList<Video>()
+        val videos = movieDetailDto.videos?.results
+            ?.mapNotNull { (it as? VideoDto)?.toDomain() }
+            ?: emptyList()
         emit(Response.Success(videos))
     }.catch { e ->
         e.printStackTrace()
         emit(Response.Error(e))
     }
-
-    override fun fetchMovie(): Flow<Response<List<Movie>>> = flow {
-        emit(Response.Loading())
-        val movieDto = movieDetailApiService.fetchMovie()
-        apiMovieMapper.mapToDomain(movieDto).apply {
-            emit(Response.Success(this))
-        }
-    }.catch { e ->
-        e.printStackTrace()
-        emit(Response.Error(e))
-    }
-
 }

@@ -1,9 +1,7 @@
 package com.depi.moviex.movie_detail.data.remote.api
 
 import com.depi.moviex.BuildConfig
-import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
-import com.depi.moviex.movie_detail.data.remote.models.MovieResponse
 import com.depi.moviex.utils.K
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -16,28 +14,15 @@ interface MovieDetailApiService {
 
     @GET("${K.MOVIE_DETAIL_ENDPOINT}/{$MOVIE_ID}")
     suspend fun fetchMovieDetail(
-        @Path(MOVIE_ID) movieId:Int,
+        @Path(MOVIE_ID) movieId: Int,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("append_to_response") appendToResponse: String = "credits,reviews,videos"
-    ):MovieDetailDto
+    ): MovieDetailDto
 
     @GET("tv/{$TV_ID}")
     suspend fun fetchTvDetail(
-        @Path(TV_ID) tvId:Int,
+        @Path(TV_ID) tvId: Int,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("append_to_response") appendToResponse: String = "credits,reviews,videos"
-    ):MovieDetailDto
-
-    @GET(K.MOVIE_ENDPOINT)
-    suspend fun fetchMovie(
-        @Query("api_key") apiKey: String = BuildConfig.API_KEY,
-        @Query("include_adult") includeAdult: Boolean = false
-    ): MovieDto
-
-    @GET("search/movie")
-    suspend fun searchMovies(
-        @Query("query") query: String,
-        @Query("page") page: Int = 1,
-        @Query("api_key") apiKey: String = "b761e0b591d3d9bd52bfeb3c2aa64f80"
-    ): MovieResponse
+    ): MovieDetailDto
 }

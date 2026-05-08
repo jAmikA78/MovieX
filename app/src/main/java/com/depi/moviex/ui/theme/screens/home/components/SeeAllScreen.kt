@@ -92,7 +92,7 @@ fun SeeAllScreen(
                     if (movie != null) {
                         MovieGridItem(
                             movie = movie,
-                            onClick = { onMovieClick(movie.id, movie.mediaType) },
+                            onClick = { onMovieClick(movie.id, movie.mediaType.value) },
                             watchlistViewModel = watchlistViewModel,
                             categoryTitle = categoryTitle
                         )

@@ -51,12 +51,9 @@ fun SignUpScreen(
     val signUpState by signUpViewModel.signUpState.collectAsStateWithLifecycle()
 
     LaunchedEffect(signUpState) {
-        when (signUpState) {
-            is SignUpState.MessageShown -> {
-                onSignUpSuccess()
-                signUpViewModel.resetState()
-            }
-            else -> { }
+        if (signUpState is SignUpState.Success) {
+            onSignUpSuccess()
+            signUpViewModel.resetState()
         }
     }
 
@@ -124,16 +121,20 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // TMDB does not support signup via API
-            Text(
-                text = "TMDB does not support signup via API.\nPlease create an account at themoviedb.org",
-                color = Color.Gray,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            if (signUpState is SignUpState.Error) {
+                Text(
+                    text = (signUpState as SignUpState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
 
             Button(
-                onClick = { signUpViewModel.onSignUpClick() },
+                onClick = {
+                    signUpViewModel.onSignUpClick(username, email, password, confirmPassword)
+                },
+                enabled = signUpState !is SignUpState.Loading,
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -144,12 +145,20 @@ fun SignUpScreen(
                         .background(signUpButtonGradient, shape = RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "SIGN UP",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (signUpState is SignUpState.Loading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = "SIGN UP",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))

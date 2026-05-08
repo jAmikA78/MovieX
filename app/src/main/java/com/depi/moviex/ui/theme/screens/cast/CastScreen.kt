@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.movie_detail.domain.models.Cast
 import com.depi.moviex.ui.theme.components.ActorCard
 import com.depi.moviex.ui.theme.components.BackButton
@@ -33,7 +34,7 @@ import com.depi.moviex.ui.theme.components.LoadingIndicator
 fun CastScreen(
     modifier: Modifier = Modifier,
     castViewModel: CastViewModel = hiltViewModel(),
-    mediaType: String = "movie",
+    mediaType: MediaType = MediaType.MOVIE,
     movieId: Int = 0,
     movieTitle: String = "",
     onBackClick: () -> Unit = {},

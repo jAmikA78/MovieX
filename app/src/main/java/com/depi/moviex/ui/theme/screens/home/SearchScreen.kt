@@ -13,8 +13,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -30,7 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.depi.moviex.movie.data.remote.models.Result
+import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 import com.depi.moviex.utils.K
@@ -66,18 +64,18 @@ fun SearchScreen(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .focusRequester(focusRequester),
-            placeholder = { 
+            placeholder = {
                 Text(
-                    text = "Search for movies...", 
-                    color = MaterialTheme.colorScheme.onSurfaceVariant 
-                ) 
+                    text = "Search for movies...",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             },
-            leadingIcon = { 
+            leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Search, 
-                    contentDescription = null, 
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
-                ) 
+                )
             },
             shape = RoundedCornerShape(16.dp),
             singleLine = true,
@@ -99,7 +97,7 @@ fun SearchScreen(
         if (movies.isEmpty() && searchQuery.length > 2) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "No movies found", 
+                    text = "No movies found",
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -112,8 +110,8 @@ fun SearchScreen(
             ) {
                 items(movies) { movie ->
                     MovieItem(
-                        movie = movie, 
-                        onClick = { movie.id?.let { onMovieClick(it, "movie") } },
+                        movie = movie,
+                        onClick = { onMovieClick(movie.id, movie.mediaType.value) },
                         watchlistViewModel = watchlistViewModel
                     )
                 }
@@ -124,15 +122,14 @@ fun SearchScreen(
 
 @Composable
 fun MovieItem(
-    movie: Result, 
+    movie: Movie,
     onClick: () -> Unit,
     watchlistViewModel: WatchlistViewModel = hiltViewModel()
 ) {
-    val movieId = movie.id ?: return
-    val isInWatchlist by watchlistViewModel.isInWatchlist(movieId).collectAsStateWithLifecycle(initialValue = false)
+    val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
     var showRemoveDialog by remember { mutableStateOf(false) }
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,7 +152,7 @@ fun MovieItem(
                     contentScale = ContentScale.Crop
                 )
                 Text(
-                    text = movie.title ?: "Unknown",
+                    text = movie.title,
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -163,8 +160,7 @@ fun MovieItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            
-            // Heart icon for watchlist
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -173,30 +169,16 @@ fun MovieItem(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
                     .clickable {
-                if (isInWatchlist) {
-                    showRemoveDialog = true
-                } else {
-                    scope.launch {
-                        watchlistViewModel.addToWatchlist(
-                            com.depi.moviex.movie.domain.models.Movie(
-                                id = movie.id ?: 0,
-                                title = movie.title ?: "",
-                                posterPath = movie.posterPath ?: "",
-                                backdropPath = movie.backdropPath ?: "",
-                                releaseDate = movie.releaseDate ?: "",
-                                voteAverage = movie.voteAverage ?: 0.0,
-                                voteCount = movie.voteCount ?: 0,
-                                genreIds = emptyList(),
-                                originalLanguage = "",
-                                originalTitle = movie.title ?: "",
-                                overview = "",
-                                popularity = 0.0,
-                                video = false
-                            ),
-                            "Search"
-                        )
-                    }
-                }
+                        if (isInWatchlist) {
+                            showRemoveDialog = true
+                        } else {
+                            scope.launch {
+                                watchlistViewModel.addToWatchlist(
+                                    movie,
+                                    "Search"
+                                )
+                            }
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {

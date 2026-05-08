@@ -57,6 +57,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
@@ -79,7 +80,7 @@ fun MovieDetailScreen(
     movieDetailViewModel: MovieDetailViewModel = hiltViewModel(),
     watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
-    onCastClick: (Int, String, String) -> Unit = { _, _, _ -> },
+    onCastClick: (Int, String, MediaType) -> Unit = { _, _, _ -> },
     onCastMemberClick: (Int) -> Unit = {}
 ) {
     val state by movieDetailViewModel.movieDetailState.collectAsStateWithLifecycle()
@@ -117,9 +118,9 @@ private fun MovieDetailContent(
     videos: List<Video>,
     watchlistViewModel: WatchlistViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onCastClick: (Int, String, String) -> Unit,
+    onCastClick: (Int, String, MediaType) -> Unit,
     onCastMemberClick: (Int) -> Unit,
-    mediaType: String = "movie"
+    mediaType: MediaType = MediaType.MOVIE
 ) {
     val context = LocalContext.current
     val trailer = videos.firstOrNull { it.type == "Trailer" && it.site == "YouTube" }
@@ -243,7 +244,7 @@ private fun MovieDetailContent(
                     showRemoveDialog = true
                 } else {
                     scope.launch {
-                        watchlistViewModel.addToWatchlist(movie, "Detail")
+                        watchlistViewModel.addToWatchlist(movie, WatchlistViewModel.CATEGORY_DETAIL)
                     }
                 }
                     },

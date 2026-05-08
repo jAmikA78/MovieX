@@ -1,6 +1,7 @@
 package com.depi.moviex.data.local.extensions
 
 import com.depi.moviex.cast_member.domain.models.KnownForMovie
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.data.local.entity.WatchlistMovieEntity
 import com.depi.moviex.movie.domain.models.Movie
 
@@ -51,6 +52,6 @@ fun KnownForMovie.toMovie(): Movie {
         voteAverage = voteAverage,
         voteCount = 0,
         video = false,
-        mediaType = mediaType
+        mediaType = MediaType.fromValue(mediaType)
     )
 }

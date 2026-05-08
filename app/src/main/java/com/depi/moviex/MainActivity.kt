@@ -2,14 +2,14 @@ package com.depi.moviex
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import com.depi.moviex.common.MediaType
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,25 +33,27 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.depi.moviex.auth.data.repository.AuthManager
+import com.depi.moviex.auth.domain.repository.AuthRepository
 import com.depi.moviex.ui.theme.MovieXTheme
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.auth.LoginScreen
 import com.depi.moviex.ui.theme.screens.auth.SignUpScreen
-import com.depi.moviex.ui.theme.screens.home.HomeScreen
-import com.depi.moviex.ui.theme.screens.moviedetail.MovieDetailScreen
-import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
-import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import com.depi.moviex.ui.theme.screens.cast.CastScreen
 import com.depi.moviex.ui.theme.screens.cast_member.CastMemberScreen
+import com.depi.moviex.ui.theme.screens.home.HomeScreen
+import com.depi.moviex.ui.theme.screens.home.SearchScreen
+import com.depi.moviex.ui.theme.screens.home.components.SeeAllScreen
+import com.depi.moviex.ui.theme.screens.moviedetail.MovieDetailScreen
+import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.screens.profile.ProfileScreen
+import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var authManager: AuthManager
+    @Inject lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(
                     isDarkMode = isDarkMode,
                     onThemeChange = { isDarkMode = it },
-                    authManager = authManager
+                    authRepository = authRepository
                 )
             }
         }
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, "Home")
-    object Watchlist : BottomNavItem("watchlist", Icons.Default.List, "Watchlist")
+    object Watchlist : BottomNavItem("watchlist", Icons.AutoMirrored.Filled.List, "Watchlist")
     object Profile : BottomNavItem("profile", Icons.Default.Person, "Profile")
 }
 
@@ -82,7 +84,7 @@ val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Watchlist, BottomN
 fun AppNavigation(
     isDarkMode: Boolean,
     onThemeChange: (Boolean) -> Unit,
-    authManager: AuthManager
+    authRepository: AuthRepository
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -91,13 +93,12 @@ fun AppNavigation(
     val showBottomBar = currentRoute in listOf("home", "watchlist", "profile")
 
     val startDestination = remember {
-        if (authManager.isLoggedIn() || authManager.isGuest()) "home" else "splash"
+        if (authRepository.isLoggedIn() || authRepository.isGuest()) "home" else "splash"
     }
 
     val context = LocalContext.current
 
     BackHandler(enabled = showBottomBar) {
-        // On bottom nav screens, pressing back exits the app
         (context as? ComponentActivity)?.finish()
     }
 
@@ -113,7 +114,6 @@ fun AppNavigation(
                             selected = currentRoute == item.route,
                             onClick = {
                                 navController.navigate(item.route) {
-                                    // Pop up to home to clear back stack when switching tabs
                                     popUpTo("home") {
                                         saveState = true
                                         inclusive = false
@@ -225,9 +225,10 @@ fun AppNavigation(
                 ProfileScreen(
                     isDarkMode = isDarkMode,
                     onThemeChange = onThemeChange,
-                    isGuest = authManager.isGuest(),
+                    username = authRepository.getRegisteredUsername(),
+                    isGuest = authRepository.isGuest(),
                     onSignOut = {
-                        authManager.logout()
+                        authRepository.logout()
                         navController.navigate("login") {
                             popUpTo("home") { inclusive = true }
                             launchSingleTop = true
@@ -243,15 +244,30 @@ fun AppNavigation(
             }
 
             composable("settings") {
-                // Settings moved to ProfileScreen
+                com.depi.moviex.ui.theme.screens.settings.SettingsScreen(
+                    isDarkMode = isDarkMode,
+                    onThemeChange = onThemeChange,
+                    onSignOut = {
+                        authRepository.logout()
+                        navController.navigate("login") {
+                            popUpTo("home") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onBack = { navController.popBackStack() },
+                    onSupportClick = { navController.navigate("support") },
+                    onDevelopersClick = { navController.navigate("developers") }
+                )
             }
-
             composable("support") {
-                // Support moved to ProfileScreen
+                com.depi.moviex.ui.theme.screens.settings.SupportScreen(
+                    onBack = { navController.popBackStack() }
+                )
             }
-
             composable("developers") {
-                // Developers moved to ProfileScreen
+                com.depi.moviex.ui.theme.screens.settings.DevelopersScreen(
+                    onBack = { navController.popBackStack() }
+                )
             }
 
             composable(
@@ -264,7 +280,7 @@ fun AppNavigation(
                 MovieDetailScreen(
                     onBackClick = { navController.popBackStack() },
                     onCastClick = { movieId, movieTitle, mediaType ->
-                        navController.navigate("cast/$mediaType/$movieId?movieTitle=$movieTitle")
+                        navController.navigate("cast/${mediaType.value}/$movieId?movieTitle=$movieTitle")
                     },
                     onCastMemberClick = { personId ->
                         navController.navigate("cast_member/$personId")
@@ -284,7 +300,7 @@ fun AppNavigation(
                     }
                 )
             ) { backStackEntry ->
-                val mediaType = backStackEntry.arguments?.getString("mediaType") ?: "movie"
+                val mediaType = MediaType.fromValue(backStackEntry.arguments?.getString("mediaType") ?: "movie")
                 val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
                 val movieTitle = backStackEntry.arguments?.getString("movieTitle") ?: ""
                 CastScreen(
@@ -313,7 +329,7 @@ fun AppNavigation(
             }
 
             composable("search_screen") {
-                com.depi.moviex.ui.theme.screens.home.SearchScreen(
+                SearchScreen(
                     onMovieClick = { movieId, mediaType ->
                         navController.navigate("movie_detail/$mediaType/$movieId")
                     }
@@ -327,8 +343,7 @@ fun AppNavigation(
                 )
             ) { backStackEntry ->
                 val categoryTitle = backStackEntry.arguments?.getString("categoryTitle") ?: ""
-
-                com.depi.moviex.ui.theme.screens.home.components.SeeAllScreen(
+                SeeAllScreen(
                     categoryTitle = categoryTitle,
                     onBackClick = { navController.popBackStack() },
                     onMovieClick = { movieId, mediaType ->

@@ -3,6 +3,7 @@ package com.depi.moviex.ui.theme.screens.cast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.movie_detail.domain.models.Cast
 import com.depi.moviex.movie_detail.domain.repository.MovieDetailRepository
 import com.depi.moviex.utils.collectAndHandle
@@ -26,7 +27,7 @@ class CastViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val movieId: Int = checkNotNull(savedStateHandle["movieId"])
-    private val mediaType: String = savedStateHandle["mediaType"] ?: "movie"
+    private val mediaType: MediaType = MediaType.fromValue(savedStateHandle["mediaType"] ?: "movie")
 
     private val _castState = MutableStateFlow(CastState())
     val castState = _castState.asStateFlow()
@@ -35,7 +36,7 @@ class CastViewModel @Inject constructor(
         fetchCast(movieId, mediaType)
     }
 
-    private fun fetchCast(movieId: Int, mediaType: String) = viewModelScope.launch {
+    private fun fetchCast(movieId: Int, mediaType: MediaType) = viewModelScope.launch {
         repository.fetchDetail(movieId, mediaType).collectAndHandle(
             onError = { error ->
                 _castState.update {

@@ -3,6 +3,7 @@ package com.depi.moviex.ui.theme.screens.moviedetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.utils.Response
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
@@ -20,7 +21,7 @@ data class MovieDetailState(
     val videos: List<Video> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val mediaType: String = "movie"
+    val mediaType: MediaType = MediaType.MOVIE
 )
 
 @HiltViewModel
@@ -30,7 +31,7 @@ class MovieDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val movieId: Int = checkNotNull(savedStateHandle["movieId"])
-    private val mediaType: String = savedStateHandle["mediaType"] ?: "movie"
+    private val mediaType: MediaType = MediaType.fromValue(savedStateHandle["mediaType"] ?: "movie")
 
     private val _movieDetailState = MutableStateFlow(MovieDetailState(mediaType = mediaType))
     val movieDetailState = _movieDetailState.asStateFlow()
@@ -40,7 +41,7 @@ class MovieDetailViewModel @Inject constructor(
         fetchVideos(movieId, mediaType)
     }
 
-    private fun fetchDetail(movieId: Int, mediaType: String) = viewModelScope.launch {
+    private fun fetchDetail(movieId: Int, mediaType: MediaType) = viewModelScope.launch {
         repository.fetchDetail(movieId, mediaType).collectAndHandle(
             onError = { error ->
                 _movieDetailState.update {
@@ -59,7 +60,7 @@ class MovieDetailViewModel @Inject constructor(
         }
     }
 
-    private fun fetchVideos(movieId: Int, mediaType: String) = viewModelScope.launch {
+    private fun fetchVideos(movieId: Int, mediaType: MediaType) = viewModelScope.launch {
         repository.fetchVideos(movieId, mediaType).collectAndHandle(
             onError = { },
             onLoading = { }

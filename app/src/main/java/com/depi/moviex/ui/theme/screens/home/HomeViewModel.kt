@@ -3,6 +3,7 @@ package com.depi.moviex.ui.theme.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depi.moviex.movie.domain.models.Movie
+import com.depi.moviex.movie.domain.models.MovieCategory
 import com.depi.moviex.movie.domain.repository.MovieRepository
 import com.depi.moviex.utils.collectAndHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,6 @@ data class HomeState(
     val isLoading: Boolean = false
 )
 
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: MovieRepository,
@@ -33,93 +33,30 @@ class HomeViewModel @Inject constructor(
     val homeState = _homeState.asStateFlow()
 
     init {
-        fetchDiscoverMovie()
-        fetchTrendingMovie()
-        fetchTvShows()
-        fetchActionMovies()
-        fetchDramaMovies()
-        fetchComedyMovies()
+        MovieCategory.entries.forEach { fetchCategory(it) }
     }
 
-
-    private fun fetchDiscoverMovie() = viewModelScope.launch {
-        repository.fetchDiscoverMovies().collectAndHandle(
+    private fun fetchCategory(category: MovieCategory) = viewModelScope.launch {
+        repository.fetchMovies(category).collectAndHandle(
             onError = { error ->
-                _homeState.update {
-                    it.copy(isLoading = false, error = error?.message)
-                }
+                _homeState.update { it.copy(isLoading = false, error = error?.message) }
             },
             onLoading = {
-                _homeState.update {
-                    it.copy(isLoading = true, error = null)
-                }
+                _homeState.update { it.copy(isLoading = true, error = null) }
             }
-        ) { movie ->
-            _homeState.update {
-                it.copy(isLoading = false, error = null, discoverMovies = movie)
+        ) { movies ->
+            _homeState.update { state ->
+                state.copy(
+                    isLoading = false,
+                    error = null,
+                    discoverMovies = if (category == MovieCategory.DISCOVER) movies else state.discoverMovies,
+                    trendingMovies = if (category == MovieCategory.TRENDING) movies else state.trendingMovies,
+                    tvShows = if (category == MovieCategory.TV_SHOWS) movies else state.tvShows,
+                    actionMovies = if (category == MovieCategory.ACTION) movies else state.actionMovies,
+                    dramaMovies = if (category == MovieCategory.DRAMA) movies else state.dramaMovies,
+                    comedyMovies = if (category == MovieCategory.COMEDY) movies else state.comedyMovies,
+                )
             }
-        }
-    }
-    private fun fetchTrendingMovie() = viewModelScope.launch {
-        repository.fetchTrendingMovies().collectAndHandle(
-            onError = { error ->
-                _homeState.update {
-                    it.copy(isLoading = false, error = error?.message)
-                }
-            },
-            onLoading = {
-                _homeState.update {
-                    it.copy(isLoading = true, error = null)
-                }
-            }
-        ) { movie ->
-            _homeState.update {
-                it.copy(isLoading = false, error = null, trendingMovies = movie)
-            }
-        }
-    }
-
-    private fun fetchTvShows() = viewModelScope.launch {
-        repository.fetchTvShows().collectAndHandle(
-            onError = { error ->
-                _homeState.update { it.copy(error = error?.message) }
-            },
-            onLoading = { }
-        ) { movie ->
-            _homeState.update { it.copy(tvShows = movie) }
-        }
-    }
-
-    private fun fetchActionMovies() = viewModelScope.launch {
-        repository.fetchActionMovies().collectAndHandle(
-            onError = { error ->
-                _homeState.update { it.copy(error = error?.message) }
-            },
-            onLoading = { }
-        ) { movie ->
-            _homeState.update { it.copy(actionMovies = movie) }
-        }
-    }
-
-    private fun fetchDramaMovies() = viewModelScope.launch {
-        repository.fetchDramaMovies().collectAndHandle(
-            onError = { error ->
-                _homeState.update { it.copy(error = error?.message) }
-            },
-            onLoading = { }
-        ) { movie ->
-            _homeState.update { it.copy(dramaMovies = movie) }
-        }
-    }
-
-    private fun fetchComedyMovies() = viewModelScope.launch {
-        repository.fetchComedyMovies().collectAndHandle(
-            onError = { error ->
-                _homeState.update { it.copy(error = error?.message) }
-            },
-            onLoading = { }
-        ) { movie ->
-            _homeState.update { it.copy(comedyMovies = movie) }
         }
     }
 }

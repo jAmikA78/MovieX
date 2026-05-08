@@ -3,8 +3,6 @@ package com.depi.moviex.ui.theme.screens.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Email
@@ -52,62 +52,68 @@ fun ProfileScreen(
     isDarkMode: Boolean = true,
     onThemeChange: (Boolean) -> Unit = {},
     onSignOut: () -> Unit = {},
+    username: String? = null,
     isGuest: Boolean = false,
-    onLoginClick: () -> Unit = {}
+    onLoginClick: () -> Unit = {},
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 24.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
         ) {
             Text(
                 text = "Profile",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 50.dp, bottom = 24.dp)
+                modifier = Modifier.padding(top = 50.dp, bottom = 24.dp),
             )
 
             Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .align(Alignment.CenterHorizontally),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(PrimaryRed)
+                        .align(Alignment.CenterHorizontally),
+                contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(48.dp)
+                Text(
+                    text = (username?.firstOrNull()?.uppercase() ?: "?"),
+                    color = Color.White,
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "MovieX User",
+                text = if (isGuest) "Guest" else (username ?: "MovieX User"),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
             )
 
-            Text(
-                text = "user@moviex.com",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+            if (!isGuest && username != null) {
+                Text(
+                    text = "@$username",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -119,40 +125,34 @@ fun ProfileScreen(
                     Switch(
                         checked = isDarkMode,
                         onCheckedChange = { onThemeChange(it) },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = PrimaryRed,
-                            checkedTrackColor = PrimaryRed.copy(alpha = 0.5f)
-                        )
+                        colors =
+                            SwitchDefaults.colors(
+                                checkedThumbColor = PrimaryRed,
+                                checkedTrackColor = PrimaryRed.copy(alpha = 0.5f),
+                            ),
                     )
-                }
+                },
             )
 
             MenuItemRow(
                 icon = Icons.Default.Notifications,
                 title = "Notifications",
                 subtitle = "Manage notification preferences",
-                onClick = { }
-            )
-
-            MenuItemRow(
-                icon = Icons.Default.Info,
-                title = "About",
-                subtitle = "App version 1.0.0",
-                onClick = { }
+                onClick = { },
             )
 
             MenuItemRow(
                 icon = Icons.Default.Email,
                 title = "Support",
                 subtitle = "Contact us for help or feedback",
-                onClick = { }
+                onClick = { },
             )
 
             MenuItemRow(
                 icon = Icons.Default.Person,
                 title = "Developers",
                 subtitle = "Meet the team behind MovieX",
-                onClick = { }
+                onClick = { },
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -163,7 +163,7 @@ fun ProfileScreen(
                     title = "Login",
                     subtitle = "Sign in to your account",
                     titleColor = PrimaryRed,
-                    onClick = onLoginClick
+                    onClick = onLoginClick,
                 )
             } else {
                 MenuItemRow(
@@ -171,9 +171,16 @@ fun ProfileScreen(
                     title = "Sign Out",
                     subtitle = "Sign out of your account",
                     titleColor = PrimaryRed,
-                    onClick = { showLogoutDialog = true }
+                    onClick = { showLogoutDialog = true },
                 )
             }
+
+            MenuItemRow(
+                icon = Icons.Default.Info,
+                title = "About",
+                subtitle = "App version 1.0.0",
+                onClick = { },
+            )
 
             Spacer(modifier = Modifier.height(25.dp))
         }
@@ -188,8 +195,7 @@ fun ProfileScreen(
             onConfirm = {
                 showLogoutDialog = false
                 onSignOut()
-            }
+            },
         )
     }
 }
-

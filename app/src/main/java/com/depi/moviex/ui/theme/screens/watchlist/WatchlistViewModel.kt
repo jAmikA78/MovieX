@@ -62,14 +62,21 @@ class WatchlistViewModel @Inject constructor(
         }
     }
 
-    suspend fun addToWatchlist(movie: com.depi.moviex.movie.domain.models.Movie, category: String = "Trending") {
+    suspend fun addToWatchlist(movie: com.depi.moviex.movie.domain.models.Movie, category: String = CATEGORY_TRENDING) {
         val entity = movie.toWatchlistEntity(category)
         watchlistDao.addToWatchlist(entity)
     }
 
     suspend fun removeFromWatchlist(movie: com.depi.moviex.movie.domain.models.Movie) {
-        val entity = movie.toWatchlistEntity("")
+        val entity = movie.toWatchlistEntity(CATEGORY_REMOVE)
         watchlistDao.removeFromWatchlist(entity)
+    }
+
+    companion object {
+        const val CATEGORY_TRENDING = "Trending"
+        const val CATEGORY_DETAIL = "Detail"
+        const val CATEGORY_SEARCH = "Search"
+        const val CATEGORY_REMOVE = ""
     }
 
     fun isInWatchlist(movieId: Int): Flow<Boolean> {

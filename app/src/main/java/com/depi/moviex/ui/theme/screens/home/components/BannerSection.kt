@@ -66,7 +66,7 @@ fun FeaturedBanner(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(24.dp))
-                    .clickable { onMovieClick(movie.id, movie.mediaType) }
+                    .clickable { onMovieClick(movie.id, movie.mediaType.value) }
             ) {
 
                 AsyncImage(

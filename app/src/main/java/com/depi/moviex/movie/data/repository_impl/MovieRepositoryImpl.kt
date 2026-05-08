@@ -8,8 +8,8 @@ import com.depi.moviex.movie.data.paging.MoviePagingSource
 import com.depi.moviex.movie.data.remote.api.MovieApiService
 import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
+import com.depi.moviex.movie.domain.models.MovieCategory
 import com.depi.moviex.movie.domain.repository.MovieRepository
-import com.depi.moviex.movie_detail.data.remote.models.MovieResponse
 import com.depi.moviex.utils.Response
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -19,9 +19,14 @@ class MovieRepositoryImpl(
     private val movieApiService: MovieApiService,
     private val apiMapper: ApiMapper<List<Movie>, MovieDto>
 ) : MovieRepository {
-    override fun fetchDiscoverMovies(): Flow<Response<List<Movie>>> = flow {
+
+    override fun fetchMovies(category: MovieCategory): Flow<Response<List<Movie>>> = flow {
         emit(Response.Loading())
-        val movieDto = movieApiService.fetchDiscoverMovies()
+        val movieDto = when (category) {
+            MovieCategory.TRENDING -> movieApiService.fetchTrendingMovies()
+            MovieCategory.TV_SHOWS -> movieApiService.fetchTvShows()
+            else -> movieApiService.fetchDiscoverMovies(genreId = category.genreId)
+        }
         apiMapper.mapToDomain(movieDto).apply {
             emit(Response.Success(this))
         }
@@ -29,71 +34,14 @@ class MovieRepositoryImpl(
         emit(Response.Error(e))
     }
 
-    override fun fetchTrendingMovies(): Flow<Response<List<Movie>>> = flow {
-        emit(Response.Loading())
-        val movieDto = movieApiService.fetchTrendingMovies()
-        apiMapper.mapToDomain(movieDto).apply {
-            emit(Response.Success(this))
-        }
-    }.catch { e ->
-        emit(Response.Error(e))
-    }
-
-    override fun fetchTvShows(): Flow<Response<List<Movie>>> = flow {
-        emit(Response.Loading())
-        val movieDto = movieApiService.fetchTvShows()
-        apiMapper.mapToDomain(movieDto).apply {
-            emit(Response.Success(this))
-        }
-    }.catch { e ->
-        emit(Response.Error(e))
-    }
-
-    override fun fetchActionMovies(): Flow<Response<List<Movie>>> = flow {
-        emit(Response.Loading())
-        val movieDto = movieApiService.fetchActionMovies()
-        apiMapper.mapToDomain(movieDto).apply {
-            emit(Response.Success(this))
-        }
-    }.catch { e ->
-        emit(Response.Error(e))
-    }
-
-    override fun fetchDramaMovies(): Flow<Response<List<Movie>>> = flow {
-        emit(Response.Loading())
-        val movieDto = movieApiService.fetchDramaMovies()
-        apiMapper.mapToDomain(movieDto).apply {
-            emit(Response.Success(this))
-        }
-    }.catch { e ->
-        emit(Response.Error(e))
-    }
-
-    override fun fetchComedyMovies(): Flow<Response<List<Movie>>> = flow {
-        emit(Response.Loading())
-        val movieDto = movieApiService.fetchComedyMovies()
-        apiMapper.mapToDomain(movieDto).apply {
-            emit(Response.Success(this))
-        }
-    }.catch { e ->
-        emit(Response.Error(e))
-    }
-
-    override suspend fun searchMovies(query: String): Result<MovieResponse> {
-        return try {
-            val response = movieApiService.searchMovies(query = query)
-            Result.success(response)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    override suspend fun searchMovies(query: String): List<Movie> {
+        val response = movieApiService.searchMovies(query = query)
+        return apiMapper.mapToDomain(response)
     }
 
     override fun fetchTrendingMoviesPaged(category: String): Flow<PagingData<Movie>> {
         return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
-            ),
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             pagingSourceFactory = {
                 MoviePagingSource(movieApiService, apiMapper, category)
             }

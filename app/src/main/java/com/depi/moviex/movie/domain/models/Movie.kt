@@ -1,5 +1,7 @@
 package com.depi.moviex.movie.domain.models
 
+import com.depi.moviex.common.MediaType
+
 data class Movie(
     val backdropPath: String,
     val genreIds: List<String>,
@@ -14,5 +16,5 @@ data class Movie(
     val voteAverage: Double,
     val voteCount: Int,
     val video: Boolean,
-    val mediaType: String = "movie",
+    val mediaType: MediaType = MediaType.MOVIE,
 )

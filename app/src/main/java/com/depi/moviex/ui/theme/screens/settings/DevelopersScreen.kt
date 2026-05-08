@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depi.moviex.ui.theme.PrimaryRed
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
@@ -50,14 +52,14 @@ fun openUrl(context: Context, url: String) {
 @Composable
 fun DevelopersScreen(onBack: () -> Unit) {
     val developers = listOf(
-        Developer("Ahmed Mohamed",
-            "Android Developer",
+        Developer(stringResource(R.string.dev_ahmed_name),
+            stringResource(R.string.dev_ahmed_role),
             "https://github.com/ahmedalktatny5-creator/Ahmed-Alktatney",
             "https://www.linkedin.com/in/ahmed-alktatney-0a5983357/",
             com.depi.moviex.R.drawable.dev_ahmed),
 
-        Developer("Ahmed Ibrahim",
-            "Android Developer",
+        Developer(stringResource(R.string.dev_ahmed2_name),
+            stringResource(R.string.dev_ahmed2_role),
             "github.com/jAmikA78",
             "https://www.linkedin.com/in/-ahmed-ibrahim-abd-elghany/",
             com.depi.moviex.R.drawable.dev_jamika)
@@ -75,12 +77,12 @@ fun DevelopersScreen(onBack: () -> Unit) {
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.back),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Text(
-                    text = "Developers",
+                    text = stringResource(R.string.developers_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -143,7 +145,7 @@ fun DeveloperCard(developer: Developer) {
 
                     Icon(
                         painter = painterResource(id = com.depi.moviex.R.drawable.ic_github),
-                        contentDescription = "GitHub",
+                        contentDescription = stringResource(R.string.github),
                         tint = Color.White,
                         modifier = Modifier
                             .size(24.dp)
@@ -155,7 +157,7 @@ fun DeveloperCard(developer: Developer) {
 
                     Icon(
                         painter = painterResource(id = com.depi.moviex.R.drawable.ic_linkedin),
-                        contentDescription = "LinkedIn",
+                        contentDescription = stringResource(R.string.linkedin),
                         tint = Color(0xFF0A66C2),
                         modifier = Modifier
                             .size(24.dp)

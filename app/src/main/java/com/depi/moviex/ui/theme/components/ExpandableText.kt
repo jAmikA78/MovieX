@@ -16,20 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.depi.moviex.ui.theme.PrimaryRed
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun ExpandableText(
     text: String,
     modifier: Modifier = Modifier,
     maxLines: Int = 4,
-    emptyMessage: String = "No content available.",
+    emptyMessage: String = "",
     expandThreshold: Int = 150
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         Text(
-            text = text.ifEmpty { emptyMessage },
+            text = text.ifEmpty { emptyMessage.ifEmpty { stringResource(R.string.no_content_available) } },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
             maxLines = if (expanded) Int.MAX_VALUE else maxLines,
@@ -42,7 +44,7 @@ fun ExpandableText(
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(
-                    text = if (expanded) "Show Less" else "Show More",
+                    text = if (expanded) stringResource(R.string.show_less) else stringResource(R.string.show_more),
                     color = PrimaryRed,
                     style = MaterialTheme.typography.labelMedium
                 )

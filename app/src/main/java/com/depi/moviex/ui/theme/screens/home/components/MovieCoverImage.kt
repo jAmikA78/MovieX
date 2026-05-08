@@ -36,6 +36,8 @@ import coil.request.ImageRequest
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun MovieCoverImage(
@@ -85,7 +87,7 @@ fun MovieCoverImage(
         ) {
             Icon(
                 imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = "Toggle Watchlist",
+                contentDescription = stringResource(R.string.toggle_watchlist),
                 tint = if (isInWatchlist) PrimaryRed else Color.White,
                 modifier = Modifier.padding(4.dp)
             )
@@ -115,8 +117,8 @@ fun MovieCoverImage(
     if (showRemoveDialog) {
         AlertDialog(
             onDismissRequest = { showRemoveDialog = false },
-            title = { Text("Remove from Watchlist") },
-            text = { Text("Are you sure you want to remove \"${movie.title}\" from your watchlist?") },
+            title = { Text(stringResource(R.string.remove_from_watchlist)) },
+            text = { Text(stringResource(R.string.remove_confirm_text, movie.title)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -124,12 +126,12 @@ fun MovieCoverImage(
                         showRemoveDialog = false
                     }
                 ) {
-                    Text("Remove", color = PrimaryRed)
+                    Text(stringResource(R.string.remove), color = PrimaryRed)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showRemoveDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
             containerColor = MaterialTheme.colorScheme.surface,

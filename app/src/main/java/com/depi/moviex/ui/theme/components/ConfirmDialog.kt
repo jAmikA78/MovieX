@@ -6,12 +6,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import com.depi.moviex.ui.theme.PrimaryRed
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun ConfirmDialog(
     title: String,
     text: String,
-    confirmLabel: String = "Confirm",
+    confirmLabel: String = "",
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -21,12 +23,12 @@ fun ConfirmDialog(
         text = { Text(text) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(confirmLabel, color = PrimaryRed)
+                Text(confirmLabel.ifEmpty { stringResource(R.string.confirm) }, color = PrimaryRed)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,

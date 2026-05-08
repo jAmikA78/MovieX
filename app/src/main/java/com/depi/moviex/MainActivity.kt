@@ -27,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,9 +52,13 @@ import com.depi.moviex.ui.theme.screens.splash.SplashScreen
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.appcompat.app.AppCompatActivity
+import com.depi.moviex.ui.theme.screens.settings.DevelopersScreen
+import com.depi.moviex.ui.theme.screens.settings.SupportScreen
+
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @Inject lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,10 +78,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
-    object Home : BottomNavItem("home", Icons.Default.Home, "Home")
-    object Watchlist : BottomNavItem("watchlist", Icons.AutoMirrored.Filled.List, "Watchlist")
-    object Profile : BottomNavItem("profile", Icons.Default.Person, "Profile")
+sealed class BottomNavItem(val route: String, val icon: ImageVector, @StringRes val labelResId: Int) {
+    object Home : BottomNavItem("home", Icons.Default.Home, R.string.home_tab)
+    object Watchlist : BottomNavItem("watchlist", Icons.AutoMirrored.Filled.List, R.string.watchlist_title)
+    object Profile : BottomNavItem("profile", Icons.Default.Person, R.string.profile)
 }
 
 val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Watchlist, BottomNavItem.Profile)
@@ -122,8 +128,8 @@ fun AppNavigation(
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) },
+                            icon = { Icon(item.icon, contentDescription = stringResource(item.labelResId)) },
+                            label = { Text(stringResource(item.labelResId)) },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = PrimaryRed,
                                 selectedTextColor = PrimaryRed,
@@ -227,17 +233,16 @@ fun AppNavigation(
                     onThemeChange = onThemeChange,
                     username = authRepository.getRegisteredUsername(),
                     isGuest = authRepository.isGuest(),
+                    navController = navController,
                     onSignOut = {
                         authRepository.logout()
                         navController.navigate("login") {
                             popUpTo("home") { inclusive = true }
-                            launchSingleTop = true
                         }
                     },
                     onLoginClick = {
                         navController.navigate("login") {
                             popUpTo("home") { inclusive = true }
-                            launchSingleTop = true
                         }
                     }
                 )
@@ -260,14 +265,10 @@ fun AppNavigation(
                 )
             }
             composable("support") {
-                com.depi.moviex.ui.theme.screens.settings.SupportScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                SupportScreen(onBack = { navController.popBackStack() })
             }
             composable("developers") {
-                com.depi.moviex.ui.theme.screens.settings.DevelopersScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                DevelopersScreen(onBack = { navController.popBackStack() })
             }
 
             composable(

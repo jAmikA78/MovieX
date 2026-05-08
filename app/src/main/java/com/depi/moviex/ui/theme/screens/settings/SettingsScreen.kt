@@ -44,6 +44,12 @@ import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.components.ConfirmDialog
 import com.depi.moviex.ui.theme.components.MenuItemRow
 import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
+import androidx.core.os.LocaleListCompat
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.material.icons.filled.Language
+
 
 @Composable
 fun SettingsScreen(
@@ -73,7 +79,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Settings",
+                    text = stringResource(R.string.settings),
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
@@ -85,8 +91,8 @@ fun SettingsScreen(
 
             MenuItemRow(
                 icon = Icons.Default.Settings,
-                title = "Dark Mode",
-                subtitle = "Enable dark theme",
+                title = stringResource(R.string.dark_mode),
+                subtitle = stringResource(R.string.enable_dark_theme),
                 trailing = {
                     Switch(
                         checked = isDarkMode,
@@ -100,31 +106,42 @@ fun SettingsScreen(
             )
 
             MenuItemRow(
+                icon = Icons.Default.Language,
+                title = stringResource(R.string.arabic),
+                subtitle = stringResource(R.string.arabic_subtitle),
+                onClick = {
+                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("ar")
+                    AppCompatDelegate.setApplicationLocales(appLocale)
+                }
+            )
+
+
+            MenuItemRow(
                 icon = Icons.Default.Notifications,
-                title = "Notifications",
-                subtitle = "Manage notification preferences",
+                title = stringResource(R.string.notifications),
+                subtitle = stringResource(R.string.notification_preferences),
                 onClick = { }
             )
 
             MenuItemRow(
                 icon = Icons.Default.Email,
-                title = "Support",
-                subtitle = "Contact us for help or feedback",
+                title = stringResource(R.string.support),
+                subtitle = stringResource(R.string.contact_support),
                 onClick = { onSupportClick() }
 
             )
 
             MenuItemRow(
                 icon = Icons.Default.Person,
-                title = "Developers",
-                subtitle = "Meet the team behind MovieX",
+                title = stringResource(R.string.developers),
+                subtitle = stringResource(R.string.meet_team),
                 onClick = { onDevelopersClick() }
             )
 
             MenuItemRow(
                 icon = Icons.Default.Info,
-                title = "About",
-                subtitle = "App version 1.0.0",
+                title = stringResource(R.string.about),
+                subtitle = stringResource(R.string.app_version),
                 onClick = { }
             )
 
@@ -133,8 +150,8 @@ fun SettingsScreen(
 
             MenuItemRow(
                 icon = Icons.AutoMirrored.Filled.ExitToApp,
-                title = "Sign Out",
-                subtitle = "Sign out of your account",
+                title = stringResource(R.string.sign_out),
+                subtitle = stringResource(R.string.sign_out_subtitle),
                 titleColor = PrimaryRed,
                 onClick = { showLogoutDialog = true }
             )
@@ -145,9 +162,9 @@ fun SettingsScreen(
 
     if (showLogoutDialog) {
         ConfirmDialog(
-            title = "Sign Out",
-            text = "Are you sure you want to sign out?",
-            confirmLabel = "Sign Out",
+            title = stringResource(R.string.sign_out_confirm_title),
+            text = stringResource(R.string.sign_out_confirm_text),
+            confirmLabel = stringResource(R.string.sign_out_confirm_label),
             onDismiss = { showLogoutDialog = false },
             onConfirm = {
                 loginViewModel.logout()

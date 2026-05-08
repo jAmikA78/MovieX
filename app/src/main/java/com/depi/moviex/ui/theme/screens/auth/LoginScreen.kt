@@ -25,6 +25,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.auth.domain.models.LoginState
 import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Preview
 @Composable
@@ -77,7 +79,7 @@ fun LoginScreen(
         ) {
 
             Text(
-                text = "Login",
+                text = stringResource(R.string.login_title),
                 color = Color.White,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
@@ -88,8 +90,8 @@ fun LoginScreen(
             MovieXTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = "Username",
-                placeholder = "Type your username",
+                label = stringResource(R.string.label_name),
+                placeholder = stringResource(R.string.hint_username),
                 icon = Icons.Default.Person
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -98,8 +100,8 @@ fun LoginScreen(
             MovieXTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Password",
-                placeholder = "Type your password",
+                label = stringResource(R.string.label_password),
+                placeholder = stringResource(R.string.hint_password),
                 icon = Icons.Default.Lock,
                 isPassword = true
             )
@@ -140,7 +142,7 @@ fun LoginScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "LOGIN",
+                        text = stringResource(R.string.btn_login_caps),
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
@@ -150,7 +152,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             Text(
-                text = "Or Sign Up Using",
+                text = stringResource(R.string.or_signup_using),
                 color = Color.White.copy(alpha = 0.5f),
                 modifier = Modifier.padding(vertical = 16.dp)
             )
@@ -165,7 +167,7 @@ fun LoginScreen(
                 border = BorderStroke(2.dp, Color(0xFFE54E3C))
             ) {
                 Text(
-                    text = "CONTINUE AS GUEST",
+                    text = stringResource(R.string.continue_as_guest),
                     color = Color(0xFFE54E3C),//guest color
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -178,7 +180,7 @@ fun LoginScreen(
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)
         ) {
             Text(
-                text = "SIGN UP",
+                text = stringResource(R.string.btn_signup_caps),
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )

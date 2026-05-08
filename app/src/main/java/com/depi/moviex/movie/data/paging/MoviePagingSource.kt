@@ -7,11 +7,13 @@ import com.depi.moviex.movie.data.remote.api.MovieApiService
 import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie.domain.models.MovieCategory
+import com.depi.moviex.utils.K
 
 class MoviePagingSource(
     private val movieApiService: MovieApiService,
     private val apiMapper: ApiMapper<List<Movie>, MovieDto>,
-    private val category: String
+    private val category: String,
+    private val languageCode: String = K.getLanguageCode()
 ) : PagingSource<Int, Movie>() {
 
     private val categoryMap = MovieCategory.entries.associateBy { it.displayName }
@@ -28,9 +30,9 @@ class MoviePagingSource(
         return try {
             val movieCategory = categoryMap[category]
             val response = when (movieCategory) {
-                MovieCategory.TRENDING -> movieApiService.fetchTrendingMovies(page = page)
-                MovieCategory.TV_SHOWS -> movieApiService.fetchTvShows(page = page)
-                else -> movieApiService.fetchDiscoverMovies(genreId = movieCategory?.genreId, page = page)
+                MovieCategory.TRENDING -> movieApiService.fetchTrendingMovies(page = page, language = languageCode)
+                MovieCategory.TV_SHOWS -> movieApiService.fetchTvShows(page = page, language = languageCode)
+                else -> movieApiService.fetchDiscoverMovies(genreId = movieCategory?.genreId, page = page, language = languageCode)
             }
 
             val movies = apiMapper.mapToDomain(response)

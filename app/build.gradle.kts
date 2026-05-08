@@ -130,4 +130,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation("app.cash.turbine:turbine:1.1.0")
+
+    // Language
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.compose.material:material-icons-extended")
 }

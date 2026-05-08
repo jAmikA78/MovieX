@@ -10,6 +10,7 @@ import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie.domain.models.MovieCategory
 import com.depi.moviex.movie.domain.repository.MovieRepository
+import com.depi.moviex.utils.K
 import com.depi.moviex.utils.Response
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -22,10 +23,11 @@ class MovieRepositoryImpl(
 
     override fun fetchMovies(category: MovieCategory): Flow<Response<List<Movie>>> = flow {
         emit(Response.Loading())
+        val language = K.getLanguageCode()
         val movieDto = when (category) {
-            MovieCategory.TRENDING -> movieApiService.fetchTrendingMovies()
-            MovieCategory.TV_SHOWS -> movieApiService.fetchTvShows()
-            else -> movieApiService.fetchDiscoverMovies(genreId = category.genreId)
+            MovieCategory.TRENDING -> movieApiService.fetchTrendingMovies(language = language)
+            MovieCategory.TV_SHOWS -> movieApiService.fetchTvShows(language = language)
+            else -> movieApiService.fetchDiscoverMovies(genreId = category.genreId, language = language)
         }
         apiMapper.mapToDomain(movieDto).apply {
             emit(Response.Success(this))
@@ -35,7 +37,7 @@ class MovieRepositoryImpl(
     }
 
     override suspend fun searchMovies(query: String): List<Movie> {
-        val response = movieApiService.searchMovies(query = query)
+        val response = movieApiService.searchMovies(query = query, language = K.getLanguageCode())
         return apiMapper.mapToDomain(response)
     }
 
@@ -43,7 +45,7 @@ class MovieRepositoryImpl(
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             pagingSourceFactory = {
-                MoviePagingSource(movieApiService, apiMapper, category)
+                MoviePagingSource(movieApiService, apiMapper, category, K.getLanguageCode())
             }
         ).flow
     }

@@ -24,6 +24,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.ui.theme.screens.auth.viewModel.SignUpState
 import com.depi.moviex.ui.theme.screens.auth.viewModel.SignUpViewModel
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Preview
 @Composable
@@ -75,7 +77,7 @@ fun SignUpScreen(
             modifier = Modifier.fillMaxWidth().align(Alignment.Center)
         ) {
             Text(
-                text = "Sign Up",
+                text = stringResource(R.string.btn_signup),
                 color = Color.White,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
@@ -85,8 +87,8 @@ fun SignUpScreen(
             AuthTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = "Username",
-                placeholder = "Choose a username",
+                label = stringResource(R.string.label_name),
+                placeholder = stringResource(R.string.hint_choose_username),
                 icon = Icons.Default.Person
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -94,8 +96,8 @@ fun SignUpScreen(
             AuthTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = "Email",
-                placeholder = "Enter your email",
+                label = stringResource(R.string.label_email),
+                placeholder = stringResource(R.string.hint_email),
                 icon = Icons.Default.Email
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -103,8 +105,8 @@ fun SignUpScreen(
             AuthTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Password",
-                placeholder = "Create a password",
+                label = stringResource(R.string.label_password),
+                placeholder = stringResource(R.string.hint_create_password),
                 icon = Icons.Default.Lock,
                 isPassword = true
             )
@@ -113,8 +115,8 @@ fun SignUpScreen(
             AuthTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = "Confirm Password",
-                placeholder = "Confirm your password",
+                label = stringResource(R.string.label_confirm_password),
+                placeholder = stringResource(R.string.hint_confirm_password),
                 icon = Icons.Default.Lock,
                 isPassword = true
             )
@@ -153,7 +155,7 @@ fun SignUpScreen(
                         )
                     } else {
                         Text(
-                            text = "SIGN UP",
+                            text = stringResource(R.string.btn_signup_caps),
                             color = Color.White,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
@@ -174,8 +176,7 @@ fun SignUpScreen(
                 .padding(bottom = 16.dp)
         ) {
             Text(
-                text = "Already have an account? Login" +
-                        "\nOr continue as GUEST",
+                text = stringResource(R.string.already_have_account_login),
                 color = Color.White,
                 fontWeight = FontWeight.Medium
             )

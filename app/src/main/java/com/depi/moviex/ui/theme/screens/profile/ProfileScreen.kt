@@ -1,5 +1,6 @@
 package com.depi.moviex.ui.theme.screens.profile
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,8 +20,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -39,12 +42,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.LocaleListCompat
+import androidx.navigation.NavController
+import com.depi.moviex.R
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.components.ConfirmDialog
 import com.depi.moviex.ui.theme.components.MenuItemRow
+
 
 @Composable
 fun ProfileScreen(
@@ -55,8 +63,11 @@ fun ProfileScreen(
     username: String? = null,
     isGuest: Boolean = false,
     onLoginClick: () -> Unit = {},
+    navController: NavController? = null,
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    val currentLanguage = AppCompatDelegate.getApplicationLocales()[0]?.language ?: "en"
+    val isArabic = currentLanguage == "ar"
 
     Box(
         modifier =
@@ -72,7 +83,7 @@ fun ProfileScreen(
                     .verticalScroll(rememberScrollState()),
         ) {
             Text(
-                text = "Profile",
+                text = stringResource(R.string.profile),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -99,7 +110,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = if (isGuest) "Guest" else (username ?: "MovieX User"),
+                text = if (isGuest) stringResource(R.string.guest) else (username ?: stringResource(R.string.moviex_user)),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -119,8 +130,8 @@ fun ProfileScreen(
 
             MenuItemRow(
                 icon = Icons.Default.Settings,
-                title = "Dark Mode",
-                subtitle = "Enable dark theme",
+                title = stringResource(R.string.dark_mode),
+                subtitle = stringResource(R.string.enable_dark_theme),
                 trailing = {
                     Switch(
                         checked = isDarkMode,
@@ -135,24 +146,51 @@ fun ProfileScreen(
             )
 
             MenuItemRow(
+                icon = Icons.Default.Public,
+                title = stringResource(R.string.arabic),
+                subtitle = stringResource(R.string.arabic_subtitle),
+                trailing = {
+                    Switch(
+                        checked = isArabic,
+                        onCheckedChange = { checked ->
+                            val targetLang = if (checked) "ar" else "en"
+                            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(targetLang)
+                            AppCompatDelegate.setApplicationLocales(appLocale)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = PrimaryRed,
+                            checkedTrackColor = PrimaryRed.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+            )
+
+            MenuItemRow(
                 icon = Icons.Default.Notifications,
-                title = "Notifications",
-                subtitle = "Manage notification preferences",
-                onClick = { },
+                title = stringResource(R.string.notifications),
+                subtitle = stringResource(R.string.notification_preferences),
+                onClick = { }
             )
 
             MenuItemRow(
                 icon = Icons.Default.Email,
-                title = "Support",
-                subtitle = "Contact us for help or feedback",
-                onClick = { },
+                title = stringResource(R.string.support),
+                subtitle = stringResource(R.string.contact_support),
+                onClick = { navController?.navigate("support") }
             )
 
             MenuItemRow(
                 icon = Icons.Default.Person,
-                title = "Developers",
-                subtitle = "Meet the team behind MovieX",
-                onClick = { },
+                title = stringResource(R.string.developers),
+                subtitle = stringResource(R.string.meet_team),
+                onClick = { navController?.navigate("developers") }
+            )
+
+            MenuItemRow(
+                icon = Icons.Default.Info,
+                title = stringResource(R.string.about),
+                subtitle = stringResource(R.string.app_version),
+                onClick = { }
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -160,16 +198,16 @@ fun ProfileScreen(
             if (isGuest) {
                 MenuItemRow(
                     icon = Icons.Default.Person,
-                    title = "Login",
-                    subtitle = "Sign in to your account",
+                    title = stringResource(R.string.btn_login),
+                    subtitle = stringResource(R.string.login_sub_title),
                     titleColor = PrimaryRed,
                     onClick = onLoginClick,
                 )
             } else {
                 MenuItemRow(
                     icon = Icons.AutoMirrored.Filled.ExitToApp,
-                    title = "Sign Out",
-                    subtitle = "Sign out of your account",
+                    title = stringResource(R.string.sign_out),
+                    subtitle = stringResource(R.string.sign_out_subtitle),
                     titleColor = PrimaryRed,
                     onClick = { showLogoutDialog = true },
                 )
@@ -177,8 +215,8 @@ fun ProfileScreen(
 
             MenuItemRow(
                 icon = Icons.Default.Info,
-                title = "About",
-                subtitle = "App version 1.0.0",
+                title = stringResource(R.string.about),
+                subtitle = stringResource(R.string.app_version),
                 onClick = { },
             )
 
@@ -188,9 +226,9 @@ fun ProfileScreen(
 
     if (showLogoutDialog) {
         ConfirmDialog(
-            title = "Sign Out",
-            text = "Are you sure you want to sign out?",
-            confirmLabel = "Sign Out",
+            title = stringResource(R.string.sign_out_confirm_title),
+            text = stringResource(R.string.sign_out_confirm_text),
+            confirmLabel = stringResource(R.string.sign_out_confirm_label),
             onDismiss = { showLogoutDialog = false },
             onConfirm = {
                 showLogoutDialog = false

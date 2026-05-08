@@ -33,6 +33,8 @@ import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 import com.depi.moviex.utils.K
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun SearchScreen(
@@ -66,7 +68,7 @@ fun SearchScreen(
                 .focusRequester(focusRequester),
             placeholder = {
                 Text(
-                    text = "Search for movies...",
+                    text = stringResource(R.string.search_hint),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
@@ -97,7 +99,7 @@ fun SearchScreen(
         if (movies.isEmpty() && searchQuery.length > 2) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "No movies found",
+                    text = stringResource(R.string.no_movies_found),
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -184,7 +186,7 @@ fun MovieItem(
             ) {
                 Icon(
                     imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = "Toggle Watchlist",
+                    contentDescription = stringResource(R.string.toggle_watchlist),
                     tint = if (isInWatchlist) PrimaryRed else Color.White,
                     modifier = Modifier.size(18.dp)
                 )

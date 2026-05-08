@@ -27,6 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun CategoryRow(
@@ -53,7 +55,7 @@ fun CategoryRow(
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = "See All",
+                text = stringResource(R.string.see_all),
                 style = MaterialTheme.typography.bodyMedium,
                 color = PrimaryRed,
                 modifier = Modifier.clickable { onSeeAllClick(title) }

@@ -7,6 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun ErrorText(message: String?, modifier: Modifier = Modifier) {
@@ -15,7 +17,7 @@ fun ErrorText(message: String?, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = message ?: "An error occurred",
+            text = message ?: stringResource(R.string.error_occurred),
             color = MaterialTheme.colorScheme.onBackground
         )
     }

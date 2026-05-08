@@ -18,6 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.depi.moviex.ui.theme.PrimaryRed
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun StarRating(
@@ -34,7 +36,7 @@ fun StarRating(
     ) {
         Icon(
             imageVector = Icons.Filled.Star,
-            contentDescription = "Rating",
+            contentDescription = stringResource(R.string.rating),
             tint = starColor,
             modifier = Modifier.size(starSize)
         )

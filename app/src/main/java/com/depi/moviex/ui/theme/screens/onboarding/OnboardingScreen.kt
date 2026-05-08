@@ -23,6 +23,7 @@ import com.depi.moviex.ui.theme.*
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingPage
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
 
 @Preview
 @Composable
@@ -33,12 +34,11 @@ private fun OnboardingScreenPreview() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {
-    // 1. تعريف بيانات الصفحات الأربعة (ارفع الأيقونات دي لـ drawable)
     val pages = listOf(
-        OnboardingPage(R.drawable.ic_onboard_search, "Find your next movie", "Explore trending, popular, and top-rated films from around the world."),
-        OnboardingPage(R.drawable.ic_onboard_calendar, "Upcoming releases", "Track upcoming movies with a calendar view so you always know what's coming to theaters."),
-        OnboardingPage(R.drawable.ic_onboard_watchlist, "Your watchlist & history", "Save movies to watch later and keep a history of everything you've seen."),
-        OnboardingPage(R.drawable.ic_onboard_play, "Ready to explore movies?", "")
+        OnboardingPage(R.drawable.ic_onboard_search, stringResource(R.string.onboarding_title_1), stringResource(R.string.onboarding_desc_1)),
+        OnboardingPage(R.drawable.ic_onboard_calendar, stringResource(R.string.onboarding_title_2), stringResource(R.string.onboarding_desc_2)),
+        OnboardingPage(R.drawable.ic_onboard_watchlist, stringResource(R.string.onboarding_title_3), stringResource(R.string.onboarding_desc_3)),
+        OnboardingPage(R.drawable.ic_onboard_play, stringResource(R.string.onboarding_title_4), stringResource(R.string.onboarding_desc_4))
     )
 
     val pagerState = rememberPagerState(pageCount = { pages.size })
@@ -137,7 +137,7 @@ fun OnboardingBottomBar(
         // لو مش في آخر صفحة، اظهر "Skip"
         if (pagerState.currentPage < pagesSize - 1) {
             TextButton(onClick = onSkip) {
-                Text(text = "Skip", color = OnboardingIconColor, fontSize = 16.sp)
+                Text(text = stringResource(R.string.btn_skip), color = OnboardingIconColor, fontSize = 16.sp)
             }
         } else {
 
@@ -161,7 +161,7 @@ fun OnboardingBottomBar(
             contentPadding = PaddingValues(horizontal = if (isLastPage) 30.dp else 24.dp, vertical = 12.dp)
         ) {
             Text(
-                text = if (isLastPage) "Start" else "Next",
+                text = if (isLastPage) stringResource(R.string.btn_get_started) else stringResource(R.string.btn_next),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )

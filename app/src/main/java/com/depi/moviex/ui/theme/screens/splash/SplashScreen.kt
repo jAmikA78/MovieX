@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import com.airbnb.lottie.compose.*
 import com.depi.moviex.R
 import kotlinx.coroutines.delay
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
@@ -30,7 +31,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
 
     if (progress == 1f) {
         LaunchedEffect(Unit) {
-            delay(1000)
+            delay(2000)
             onTimeout()
         }
     }
@@ -55,14 +56,14 @@ fun SplashScreen(onTimeout: () -> Unit) {
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.moviex_logo),
-                    contentDescription = "MovieX Logo",
+                    contentDescription = stringResource(R.string.splash_logo_description),
                     modifier = Modifier
                         .size(150.dp)
                         .padding(bottom = 30.dp)
                 )
 
                 Text(
-                    text = "MovieX",
+                    text = stringResource(R.string.app_name),
                     color = Color(0xFFE54E3C),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
@@ -70,7 +71,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
                 )
 
                 Text(
-                    text = "Discover. Track. Never miss\na movie",
+                    text = stringResource(R.string.splash_tagline),
                     color = Color.White,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center,

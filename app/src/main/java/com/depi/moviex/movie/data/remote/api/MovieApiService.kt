@@ -12,26 +12,30 @@ interface MovieApiService {
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("include_adult") includeAdult: Boolean = false,
         @Query("with_genres") genreId: Int? = null,
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US"
     ): MovieDto
 
     @GET("trending/movie/week")
     suspend fun fetchTrendingMovies(
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US"
     ): MovieDto
 
     @GET("discover/tv")
     suspend fun fetchTvShows(
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("include_adult") includeAdult: Boolean = false,
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US"
     ): MovieDto
 
     @GET("search/movie")
     suspend fun searchMovies(
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("query") query: String,
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US"
     ): MovieDto
 }

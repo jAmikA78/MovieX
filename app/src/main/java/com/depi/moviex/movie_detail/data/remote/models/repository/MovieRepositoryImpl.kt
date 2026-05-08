@@ -7,17 +7,37 @@ import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
 import com.depi.moviex.movie_detail.data.remote.models.MovieResponse
 import com.depi.moviex.utils.Response
 import kotlinx.coroutines.flow.Flow
+import java.util.Locale
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
     private val apiService: MovieDetailApiService
 ) : MovieRepository {
+
+    private fun getLanguageCode(): String {
+        val lang = Locale.getDefault().language
+        return if (lang == "ar") "ar-SA" else "en-US"
+    }
+
+    override suspend fun searchMovies(query: String): Result<MovieResponse> {
+        return try {
+
+            val response = apiService.searchMovies(
+                query = query,
+                language = getLanguageCode()
+            )
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun fetchDiscoverMovies(): Flow<Response<List<Movie>>> {
-        TODO("Not yet implemented")
+        TODO(" language = getLanguageCode()")
     }
 
     override fun fetchTrendingMovies(): Flow<Response<List<Movie>>> {
-        TODO("Not yet implemented")
+        TODO(" language = getLanguageCode()")
     }
 
     override fun fetchTvShows(): Flow<Response<List<Movie>>> {
@@ -34,15 +54,6 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun fetchComedyMovies(): Flow<Response<List<Movie>>> {
         TODO("Not yet implemented")
-    }
-
-    override suspend fun searchMovies(query: String): Result<MovieResponse> {
-        return try {
-            val response = apiService.searchMovies(query = query)
-            Result.success(response)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
     }
 
     override fun fetchTrendingMoviesPaged(category: String): Flow<PagingData<Movie>> {

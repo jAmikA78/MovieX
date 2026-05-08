@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun BackButton(
@@ -32,7 +34,7 @@ fun BackButton(
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
+            contentDescription = stringResource(R.string.back),
             tint = iconTint
         )
     }

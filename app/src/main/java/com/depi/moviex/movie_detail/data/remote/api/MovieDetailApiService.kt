@@ -18,6 +18,7 @@ interface MovieDetailApiService {
     suspend fun fetchMovieDetail(
         @Path(MOVIE_ID) movieId:Int,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("language") language: String,
         @Query("append_to_response") appendToResponse: String = "credits,reviews,videos"
     ):MovieDetailDto
 
@@ -25,12 +26,14 @@ interface MovieDetailApiService {
     suspend fun fetchTvDetail(
         @Path(TV_ID) tvId:Int,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("language") language: String,
         @Query("append_to_response") appendToResponse: String = "credits,reviews,videos"
     ):MovieDetailDto
 
     @GET(K.MOVIE_ENDPOINT)
     suspend fun fetchMovie(
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("language") language: String,
         @Query("include_adult") includeAdult: Boolean = false
     ): MovieDto
 
@@ -38,6 +41,15 @@ interface MovieDetailApiService {
     suspend fun searchMovies(
         @Query("query") query: String,
         @Query("page") page: Int = 1,
+        @Query("language") language: String,
         @Query("api_key") apiKey: String = "b761e0b591d3d9bd52bfeb3c2aa64f80"
     ): MovieResponse
+
+    @GET("movie/popular")
+    suspend fun getPopularMovies(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+        @Query("page") page: Int
+    ): MovieResponse
+
 }

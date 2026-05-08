@@ -24,7 +24,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.depi.moviex.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,7 +44,8 @@ fun WatchlistScreen(
     onMovieClick: (id: Int, mediaType: String) -> Unit = { _, _ -> }
 ) {
     val state by watchlistViewModel.watchlistState.collectAsStateWithLifecycle()
-    var selectedCategory by remember { mutableStateOf("All") }
+    val filterAll = stringResource(R.string.filter_all)
+    var selectedCategory by remember { mutableStateOf(filterAll) }
     val scope = rememberCoroutineScope()
 
     Column(
@@ -52,7 +55,7 @@ fun WatchlistScreen(
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = "Watchlist",
+            text = stringResource(R.string.watchlist_title),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
@@ -69,7 +72,7 @@ fun WatchlistScreen(
                         selected = selectedCategory == category,
                         onClick = {
                             selectedCategory = category
-                            if (category == "All") {
+                            if (category == filterAll) {
                                 watchlistViewModel.loadWatchlistMovies()
                             } else {
                                 watchlistViewModel.loadMoviesByCategory(category)
@@ -100,7 +103,7 @@ fun WatchlistScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Your watchlist is empty",
+                        text = stringResource(R.string.watchlist_empty),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 16.sp
                     )

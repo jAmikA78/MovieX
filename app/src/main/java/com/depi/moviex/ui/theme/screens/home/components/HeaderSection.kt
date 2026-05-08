@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun HeaderSection(
@@ -22,7 +24,7 @@ fun HeaderSection(
             .fillMaxWidth()
     ) {
         Text(
-            text = "Welcome back",
+            text = stringResource(R.string.welcome_back),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )

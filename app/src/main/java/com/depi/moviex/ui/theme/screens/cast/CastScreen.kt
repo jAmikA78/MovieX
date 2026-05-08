@@ -28,6 +28,8 @@ import com.depi.moviex.ui.theme.components.ActorCard
 import com.depi.moviex.ui.theme.components.BackButton
 import com.depi.moviex.ui.theme.components.ErrorText
 import com.depi.moviex.ui.theme.components.LoadingIndicator
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun CastScreen(
@@ -93,7 +95,7 @@ private fun CastContent(
                     .padding(start = 16.dp, bottom = 16.dp)
             ) {
                 Text(
-                    text = "Cast",
+                    text = stringResource(R.string.cast_screen_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -112,7 +114,7 @@ private fun CastContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No cast information available",
+                    text = stringResource(R.string.no_cast_info),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
             }

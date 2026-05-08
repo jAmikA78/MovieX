@@ -37,6 +37,8 @@ import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 import com.depi.moviex.utils.K
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +66,7 @@ fun SeeAllScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -193,7 +195,7 @@ fun MovieGridItem(
             ) {
                 Icon(
                     imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = "Toggle Watchlist",
+                    contentDescription = stringResource(R.string.toggle_watchlist),
                     tint = if (isInWatchlist) PrimaryRed else Color.White,
                     modifier = Modifier.size(18.dp)
                 )

@@ -32,6 +32,8 @@ import com.depi.moviex.ui.theme.screens.home.components.HeaderSection
 import com.depi.moviex.ui.theme.screens.home.components.MovieCoverImage
 import com.depi.moviex.ui.theme.screens.home.components.SearchBar
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun HomeScreen(
@@ -86,12 +88,12 @@ fun HomeScreen(
             else -> {
                 CategoryRows(
                     categories = listOf(
-                        CategoryItem("Trending now", state.discoverMovies),
-                        CategoryItem("Most Watched", state.trendingMovies),
-                        CategoryItem("TV Shows", state.tvShows),
-                        CategoryItem("Action", state.actionMovies),
-                        CategoryItem("Drama", state.dramaMovies),
-                        CategoryItem("Comedy", state.comedyMovies)
+                        CategoryItem(stringResource(R.string.category_trending), state.discoverMovies),
+                        CategoryItem(stringResource(R.string.category_most_watched), state.trendingMovies),
+                        CategoryItem(stringResource(R.string.category_tv_shows), state.tvShows),
+                        CategoryItem(stringResource(R.string.category_action), state.actionMovies),
+                        CategoryItem(stringResource(R.string.category_drama), state.dramaMovies),
+                        CategoryItem(stringResource(R.string.category_comedy), state.comedyMovies)
                     ),
                     onMovieClick = onMovieClick,
                     onSeeAllClick = onSeeAllClick,

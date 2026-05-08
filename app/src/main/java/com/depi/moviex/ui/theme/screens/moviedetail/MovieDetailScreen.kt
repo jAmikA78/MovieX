@@ -72,6 +72,8 @@ import com.depi.moviex.ui.theme.components.StarRating
 import com.depi.moviex.ui.theme.screens.moviedetail.YoutubePlayer
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
 import com.depi.moviex.utils.K
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun MovieDetailScreen(
@@ -251,7 +253,7 @@ private fun MovieDetailContent(
             ) {
                 Icon(
                     imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = "Toggle Watchlist",
+                    contentDescription = stringResource(R.string.toggle_watchlist),
                     tint = if (isInWatchlist) PrimaryRed else MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
@@ -267,11 +269,11 @@ private fun MovieDetailContent(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            SectionTitle(text = "Overview", bottomSpacer = false)
+            SectionTitle(text = stringResource(R.string.overview), bottomSpacer = false)
             Spacer(modifier = Modifier.height(8.dp))
             ExpandableText(
                 text = movieDetail.overview,
-                emptyMessage = "No overview available."
+                emptyMessage = stringResource(R.string.no_overview_available)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -283,7 +285,7 @@ private fun MovieDetailContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Cast",
+                        text = stringResource(R.string.cast_label),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -292,7 +294,7 @@ private fun MovieDetailContent(
                         onClick = { onCastClick(movieDetail.id, movieDetail.title, mediaType) }
                     ) {
                         Text(
-                            text = "See All",
+                            text = stringResource(R.string.see_all),
                             color = PrimaryRed,
                             style = MaterialTheme.typography.labelMedium
                         )
@@ -327,7 +329,7 @@ private fun MovieDetailContent(
                 val keyJobs = listOf("Director", "Writer", "Producer", "Screenplay", "Original Music")
                 val filteredCrew = movieDetail.crew.filter { it.job in keyJobs }.take(5)
                 if (filteredCrew.isNotEmpty()) {
-                    SectionTitle(text = "Crew")
+                    SectionTitle(text = stringResource(R.string.crew))
                     Row(
                         modifier = Modifier.horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -347,7 +349,7 @@ private fun MovieDetailContent(
             Spacer(modifier = Modifier.height(24.dp))
 
             if (movieDetail.reviews.isNotEmpty()) {
-                SectionTitle(text = "Reviews")
+                SectionTitle(text = stringResource(R.string.reviews))
                 movieDetail.reviews.take(3).forEach { review ->
                     ReviewItem(review = review)
                     Spacer(modifier = Modifier.height(12.dp))

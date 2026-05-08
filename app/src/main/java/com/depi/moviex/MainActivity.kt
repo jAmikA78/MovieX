@@ -48,9 +48,13 @@ import com.depi.moviex.ui.theme.screens.profile.ProfileScreen
 import com.depi.moviex.ui.theme.screens.watchlist.WatchlistScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.appcompat.app.AppCompatActivity
+import com.depi.moviex.ui.theme.screens.settings.DevelopersScreen
+import com.depi.moviex.ui.theme.screens.settings.SupportScreen
+
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @Inject lateinit var authManager: AuthManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -226,17 +230,16 @@ fun AppNavigation(
                     isDarkMode = isDarkMode,
                     onThemeChange = onThemeChange,
                     isGuest = authManager.isGuest(),
+                    navController = navController,
                     onSignOut = {
                         authManager.logout()
                         navController.navigate("login") {
                             popUpTo("home") { inclusive = true }
-                            launchSingleTop = true
                         }
                     },
                     onLoginClick = {
                         navController.navigate("login") {
                             popUpTo("home") { inclusive = true }
-                            launchSingleTop = true
                         }
                     }
                 )
@@ -247,11 +250,11 @@ fun AppNavigation(
             }
 
             composable("support") {
-                // Support moved to ProfileScreen
+                SupportScreen(onBack = { navController.popBackStack() })
             }
 
             composable("developers") {
-                // Developers moved to ProfileScreen
+                DevelopersScreen(onBack = { navController.popBackStack() })
             }
 
             composable(

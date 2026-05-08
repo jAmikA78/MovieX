@@ -37,7 +37,10 @@ import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
 import com.depi.moviex.utils.K
 import androidx.compose.ui.res.stringResource
+import com.depi.moviex.LocalIsGuest
+import com.depi.moviex.LocalOnLoginClick
 import com.depi.moviex.R
+import com.depi.moviex.ui.theme.components.LoginRequiredDialog
 
 @Composable
 fun MovieCoverImage(
@@ -46,9 +49,12 @@ fun MovieCoverImage(
     onMovieClick: (Int, String) -> Unit,
     isInWatchlist: Boolean = false,
     onHeartClick: () -> Unit = {},
-    onRemoveFromWatchlist: (Movie) -> Unit = {}
+    onRemoveFromFavorite: (Movie) -> Unit = {}
 ) {
     var showRemoveDialog by remember { mutableStateOf(false) }
+    var showLoginDialog by remember { mutableStateOf(false) }
+    val isGuest = LocalIsGuest.current
+    val onLoginClick = LocalOnLoginClick.current
 
     Box(
         modifier = modifier
@@ -80,6 +86,8 @@ fun MovieCoverImage(
                 .clickable {
                     if (isInWatchlist) {
                         showRemoveDialog = true
+                    } else if (isGuest) {
+                        showLoginDialog = true
                     } else {
                         onHeartClick()
                     }
@@ -87,7 +95,7 @@ fun MovieCoverImage(
         ) {
             Icon(
                 imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = stringResource(R.string.toggle_watchlist),
+                contentDescription = stringResource(R.string.toggle_favorite),
                 tint = if (isInWatchlist) PrimaryRed else Color.White,
                 modifier = Modifier.padding(4.dp)
             )
@@ -117,12 +125,12 @@ fun MovieCoverImage(
     if (showRemoveDialog) {
         AlertDialog(
             onDismissRequest = { showRemoveDialog = false },
-            title = { Text(stringResource(R.string.remove_from_watchlist)) },
+            title = { Text(stringResource(R.string.remove_from_favorites)) },
             text = { Text(stringResource(R.string.remove_confirm_text, movie.title)) },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onRemoveFromWatchlist(movie)
+                        onRemoveFromFavorite(movie)
                         showRemoveDialog = false
                     }
                 ) {
@@ -137,6 +145,13 @@ fun MovieCoverImage(
             containerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+
+    if (showLoginDialog) {
+        LoginRequiredDialog(
+            onDismiss = { showLoginDialog = false },
+            onLoginClick = onLoginClick
         )
     }
 }

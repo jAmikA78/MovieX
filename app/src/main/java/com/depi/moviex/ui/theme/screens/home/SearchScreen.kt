@@ -30,16 +30,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 import com.depi.moviex.utils.K
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
 import com.depi.moviex.R
+import com.depi.moviex.LocalIsGuest
+import com.depi.moviex.LocalOnLoginClick
+import com.depi.moviex.ui.theme.components.LoginRequiredDialog
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onMovieClick: (Int, String) -> Unit
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -114,7 +117,7 @@ fun SearchScreen(
                     MovieItem(
                         movie = movie,
                         onClick = { onMovieClick(movie.id, movie.mediaType.value) },
-                        watchlistViewModel = watchlistViewModel
+                        favoriteViewModel = favoriteViewModel
                     )
                 }
             }
@@ -126,11 +129,14 @@ fun SearchScreen(
 fun MovieItem(
     movie: Movie,
     onClick: () -> Unit,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel()
+    favoriteViewModel: FavoriteViewModel = hiltViewModel()
 ) {
-    val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
+    val isInFavorite by favoriteViewModel.isInFavorite(movie.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
     var showRemoveDialog by remember { mutableStateOf(false) }
+    var showLoginDialog by remember { mutableStateOf(false) }
+    val isGuest = LocalIsGuest.current
+    val onLoginClick = LocalOnLoginClick.current
 
     Card(
         modifier = Modifier
@@ -171,11 +177,13 @@ fun MovieItem(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
                     .clickable {
-                        if (isInWatchlist) {
+                        if (isInFavorite) {
                             showRemoveDialog = true
+                        } else if (isGuest) {
+                            showLoginDialog = true
                         } else {
                             scope.launch {
-                                watchlistViewModel.addToWatchlist(
+                                favoriteViewModel.addToFavorite(
                                     movie,
                                     "Search"
                                 )
@@ -185,9 +193,9 @@ fun MovieItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = stringResource(R.string.toggle_watchlist),
-                    tint = if (isInWatchlist) PrimaryRed else Color.White,
+                    imageVector = if (isInFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = stringResource(R.string.toggle_favorite),
+                    tint = if (isInFavorite) PrimaryRed else Color.White,
                     modifier = Modifier.size(18.dp)
                 )
             }

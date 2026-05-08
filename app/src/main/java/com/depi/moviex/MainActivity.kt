@@ -23,11 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.annotation.StringRes
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -49,12 +51,15 @@ import com.depi.moviex.ui.theme.screens.moviedetail.MovieDetailScreen
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.screens.profile.ProfileScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistScreen
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.appcompat.app.AppCompatActivity
 import com.depi.moviex.ui.theme.screens.settings.DevelopersScreen
 import com.depi.moviex.ui.theme.screens.settings.SupportScreen
+
+val LocalIsGuest = staticCompositionLocalOf { false }
+val LocalOnLoginClick = staticCompositionLocalOf<() -> Unit> { {} }
 
 
 @AndroidEntryPoint
@@ -73,18 +78,18 @@ class MainActivity : AppCompatActivity() {
                     onThemeChange = { isDarkMode = it },
                     authRepository = authRepository
                 )
-            }
-        }
     }
+    }
+}
 }
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, @StringRes val labelResId: Int) {
     object Home : BottomNavItem("home", Icons.Default.Home, R.string.home_tab)
-    object Watchlist : BottomNavItem("watchlist", Icons.AutoMirrored.Filled.List, R.string.watchlist_title)
+    object Favorites : BottomNavItem("favorites", Icons.AutoMirrored.Filled.List, R.string.favorites_title)
     object Profile : BottomNavItem("profile", Icons.Default.Person, R.string.profile)
 }
 
-val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Watchlist, BottomNavItem.Profile)
+val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Favorites, BottomNavItem.Profile)
 
 @Composable
 fun AppNavigation(
@@ -96,20 +101,30 @@ fun AppNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute in listOf("home", "watchlist", "profile")
+    val showBottomBar = currentRoute in listOf("home", "favorites", "profile")
 
     val startDestination = remember {
         if (authRepository.isLoggedIn() || authRepository.isGuest()) "home" else "splash"
     }
 
     val context = LocalContext.current
+    val isGuest = authRepository.isGuest()
+    val onLoginClick = {
+        navController.navigate("login") {
+            popUpTo("home") { inclusive = true }
+        }
+    }
 
     BackHandler(enabled = showBottomBar) {
         (context as? ComponentActivity)?.finish()
     }
 
-    Scaffold(
-        bottomBar = {
+    CompositionLocalProvider(
+        LocalIsGuest provides isGuest,
+        LocalOnLoginClick provides onLoginClick
+    ) {
+        Scaffold(
+            bottomBar = {
             if (showBottomBar) {
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -138,10 +153,9 @@ fun AppNavigation(
                                 indicatorColor = Color.Transparent
                             )
                         )
-                    }
-                }
-            }
         }
+    }
+} }
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -219,8 +233,8 @@ fun AppNavigation(
                 )
             }
 
-            composable("watchlist") {
-                WatchlistScreen(
+            composable("favorites") {
+                FavoriteScreen(
                     onMovieClick = { movieId, mediaType ->
                         navController.navigate("movie_detail/$mediaType/$movieId")
                     }
@@ -353,5 +367,6 @@ fun AppNavigation(
                 )
             }
         }
+    }
     }
 }

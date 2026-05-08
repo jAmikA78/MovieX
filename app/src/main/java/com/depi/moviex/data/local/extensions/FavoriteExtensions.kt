@@ -2,14 +2,14 @@ package com.depi.moviex.data.local.extensions
 
 import com.depi.moviex.cast_member.domain.models.KnownForMovie
 import com.depi.moviex.common.MediaType
-import com.depi.moviex.data.local.entity.WatchlistMovieEntity
+import com.depi.moviex.data.local.entity.FavoriteMovieEntity
 import com.depi.moviex.movie.domain.models.Movie
 
-fun WatchlistMovieEntity.toDomainMovie(): Movie {
+fun FavoriteMovieEntity.toDomainMovie(): Movie {
     return Movie(
         backdropPath = this.backdropPath ?: "",
         genreIds = emptyList(),
-        id = this.id,
+        id = this.movieId,
         originalLanguage = "",
         originalTitle = this.title,
         overview = this.overview,
@@ -23,9 +23,10 @@ fun WatchlistMovieEntity.toDomainMovie(): Movie {
     )
 }
 
-fun Movie.toWatchlistEntity(category: String = "trending"): WatchlistMovieEntity {
-    return WatchlistMovieEntity(
-        id = this.id,
+fun Movie.toFavoriteEntity(accountName: String, category: String = "trending"): FavoriteMovieEntity {
+    return FavoriteMovieEntity(
+        movieId = this.id,
+        accountName = accountName,
         title = this.title,
         posterPath = this.posterPath,
         backdropPath = this.backdropPath,

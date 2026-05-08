@@ -25,7 +25,7 @@
     <string name="arabic">Arabic</string>
     <string name="rating">Rating</string>
     <string name="genres">Genres</string>
-    <string name="toggle_watchlist">Toggle Watchlist</string>
+    <string name="toggle_favorite">Toggle Favorite</string>
     <string name="github">GitHub</string>
     <string name="linkedin">LinkedIn</string>
 
@@ -38,7 +38,7 @@
     <string name="onboarding_desc_1">Explore trending, popular, and top-rated films from around the world.</string>
     <string name="onboarding_title_2">Upcoming releases</string>
     <string name="onboarding_desc_2">Track upcoming movies with a calendar view so you always know what\'s coming to theaters.</string>
-    <string name="onboarding_title_3">Your watchlist &amp; history</string>
+    <string name="onboarding_title_3">Your favorites &amp; history</string>
     <string name="onboarding_desc_3">Save movies to watch later and keep a history of everything you\'ve seen.</string>
     <string name="onboarding_title_4">Ready to explore movies?</string>
     <string name="onboarding_desc_4"></string>
@@ -116,12 +116,12 @@
     <string name="runtime">Runtime</string>
     <string name="add_to_fav">Add to favourites</string>
 
-    <!-- Watchlist -->
-    <string name="watchlist_title">Watchlist</string>
+    <!-- Favorites -->
+    <string name="favorites_title">Favorites</string>
     <string name="filter_all">All</string>
-    <string name="watchlist_empty">Your watchlist is empty</string>
-    <string name="remove_from_watchlist">Remove from Watchlist</string>
-    <string name="remove_confirm_text">Are you sure you want to remove \"%s\" from your watchlist?</string>
+    <string name="favorites_empty">Your favorites list is empty</string>
+    <string name="remove_from_favorites">Remove from Favorites</string>
+    <string name="remove_confirm_text">Are you sure you want to remove \"%s\" from your favorites?</string>
     <string name="home_tab">Home</string>
 
     <!-- Settings -->
@@ -160,4 +160,6 @@
     <!-- Error -->
     <string name="error_occurred">An error occurred</string>
     <string name="no_content_available">No content available.</string>
+    <string name="login_required">Login required</string>
+    <string name="login_to_add_favorites">You must login first to add movies to favorites.</string>
 </resources>

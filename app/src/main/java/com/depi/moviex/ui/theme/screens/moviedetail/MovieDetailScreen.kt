@@ -67,12 +67,14 @@ import com.depi.moviex.ui.theme.components.BackButton
 import com.depi.moviex.ui.theme.components.ErrorText
 import com.depi.moviex.ui.theme.components.ExpandableText
 import com.depi.moviex.ui.theme.components.LoadingIndicator
-import com.depi.moviex.ui.theme.components.RemoveFromWatchlistDialog
+import com.depi.moviex.ui.theme.components.RemoveFromFavoritesDialog
 import com.depi.moviex.ui.theme.components.SectionTitle
 import com.depi.moviex.ui.theme.components.StarRating
-import com.depi.moviex.ui.theme.screens.moviedetail.YoutubePlayer
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 import com.depi.moviex.utils.K
+import com.depi.moviex.LocalIsGuest
+import com.depi.moviex.LocalOnLoginClick
+import com.depi.moviex.ui.theme.components.LoginRequiredDialog
 import androidx.compose.ui.res.stringResource
 import com.depi.moviex.R
 
@@ -80,7 +82,7 @@ import com.depi.moviex.R
 fun MovieDetailScreen(
     modifier: Modifier = Modifier,
     movieDetailViewModel: MovieDetailViewModel = hiltViewModel(),
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onCastClick: (Int, String, MediaType) -> Unit = { _, _, _ -> },
     onCastMemberClick: (Int) -> Unit = {}
@@ -103,7 +105,7 @@ fun MovieDetailScreen(
                 MovieDetailContent(
                     movieDetail = state.movieDetail!!,
                     videos = state.videos,
-                    watchlistViewModel = watchlistViewModel,
+                    favoriteViewModel = favoriteViewModel,
                     onBackClick = onBackClick,
                     onCastClick = onCastClick,
                     onCastMemberClick = onCastMemberClick,
@@ -118,7 +120,7 @@ fun MovieDetailScreen(
 private fun MovieDetailContent(
     movieDetail: MovieDetail,
     videos: List<Video>,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
     onCastClick: (Int, String, MediaType) -> Unit,
     onCastMemberClick: (Int) -> Unit,
@@ -129,10 +131,13 @@ private fun MovieDetailContent(
     val teaser = videos.firstOrNull { it.type == "Teaser" && it.site == "YouTube" }
     val videoToShow = trailer ?: teaser
     
-    val isInWatchlist by watchlistViewModel.isInWatchlist(movieDetail.id).collectAsStateWithLifecycle(initialValue = false)
+    val isInFavorite by favoriteViewModel.isInFavorite(movieDetail.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
     var isOverviewExpanded by remember { mutableStateOf(false) }
     var showRemoveDialog by remember { mutableStateOf(false) }
+    var showLoginDialog by remember { mutableStateOf(false) }
+    val isGuest = LocalIsGuest.current
+    val onLoginClick = LocalOnLoginClick.current
     
     val movie = Movie(
         id = movieDetail.id,
@@ -242,20 +247,22 @@ private fun MovieDetailContent(
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
                     .clickable {
-                if (isInWatchlist) {
+                if (isInFavorite) {
                     showRemoveDialog = true
+                } else if (isGuest) {
+                    showLoginDialog = true
                 } else {
                     scope.launch {
-                        watchlistViewModel.addToWatchlist(movie, WatchlistViewModel.CATEGORY_DETAIL)
+                        favoriteViewModel.addToFavorite(movie, FavoriteViewModel.CATEGORY_DETAIL)
                     }
                 }
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = stringResource(R.string.toggle_watchlist),
-                    tint = if (isInWatchlist) PrimaryRed else MaterialTheme.colorScheme.onSurface,
+                    imageVector = if (isInFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = stringResource(R.string.toggle_favorite),
+                    tint = if (isInFavorite) PrimaryRed else MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -360,15 +367,22 @@ private fun MovieDetailContent(
             Spacer(modifier = Modifier.height(32.dp))
 
     if (showRemoveDialog) {
-        RemoveFromWatchlistDialog(
+        RemoveFromFavoritesDialog(
             title = movieDetail.title,
             onDismiss = { showRemoveDialog = false },
             onConfirm = {
                 scope.launch {
-                    watchlistViewModel.removeFromWatchlist(movie)
+                    favoriteViewModel.removeFromFavorite(movie)
                 }
                 showRemoveDialog = false
             }
+        )
+    }
+
+    if (showLoginDialog) {
+        LoginRequiredDialog(
+            onDismiss = { showLoginDialog = false },
+            onLoginClick = onLoginClick
         )
     }
     }

@@ -1,4 +1,4 @@
-package com.depi.moviex.ui.theme.screens.watchlist
+package com.depi.moviex.ui.theme.screens.favorites
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +17,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,15 +39,19 @@ import com.depi.moviex.ui.theme.screens.home.components.MovieCoverImage
 import kotlinx.coroutines.launch
 
 @Composable
-fun WatchlistScreen(
+fun FavoriteScreen(
     modifier: Modifier = Modifier,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onMovieClick: (id: Int, mediaType: String) -> Unit = { _, _ -> }
 ) {
-    val state by watchlistViewModel.watchlistState.collectAsStateWithLifecycle()
+    val state by favoriteViewModel.favoriteState.collectAsStateWithLifecycle()
     val filterAll = stringResource(R.string.filter_all)
     var selectedCategory by remember { mutableStateOf(filterAll) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        favoriteViewModel.refreshAccountName()
+    }
 
     Column(
         modifier = modifier
@@ -55,7 +60,7 @@ fun WatchlistScreen(
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = stringResource(R.string.watchlist_title),
+            text = stringResource(R.string.favorites_title),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
@@ -73,9 +78,9 @@ fun WatchlistScreen(
                         onClick = {
                             selectedCategory = category
                             if (category == filterAll) {
-                                watchlistViewModel.loadWatchlistMovies()
+                                favoriteViewModel.showAllFavorites()
                             } else {
-                                watchlistViewModel.loadMoviesByCategory(category)
+                                favoriteViewModel.loadMoviesByCategory(category)
                             }
                         },
                         label = { Text(category) },
@@ -97,13 +102,13 @@ fun WatchlistScreen(
             state.error != null -> {
                 ErrorText(message = state.error)
             }
-            state.watchlistMovies.isEmpty() -> {
+            state.favoriteMovies.isEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(R.string.watchlist_empty),
+                        text = stringResource(R.string.favorites_empty),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 16.sp
                     )
@@ -114,7 +119,7 @@ fun WatchlistScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     itemsIndexed(
-                        items = state.watchlistMovies.chunked(2),
+                        items = state.favoriteMovies.chunked(2),
                         key = { index, _ -> index.toString() }
                     ) { _, rowMovies ->
                         Box(
@@ -130,9 +135,9 @@ fun WatchlistScreen(
                                     onMovieClick = onMovieClick,
                                     isInWatchlist = true,
                                     onHeartClick = {},
-                                    onRemoveFromWatchlist = { movieToRemove ->
+                                    onRemoveFromFavorite = { movieToRemove ->
                                         scope.launch {
-                                            watchlistViewModel.removeFromWatchlist(movieToRemove)
+                                            favoriteViewModel.removeFromFavorite(movieToRemove)
                                         }
                                     }
                                 )

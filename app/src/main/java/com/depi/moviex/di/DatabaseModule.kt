@@ -2,7 +2,7 @@ package com.depi.moviex.di
 
 import android.content.Context
 import androidx.room.Room
-import com.depi.moviex.data.local.WatchlistDatabase
+import com.depi.moviex.data.local.FavoriteDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,17 +16,17 @@ object DatabaseModule {
     
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): WatchlistDatabase {
+    fun provideDatabase(@ApplicationContext context: Context): FavoriteDatabase {
         return Room.databaseBuilder(
             context,
-            WatchlistDatabase::class.java,
+            FavoriteDatabase::class.java,
             "moviex_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
     
     @Provides
     @Singleton
-    fun provideWatchlistDao(database: WatchlistDatabase): com.depi.moviex.data.local.dao.WatchlistDao {
-        return database.watchlistDao()
+    fun provideFavoriteDao(database: FavoriteDatabase): com.depi.moviex.data.local.dao.FavoriteDao {
+        return database.favoriteDao()
     }
 }

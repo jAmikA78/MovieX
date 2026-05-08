@@ -10,18 +10,17 @@ import androidx.compose.ui.res.stringResource
 import com.depi.moviex.R
 
 @Composable
-fun RemoveFromWatchlistDialog(
-    title: String,
+fun LoginRequiredDialog(
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit
+    onLoginClick: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.remove_from_watchlist)) },
-        text = { Text(stringResource(R.string.remove_confirm_text, title)) },
+        title = { Text(stringResource(R.string.login_required)) },
+        text = { Text(stringResource(R.string.login_to_add_favorites)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.remove), color = PrimaryRed)
+            TextButton(onClick = onLoginClick) {
+                Text(stringResource(R.string.btn_login_caps), color = PrimaryRed)
             }
         },
         dismissButton = {

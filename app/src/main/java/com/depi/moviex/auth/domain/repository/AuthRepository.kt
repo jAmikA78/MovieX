@@ -9,8 +9,11 @@ interface AuthRepository {
     fun getSession(): String?
     fun isLoggedIn(): Boolean
     fun getRegisteredUsername(): String?
+    fun getAccountName(): String
     fun saveGuest()
     fun isGuest(): Boolean
     fun clearGuest()
+    fun getPreviousAccountName(): String?
+    fun clearPreviousAccountName()
     fun logout()
 }

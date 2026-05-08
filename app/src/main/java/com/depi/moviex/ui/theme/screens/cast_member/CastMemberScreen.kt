@@ -48,7 +48,7 @@ import com.depi.moviex.ui.theme.components.ExpandableText
 import com.depi.moviex.ui.theme.components.LoadingIndicator
 import com.depi.moviex.ui.theme.components.SectionTitle
 import com.depi.moviex.ui.theme.screens.home.components.MovieCoverImage
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 import com.depi.moviex.utils.K
 import kotlinx.coroutines.launch
 
@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
 fun CastMemberScreen(
     modifier: Modifier = Modifier,
     castMemberViewModel: CastMemberViewModel = hiltViewModel(),
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onMovieClick: (Int, String) -> Unit = { _, _ -> }
 ) {
@@ -79,7 +79,7 @@ fun CastMemberScreen(
                     castMember = state.castMember!!,
                     onBackClick = onBackClick,
                     onMovieClick = onMovieClick,
-                    watchlistViewModel = watchlistViewModel
+                    favoriteViewModel = favoriteViewModel
                 )
             }
         }
@@ -91,7 +91,7 @@ private fun CastMemberContent(
     castMember: CastMember,
     onBackClick: () -> Unit,
     onMovieClick: (Int, String) -> Unit = { _, _ -> },
-    watchlistViewModel: WatchlistViewModel
+    favoriteViewModel: FavoriteViewModel
 ) {
     var isBiographyExpanded by remember { mutableStateOf(false) }
 
@@ -197,21 +197,21 @@ private fun CastMemberContent(
         ) {
             items(castMember.knownFor) { knownFor ->
                 val movie = knownFor.toMovie()
-                val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id)
+                val isInFavorite by favoriteViewModel.isInFavorite(movie.id)
                     .collectAsStateWithLifecycle(initialValue = false)
                 val scope = rememberCoroutineScope()
                 MovieCoverImage(
                     movie = movie,
                     onMovieClick = onMovieClick,
-                    isInWatchlist = isInWatchlist,
+                    isInWatchlist = isInFavorite,
                     onHeartClick = {
                         scope.launch {
-                            watchlistViewModel.addToWatchlist(movie)
+                            favoriteViewModel.addToFavorite(movie)
                         }
                     },
-                    onRemoveFromWatchlist = { movieToRemove ->
+                    onRemoveFromFavorite = { movieToRemove ->
                         scope.launch {
-                            watchlistViewModel.removeFromWatchlist(movieToRemove)
+                            favoriteViewModel.removeFromFavorite(movieToRemove)
                         }
                     }
                 )

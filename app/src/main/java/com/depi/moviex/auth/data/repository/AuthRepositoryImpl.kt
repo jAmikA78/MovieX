@@ -46,6 +46,7 @@ class AuthRepositoryImpl @Inject constructor(
                 return@flow
             }
 
+            savePreviousAccountName()
             clearGuest()
             saveSession(sessionResponse.sessionId)
             saveUsername(username)
@@ -72,6 +73,8 @@ class AuthRepositoryImpl @Inject constructor(
             return AuthResult(success = false, error = "A user is already registered on this device")
         }
 
+        savePreviousAccountName()
+        clearGuest()
         prefs.edit()
             .putString(KEY_REGISTERED_USERNAME, username)
             .putString(KEY_REGISTERED_EMAIL, email)
@@ -91,6 +94,17 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override fun isGuest(): Boolean = prefs.getBoolean(KEY_IS_GUEST, false)
+
+    override fun getAccountName(): String {
+        getRegisteredUsername()?.let { return it }
+        return GUEST_ACCOUNT_NAME
+    }
+
+    override fun getPreviousAccountName(): String? = prefs.getString(KEY_PREVIOUS_ACCOUNT, null)
+
+    override fun clearPreviousAccountName() {
+        prefs.edit().remove(KEY_PREVIOUS_ACCOUNT).apply()
+    }
 
     override fun clearGuest() {
         prefs.edit().remove(KEY_IS_GUEST).apply()
@@ -114,6 +128,11 @@ class AuthRepositoryImpl @Inject constructor(
         prefs.edit().putString(KEY_REGISTERED_USERNAME, username).apply()
     }
 
+    private fun savePreviousAccountName() {
+        val currentName = getAccountName()
+        prefs.edit().putString(KEY_PREVIOUS_ACCOUNT, currentName).apply()
+    }
+
     companion object {
         private const val PREFS_NAME = "auth_prefs"
         private const val KEY_SESSION_ID = "session_id"
@@ -121,5 +140,7 @@ class AuthRepositoryImpl @Inject constructor(
         private const val KEY_IS_REGISTERED = "is_registered"
         private const val KEY_REGISTERED_USERNAME = "registered_username"
         private const val KEY_REGISTERED_EMAIL = "registered_email"
+        private const val KEY_PREVIOUS_ACCOUNT = "previous_account_name"
+        private const val GUEST_ACCOUNT_NAME = "guest"
     }
 }

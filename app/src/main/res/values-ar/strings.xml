@@ -26,7 +26,7 @@
     <string name="arabic">اللغة العربية</string>
     <string name="rating">التقييم</string>
     <string name="genres">التصنيفات</string>
-    <string name="toggle_watchlist">تبديل قائمة المشاهدة</string>
+    <string name="toggle_favorite">تبديل المفضلة</string>
     <string name="github">GitHub</string>
     <string name="linkedin">LinkedIn</string>
 
@@ -117,12 +117,12 @@
     <string name="runtime">مدة الفيلم</string>
     <string name="add_to_fav">أضف للمفضلة</string>
 
-    <!-- Watchlist -->
-    <string name="watchlist_title">قائمة المشاهدة</string>
+    <!-- Favorites -->
+    <string name="favorites_title">المفضلة</string>
     <string name="filter_all">الكل</string>
-    <string name="watchlist_empty">قائمة المشاهدة فارغة</string>
-    <string name="remove_from_watchlist">إزالة من قائمة المشاهدة</string>
-    <string name="remove_confirm_text">هل أنت متأكد من إزالة \"%s\" من قائمة المشاهدة؟</string>
+    <string name="favorites_empty">قائمة المفضلة فارغة</string>
+    <string name="remove_from_favorites">إزالة من المفضلة</string>
+    <string name="remove_confirm_text">هل أنت متأكد من إزالة \"%s\" من المفضلة؟</string>
     <string name="home_tab">الرئيسية</string>
 
     <!-- Settings -->
@@ -161,4 +161,6 @@
     <!-- Error -->
     <string name="error_occurred">حدث خطأ</string>
     <string name="no_content_available">لا يوجد محتوى متاح.</string>
+    <string name="login_required">تسجيل الدخول مطلوب</string>
+    <string name="login_to_add_favorites">يجب عليك تسجيل الدخول أولاً لإضافة الأفلام إلى المفضلة.</string>
 </resources>

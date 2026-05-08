@@ -31,7 +31,7 @@ import com.depi.moviex.ui.theme.screens.home.components.FeaturedBanner
 import com.depi.moviex.ui.theme.screens.home.components.HeaderSection
 import com.depi.moviex.ui.theme.screens.home.components.MovieCoverImage
 import com.depi.moviex.ui.theme.screens.home.components.SearchBar
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 import androidx.compose.ui.res.stringResource
 import com.depi.moviex.R
 
@@ -39,7 +39,7 @@ import com.depi.moviex.R
 fun HomeScreen(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onMovieClick: (id: Int, mediaType: String) -> Unit = { _, _ -> },
     onSettingsClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -97,7 +97,7 @@ fun HomeScreen(
                     ),
                     onMovieClick = onMovieClick,
                     onSeeAllClick = onSeeAllClick,
-                    watchlistViewModel = watchlistViewModel
+                    favoriteViewModel = favoriteViewModel
                 )
             }
         }

@@ -1,12 +1,15 @@
 package com.depi.moviex.data.local.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.Index
 
-@Entity(tableName = "watchlist_movies")
-data class WatchlistMovieEntity(
-    @PrimaryKey
-    val id: Int,
+@Entity(
+    tableName = "favorite_movies",
+    primaryKeys = ["movieId", "accountName"]
+)
+data class FavoriteMovieEntity(
+    val movieId: Int,
+    val accountName: String,
     val title: String,
     val posterPath: String?,
     val backdropPath: String?,

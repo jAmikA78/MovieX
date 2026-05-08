@@ -186,13 +186,6 @@ fun ProfileScreen(
                 onClick = { navController?.navigate("developers") }
             )
 
-            MenuItemRow(
-                icon = Icons.Default.Info,
-                title = stringResource(R.string.about),
-                subtitle = stringResource(R.string.app_version),
-                onClick = { }
-            )
-
             Spacer(modifier = Modifier.weight(1f))
 
             if (isGuest) {

@@ -67,7 +67,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
             )
         }
     ) { innerPadding ->
-        //  عرض الصفحات (التقليب الأفقي)
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier

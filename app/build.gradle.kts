@@ -134,4 +134,7 @@ dependencies {
     // Language
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Ads
+    implementation("com.google.android.gms:play-services-ads:23.3.0")
 }

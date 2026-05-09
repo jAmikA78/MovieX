@@ -1,5 +1,6 @@
 package com.depi.moviex.ui.theme.screens.moviedetail
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +77,7 @@ import com.depi.moviex.utils.K
 import com.depi.moviex.LocalIsGuest
 import com.depi.moviex.LocalOnLoginClick
 import com.depi.moviex.ui.theme.components.LoginRequiredDialog
+import com.depi.moviex.utils.AdManager
 import androidx.compose.ui.res.stringResource
 import com.depi.moviex.R
 
@@ -443,12 +446,24 @@ private fun WatchButton(imdbId: String) {
     if (imdbId.isBlank()) return
 
     val context = LocalContext.current
+    val activity = remember { context as? Activity }
     val playUrl = "https://www.playimdb.com/title/$imdbId/"
+
+    LaunchedEffect(Unit) {
+        AdManager.loadInterstitial(context)
+    }
 
     Button(
         onClick = {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playUrl))
-            context.startActivity(intent)
+            activity?.let {
+                AdManager.showInterstitial(it) {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playUrl))
+                    context.startActivity(intent)
+                }
+            } ?: run {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playUrl))
+                context.startActivity(intent)
+            }
         },
         modifier = Modifier
             .fillMaxWidth()

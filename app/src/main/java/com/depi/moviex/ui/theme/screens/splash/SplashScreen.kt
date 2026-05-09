@@ -31,7 +31,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
 
     if (progress == 1f) {
         LaunchedEffect(Unit) {
-            delay(2000)
+            delay(4000)
             onTimeout()
         }
     }

@@ -60,7 +60,7 @@ fun DevelopersScreen(onBack: () -> Unit) {
 
         Developer(stringResource(R.string.dev_ahmed2_name),
             stringResource(R.string.dev_ahmed2_role),
-            "github.com/jAmikA78",
+            "https://github.com/jAmikA78",
             "https://www.linkedin.com/in/-ahmed-ibrahim-abd-elghany/",
             com.depi.moviex.R.drawable.dev_jamika)
     )

@@ -104,7 +104,7 @@ fun AppNavigation(
     val showBottomBar = currentRoute in listOf("home", "favorites", "profile")
 
     val startDestination = remember {
-        if (authRepository.isLoggedIn() || authRepository.isGuest()) "home" else "splash"
+        if (authRepository.isLoggedIn()) "home" else "splash"
     }
 
     val context = LocalContext.current
@@ -163,8 +163,10 @@ fun AppNavigation(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("splash") {
+                val isGuest = authRepository.isGuest()
                 SplashScreen(onTimeout = {
-                    navController.navigate("onboarding") {
+                    val destination = if (isGuest) "home" else "onboarding"
+                    navController.navigate(destination) {
                         popUpTo("splash") { inclusive = true }
                     }
                 })

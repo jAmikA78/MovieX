@@ -114,6 +114,7 @@
     <string name="original_music">Original Music</string>
     <string name="release_date">Release date</string>
     <string name="runtime">Runtime</string>
+    <string name="watch">Watch</string>
     <string name="add_to_fav">Add to favourites</string>
 
     <!-- Favorites -->

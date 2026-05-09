@@ -46,7 +46,8 @@ class MovieDetailMapperImpl : ApiMapper<MovieDetail, MovieDetailDto> {
                 )
             } ?: emptyList<Review>(),
             runTime = convertMinutesToHours(entity.runtime ?: 0),
-            videos = emptyList<com.depi.moviex.movie_detail.domain.models.Video>()
+            videos = emptyList<com.depi.moviex.movie_detail.domain.models.Video>(),
+            imdbId = entity.imdbId ?: ""
         )
     }
 

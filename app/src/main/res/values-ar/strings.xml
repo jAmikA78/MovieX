@@ -115,6 +115,7 @@
     <string name="original_music">موسيقى تصويرية</string>
     <string name="release_date">تاريخ الإصدار</string>
     <string name="runtime">مدة الفيلم</string>
+    <string name="watch">شاهد</string>
     <string name="add_to_fav">أضف للمفضلة</string>
 
     <!-- Favorites -->

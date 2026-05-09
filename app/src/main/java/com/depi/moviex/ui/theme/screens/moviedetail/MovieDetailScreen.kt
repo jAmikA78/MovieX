@@ -1,10 +1,7 @@
 package com.depi.moviex.ui.theme.screens.moviedetail
 
-import android.annotation.SuppressLint
-import android.view.ViewGroup
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -30,6 +27,8 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -53,6 +52,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -268,12 +268,6 @@ private fun MovieDetailContent(
             }
         }
 
-        if (videoToShow != null) {
-            val videoUrl = "https://www.youtube.com/watch?v=${videoToShow.key}"
-            YoutubePlayer(videoUrl = videoUrl)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -284,6 +278,15 @@ private fun MovieDetailContent(
                 emptyMessage = stringResource(R.string.no_overview_available)
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (videoToShow != null) {
+                val videoUrl = "https://www.youtube.com/watch?v=${videoToShow.key}"
+                YoutubePlayer(videoUrl = videoUrl)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            WatchButton(imdbId = movieDetail.imdbId)
             Spacer(modifier = Modifier.height(24.dp))
 
             if (movieDetail.cast.isNotEmpty()) {
@@ -385,6 +388,7 @@ private fun MovieDetailContent(
             onLoginClick = onLoginClick
         )
     }
+
     }
 }
 }
@@ -431,5 +435,38 @@ private fun ReviewItem(review: com.depi.moviex.movie_detail.domain.models.Review
                 maxLines = 4
             )
         }
+    }
+}
+
+@Composable
+private fun WatchButton(imdbId: String) {
+    if (imdbId.isBlank()) return
+
+    val context = LocalContext.current
+    val playUrl = "https://www.playimdb.com/title/$imdbId/"
+
+    Button(
+        onClick = {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playUrl))
+            context.startActivity(intent)
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        shape = RoundedCornerShape(10.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE54E3C))
+    ) {
+        Icon(
+            imageVector = Icons.Filled.PlayArrow,
+            contentDescription = null,
+            tint = Color.White
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.watch),
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }

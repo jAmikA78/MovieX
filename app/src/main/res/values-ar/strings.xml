@@ -159,7 +159,10 @@
     <string name="dev_ahmed2_name">أحمد إبراهيم</string>
     <string name="dev_ahmed2_role">مطور أندرويد</string>
 
-    <!-- Error -->
+    <!-- Error / No Internet -->
+    <string name="no_internet_title">لا يوجد اتصال بالإنترنت</string>
+    <string name="no_internet_message">يرجى التحقق من اتصالك والمحاولة مرة أخرى.</string>
+    <string name="try_again">حاول مرة أخرى</string>
     <string name="error_occurred">حدث خطأ</string>
     <string name="no_content_available">لا يوجد محتوى متاح.</string>
     <string name="login_required">تسجيل الدخول مطلوب</string>

@@ -158,7 +158,10 @@
     <string name="dev_ahmed2_name">Ahmed Ibrahim</string>
     <string name="dev_ahmed2_role">Android Developer</string>
 
-    <!-- Error -->
+    <!-- Error / No Internet -->
+    <string name="no_internet_title">No internet connection</string>
+    <string name="no_internet_message">Please check your connection and try again.</string>
+    <string name="try_again">Try Again</string>
     <string name="error_occurred">An error occurred</string>
     <string name="no_content_available">No content available.</string>
     <string name="login_required">Login required</string>

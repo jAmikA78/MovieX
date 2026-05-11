@@ -1,12 +1,28 @@
 package com.depi.moviex.movie.domain.models
 
-enum class MovieCategory(val displayName: String, val genreId: Int? = null) {
+enum class MovieCategory(
+    val displayName: String,
+    val genreId: Int? = null,
+    val originalLanguage: String? = null,
+    val originCountry: String? = null
+) {
     DISCOVER("Trending now"),
     TRENDING("Most Watched"),
     TV_SHOWS("TV Shows"),
     ACTION("Action", genreId = 28),
     DRAMA("Drama", genreId = 18),
-    COMEDY("Comedy", genreId = 35);
+    COMEDY("Comedy", genreId = 35),
+    ANIMATION("Animation", genreId = 16),
+    TOP_RATED("Top Rated"),
+    DOCUMENTARIES("Documentaries", genreId = 99),
+    HORROR("Horror", genreId = 27),
+    FAMILY_KIDS("Family & Kids", genreId = 10751),
+    WAR("War", genreId = 10752),
+    CRIME("Crime", genreId = 80),
+    EGYPTIAN_MOVIES("Egyptian movies", originalLanguage = "ar", originCountry = "EG"),
+    EGYPTIAN_TV("Egyptian TV series", originalLanguage = "ar", originCountry = "EG"),
+    KOREAN_TV("Korean TV series", originalLanguage = "ko"),
+    UPCOMING("Upcoming");
 
     companion object {
         fun fromDisplayName(name: String): MovieCategory? = entries.find { it.displayName == name }

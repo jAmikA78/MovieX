@@ -89,6 +89,16 @@
     <string name="category_action">Action</string>
     <string name="category_comedy">Comedy</string>
     <string name="category_drama">Drama</string>
+    <string name="category_animation">Animation</string>
+    <string name="category_top_rated">Top Rated</string>
+    <string name="category_documentaries">Documentaries</string>
+    <string name="category_family_kids">Family &amp; Kids</string>
+    <string name="category_war">War</string>
+    <string name="category_crime">Crime</string>
+    <string name="category_egyptian_movies">Egyptian movies</string>
+    <string name="category_egyptian_tv">Egyptian TV series</string>
+    <string name="category_korean_tv">Korean TV series</string>
+    <string name="category_upcoming">Upcoming</string>
     <string name="section_trending">Trending</string>
     <string name="section_popular">Popular</string>
     <string name="section_top_rated">Top Rated</string>
@@ -98,6 +108,10 @@
     <string name="search_hint">Search for movies...</string>
     <string name="search_movies_hint">Search movies...</string>
     <string name="no_movies_found">No movies found</string>
+    <string name="search_filter_movies">Movies</string>
+    <string name="search_filter_tv">TV Shows</string>
+    <string name="search_filter_people">People</string>
+    <string name="known_for">Known for</string>
 
     <!-- Movie Detail -->
     <string name="overview">Overview</string>

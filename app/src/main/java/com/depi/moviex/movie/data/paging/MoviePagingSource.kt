@@ -31,8 +31,21 @@ class MoviePagingSource(
             val movieCategory = categoryMap[category]
             val response = when (movieCategory) {
                 MovieCategory.TRENDING -> movieApiService.fetchTrendingMovies(page = page, language = languageCode)
+                MovieCategory.TOP_RATED -> movieApiService.fetchTopRatedMovies(page = page, language = languageCode)
+                MovieCategory.UPCOMING -> movieApiService.fetchUpcomingMovies(page = page, language = languageCode)
                 MovieCategory.TV_SHOWS -> movieApiService.fetchTvShows(page = page, language = languageCode)
-                else -> movieApiService.fetchDiscoverMovies(genreId = movieCategory?.genreId, page = page, language = languageCode)
+                MovieCategory.EGYPTIAN_TV -> movieApiService.fetchTvShows(
+                    originalLanguage = movieCategory.originalLanguage, originCountry = movieCategory.originCountry,
+                    page = page, language = languageCode
+                )
+                MovieCategory.KOREAN_TV -> movieApiService.fetchTvShows(
+                    originalLanguage = movieCategory.originalLanguage,
+                    page = page, language = languageCode
+                )
+                else -> movieApiService.fetchDiscoverMovies(
+                    genreId = movieCategory?.genreId, originalLanguage = movieCategory?.originalLanguage,
+                    originCountry = movieCategory?.originCountry, page = page, language = languageCode
+                )
             }
 
             val movies = apiMapper.mapToDomain(response)

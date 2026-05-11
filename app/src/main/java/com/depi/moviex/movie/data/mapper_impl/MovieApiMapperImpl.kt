@@ -8,7 +8,7 @@ import com.depi.moviex.movie.domain.models.MovieCategory
 
 class MovieApiMapperImpl : ApiMapper<List<Movie>, MovieDto> {
     override fun mapToDomain(entity: MovieDto): List<Movie> {
-        return entity.results?.map { result ->
+        return entity.results?.filter { it?.adult != true }?.map { result ->
             val isTvShow = !result?.name.isNullOrEmpty()
             Movie(
                 backdropPath = formatEmptyValue(result?.backdropPath),

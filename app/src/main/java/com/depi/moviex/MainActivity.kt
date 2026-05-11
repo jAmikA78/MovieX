@@ -48,6 +48,7 @@ import com.depi.moviex.ui.theme.screens.home.HomeScreen
 import com.depi.moviex.ui.theme.screens.home.SearchScreen
 import com.depi.moviex.ui.theme.screens.home.components.SeeAllScreen
 import com.depi.moviex.ui.theme.screens.moviedetail.MovieDetailScreen
+import com.depi.moviex.ui.theme.screens.notifications.NotificationsScreen
 import com.depi.moviex.ui.theme.screens.onboarding.OnboardingScreen
 import com.depi.moviex.ui.theme.screens.profile.ProfileScreen
 import com.depi.moviex.ui.theme.screens.splash.SplashScreen
@@ -349,6 +350,9 @@ fun AppNavigation(
                 SearchScreen(
                     onMovieClick = { movieId, mediaType ->
                         navController.navigate("movie_detail/$mediaType/$movieId")
+                    },
+                    onPersonClick = { personId ->
+                        navController.navigate("cast_member/$personId")
                     }
                 )
             }
@@ -362,6 +366,15 @@ fun AppNavigation(
                 val categoryTitle = backStackEntry.arguments?.getString("categoryTitle") ?: ""
                 SeeAllScreen(
                     categoryTitle = categoryTitle,
+                    onBackClick = { navController.popBackStack() },
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate("movie_detail/$mediaType/$movieId")
+                    }
+                )
+            }
+
+            composable("notifications_screen") {
+                NotificationsScreen(
                     onBackClick = { navController.popBackStack() },
                     onMovieClick = { movieId, mediaType ->
                         navController.navigate("movie_detail/$mediaType/$movieId")

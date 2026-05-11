@@ -25,12 +25,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -112,7 +116,9 @@ fun MovieDetailScreen(
                     onBackClick = onBackClick,
                     onCastClick = onCastClick,
                     onCastMemberClick = onCastMemberClick,
-                    mediaType = state.mediaType
+                    mediaType = state.mediaType,
+                    isReminderSet = state.isReminderSet,
+                    onToggleReminder = { movieDetailViewModel.toggleReminder(it, state.movieDetail!!.posterPath, state.movieDetail!!.releaseDate) }
                 )
             }
         }
@@ -127,7 +133,9 @@ private fun MovieDetailContent(
     onBackClick: () -> Unit,
     onCastClick: (Int, String, MediaType) -> Unit,
     onCastMemberClick: (Int) -> Unit,
-    mediaType: MediaType = MediaType.MOVIE
+    mediaType: MediaType = MediaType.MOVIE,
+    isReminderSet: Boolean = false,
+    onToggleReminder: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val trailer = videos.firstOrNull { it.type == "Trailer" && it.site == "YouTube" }
@@ -220,6 +228,18 @@ private fun MovieDetailContent(
                         text = movieDetail.runTime,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(
+                        onClick = { onToggleReminder(movieDetail.title) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isReminderSet) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsNone,
+                            contentDescription = if (isReminderSet) "Reminder set" else "Set reminder",
+                            tint = if (isReminderSet) PrimaryRed else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(

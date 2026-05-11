@@ -67,10 +67,10 @@
     <string name="btn_signup_caps">إنشاء حساب</string>
     <string name="or_signup_using">أو التسجيل عبر</string>
     <string name="continue_as_guest">المتابعة كضيف</string>
-    <string name="no_account">ليس لديك حساب؟</string>
-    <string name="have_account">لديك حساب بالفعل؟</string>
+    <string name="no_account">ليس لديك حساب</string>
+    <string name="have_account">لديك حساب بالفعل</string>
     <string name="register_now">سجل الآن</string>
-    <string name="forgot_password">نسيت كلمة المرور؟</string>
+    <string name="forgot_password">نسيت كلمة المرور</string>
     <string name="signup_api_disclaimer">TMDB لا يدعم التسجيل عبر API.\nيرجى إنشاء حساب على themoviedb.org</string>
     <string name="already_have_account_login">لديك حساب بالفعل؟ سجل دخول\nأو تابع كضيف</string>
 
@@ -90,6 +90,16 @@
     <string name="category_action">أكشن</string>
     <string name="category_comedy">كوميدي</string>
     <string name="category_drama">دراما</string>
+    <string name="category_animation">أنيميشن</string>
+    <string name="category_top_rated">الأعلى تقييماً</string>
+    <string name="category_documentaries">وثائقيات</string>
+    <string name="category_family_kids">عائلي وأطفال</string>
+    <string name="category_war">حرب</string>
+    <string name="category_crime">جريمة</string>
+    <string name="category_egyptian_movies">أفلام مصرية</string>
+    <string name="category_egyptian_tv">مسلسلات مصرية</string>
+    <string name="category_korean_tv">مسلسلات كورية</string>
+    <string name="category_upcoming">أفلام قادمة</string>
     <string name="section_trending">الأفلام الرائجة</string>
     <string name="section_popular">الأكثر شعبية</string>
     <string name="section_top_rated">الأعلى تقييماً</string>
@@ -99,6 +109,10 @@
     <string name="search_hint">ابحث عن فيلمك المفضل...</string>
     <string name="search_movies_hint">ابحث عن الأفلام...</string>
     <string name="no_movies_found">لا توجد نتائج</string>
+    <string name="search_filter_movies">أفلام</string>
+    <string name="search_filter_tv">مسلسلات</string>
+    <string name="search_filter_people">أشخاص</string>
+    <string name="known_for">معروف بـ</string>
 
     <!-- Movie Detail -->
     <string name="overview">قصة الفيلم</string>

@@ -3,6 +3,7 @@ package com.depi.moviex.di
 import android.content.Context
 import androidx.room.Room
 import com.depi.moviex.data.local.FavoriteDatabase
+import com.depi.moviex.data.local.dao.ReminderDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,5 +29,11 @@ object DatabaseModule {
     @Singleton
     fun provideFavoriteDao(database: FavoriteDatabase): com.depi.moviex.data.local.dao.FavoriteDao {
         return database.favoriteDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderDao(database: FavoriteDatabase): ReminderDao {
+        return database.reminderDao()
     }
 }

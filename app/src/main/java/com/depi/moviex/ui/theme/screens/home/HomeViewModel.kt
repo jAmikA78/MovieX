@@ -21,6 +21,17 @@ data class HomeState(
     val actionMovies: List<Movie> = emptyList(),
     val dramaMovies: List<Movie> = emptyList(),
     val comedyMovies: List<Movie> = emptyList(),
+    val animationMovies: List<Movie> = emptyList(),
+    val topRatedMovies: List<Movie> = emptyList(),
+    val documentariesMovies: List<Movie> = emptyList(),
+    val horrorMovies: List<Movie> = emptyList(),
+    val familyKidsMovies: List<Movie> = emptyList(),
+    val warMovies: List<Movie> = emptyList(),
+    val crimeMovies: List<Movie> = emptyList(),
+    val egyptianMovies: List<Movie> = emptyList(),
+    val egyptianTv: List<Movie> = emptyList(),
+    val koreanTv: List<Movie> = emptyList(),
+    val upcomingMovies: List<Movie> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )
@@ -45,16 +56,28 @@ class HomeViewModel @Inject constructor(
                 _homeState.update { it.copy(isLoading = true, error = null) }
             }
         ) { movies ->
+            val shuffled = movies.shuffled()
             _homeState.update { state ->
                 state.copy(
                     isLoading = false,
                     error = null,
-                    discoverMovies = if (category == MovieCategory.DISCOVER) movies else state.discoverMovies,
-                    trendingMovies = if (category == MovieCategory.TRENDING) movies else state.trendingMovies,
-                    tvShows = if (category == MovieCategory.TV_SHOWS) movies else state.tvShows,
-                    actionMovies = if (category == MovieCategory.ACTION) movies else state.actionMovies,
-                    dramaMovies = if (category == MovieCategory.DRAMA) movies else state.dramaMovies,
-                    comedyMovies = if (category == MovieCategory.COMEDY) movies else state.comedyMovies,
+                    discoverMovies = if (category == MovieCategory.DISCOVER) shuffled else state.discoverMovies,
+                    trendingMovies = if (category == MovieCategory.TRENDING) shuffled else state.trendingMovies,
+                    tvShows = if (category == MovieCategory.TV_SHOWS) shuffled else state.tvShows,
+                    actionMovies = if (category == MovieCategory.ACTION) shuffled else state.actionMovies,
+                    dramaMovies = if (category == MovieCategory.DRAMA) shuffled else state.dramaMovies,
+                    comedyMovies = if (category == MovieCategory.COMEDY) shuffled else state.comedyMovies,
+                    animationMovies = if (category == MovieCategory.ANIMATION) shuffled else state.animationMovies,
+                    topRatedMovies = if (category == MovieCategory.TOP_RATED) shuffled else state.topRatedMovies,
+                    documentariesMovies = if (category == MovieCategory.DOCUMENTARIES) shuffled else state.documentariesMovies,
+                    horrorMovies = if (category == MovieCategory.HORROR) shuffled else state.horrorMovies,
+                    familyKidsMovies = if (category == MovieCategory.FAMILY_KIDS) shuffled else state.familyKidsMovies,
+                    warMovies = if (category == MovieCategory.WAR) shuffled else state.warMovies,
+                    crimeMovies = if (category == MovieCategory.CRIME) shuffled else state.crimeMovies,
+                    egyptianMovies = if (category == MovieCategory.EGYPTIAN_MOVIES) shuffled else state.egyptianMovies,
+                    egyptianTv = if (category == MovieCategory.EGYPTIAN_TV) shuffled else state.egyptianTv,
+                    koreanTv = if (category == MovieCategory.KOREAN_TV) shuffled else state.koreanTv,
+                    upcomingMovies = if (category == MovieCategory.UPCOMING) shuffled else state.upcomingMovies,
                 )
             }
         }

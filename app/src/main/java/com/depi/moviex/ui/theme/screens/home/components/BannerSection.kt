@@ -69,9 +69,11 @@ fun FeaturedBanner(
                     .clickable { onMovieClick(movie.id, movie.mediaType.value) }
             ) {
 
+                val bannerImagePath = if (movie.backdropPath.startsWith("/")) movie.backdropPath else movie.posterPath
+
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data("${K.BASE_IMAGE_URL}${movie.posterPath}")
+                        .data("${K.BASE_IMAGE_URL}$bannerImagePath")
                         .crossfade(true)
                         .build(),
                     contentDescription = movie.title,

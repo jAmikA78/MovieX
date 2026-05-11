@@ -2,7 +2,9 @@ package com.depi.moviex.ui.theme.screens.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -66,24 +68,26 @@ fun SignUpScreen(
         )
     )
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF13131D))
             .padding(24.dp)
     ) {
+        Text(
+            text = stringResource(R.string.btn_signup),
+            color = Color.White,
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 40.dp)
+        )
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                text = stringResource(R.string.btn_signup),
-                color = Color.White,
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 40.dp)
-            )
-
             AuthTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -172,7 +176,7 @@ fun SignUpScreen(
                 onGuestLogin()
             },
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .align(Alignment.CenterHorizontally)
                 .padding(bottom = 16.dp)
         ) {
             Text(

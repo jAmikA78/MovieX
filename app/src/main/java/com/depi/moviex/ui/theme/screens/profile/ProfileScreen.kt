@@ -169,7 +169,7 @@ fun ProfileScreen(
                 icon = Icons.Default.Notifications,
                 title = stringResource(R.string.notifications),
                 subtitle = stringResource(R.string.notification_preferences),
-                onClick = { }
+                onClick = { navController?.navigate("notifications_screen") }
             )
 
             MenuItemRow(

@@ -13,5 +13,9 @@ data class ReminderEntity(
     val title: String,
     val posterPath: String?,
     val releaseDate: String,
+    val backdropPath: String? = null,
+    val overview: String? = null,
+    val voteAverage: Double = 0.0,
+    val voteCount: Int = 0,
     val createdAt: Long = System.currentTimeMillis()
 )

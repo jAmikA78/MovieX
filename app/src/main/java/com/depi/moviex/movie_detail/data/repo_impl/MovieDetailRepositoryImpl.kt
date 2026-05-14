@@ -6,6 +6,7 @@ import com.depi.moviex.movie_detail.data.remote.api.MovieDetailApiService
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
 import com.depi.moviex.movie_detail.data.remote.models.VideoDto
 import com.depi.moviex.movie_detail.data.remote.models.toDomain
+import com.depi.moviex.movie_detail.domain.models.CollectionMovie
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
 import com.depi.moviex.movie_detail.domain.repository.MovieDetailRepository
@@ -48,6 +49,17 @@ class MovieDetailRepositoryImpl(
             ?.mapNotNull { (it as? VideoDto)?.toDomain() }
             ?: emptyList()
         emit(Response.Success(videos))
+    }.catch { e ->
+        e.printStackTrace()
+        emit(Response.Error(e))
+    }
+
+    override fun getMovieCollection(collectionId: Int): Flow<Response<List<CollectionMovie>>> = flow {
+        emit(Response.Loading<List<CollectionMovie>>())
+        val language = K.getLanguageCode()
+        val collectionDto = movieDetailApiService.fetchCollection(collectionId, language = language)
+        val movies = collectionDto.parts?.map { it.toDomain() } ?: emptyList()
+        emit(Response.Success(movies))
     }.catch { e ->
         e.printStackTrace()
         emit(Response.Error(e))

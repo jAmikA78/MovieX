@@ -17,7 +17,11 @@ object ReminderScheduler {
         movieId: Int,
         movieTitle: String,
         posterPath: String?,
-        releaseDate: String
+        releaseDate: String,
+        backdropPath: String? = null,
+        overview: String? = null,
+        voteAverage: Double = 0.0,
+        voteCount: Int = 0,
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).apply {
@@ -25,6 +29,10 @@ object ReminderScheduler {
             putExtra("movieTitle", movieTitle)
             putExtra("posterPath", posterPath)
             putExtra("releaseDate", releaseDate)
+            putExtra("backdropPath", backdropPath)
+            putExtra("overview", overview)
+            putExtra("voteAverage", voteAverage)
+            putExtra("voteCount", voteCount)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context, movieId, intent,

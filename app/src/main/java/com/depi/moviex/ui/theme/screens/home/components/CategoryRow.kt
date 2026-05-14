@@ -33,11 +33,14 @@ import com.depi.moviex.R
 @Composable
 fun CategoryRow(
     title: String,
+    key: String,
     movies: List<Movie>,
     onMovieClick: (Int, String) -> Unit,
     onSeeAllClick: (String) -> Unit,
     favoriteViewModel: FavoriteViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNotifyClick: ((Movie) -> Unit)? = null,
+    reminderMovieIds: Set<Int> = emptySet(),
 ) {
     Column(modifier = modifier) {
         Row(
@@ -58,7 +61,7 @@ fun CategoryRow(
                 text = stringResource(R.string.see_all),
                 style = MaterialTheme.typography.bodyMedium,
                 color = PrimaryRed,
-                modifier = Modifier.clickable { onSeeAllClick(title) }
+                modifier = Modifier.clickable { onSeeAllClick(key) }
             )
         }
 
@@ -71,6 +74,7 @@ fun CategoryRow(
             items(movies) { movie ->
                 val isInFavorite by favoriteViewModel.isInFavorite(movie.id).collectAsStateWithLifecycle(initialValue = false)
                 val scope = rememberCoroutineScope()
+                val isUpcoming = key == "UPCOMING"
                 MovieCoverImage(
                     movie = movie,
                     onMovieClick = onMovieClick,
@@ -86,7 +90,10 @@ fun CategoryRow(
                         scope.launch {
                             favoriteViewModel.removeFromFavorite(movieToRemove)
                         }
-                    }
+                    },
+                    isUpcoming = isUpcoming,
+                    isReminderSet = movie.id in reminderMovieIds,
+                    onNotifyClick = { onNotifyClick?.invoke(movie) },
                 )
             }
         }

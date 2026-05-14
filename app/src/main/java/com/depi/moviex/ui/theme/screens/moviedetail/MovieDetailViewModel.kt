@@ -9,6 +9,7 @@ import com.depi.moviex.common.MediaType
 import com.depi.moviex.data.local.dao.ReminderDao
 import com.depi.moviex.data.local.entity.ReminderEntity
 import com.depi.moviex.utils.Response
+import com.depi.moviex.movie_detail.domain.models.CollectionMovie
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
 import com.depi.moviex.movie_detail.domain.repository.MovieDetailRepository
@@ -28,7 +29,9 @@ data class MovieDetailState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val mediaType: MediaType = MediaType.MOVIE,
-    val isReminderSet: Boolean = false
+    val isReminderSet: Boolean = false,
+    val collectionMovies: List<CollectionMovie> = emptyList(),
+    val collectionName: String? = null,
 )
 
 @HiltViewModel
@@ -62,6 +65,7 @@ class MovieDetailViewModel @Inject constructor(
     fun toggleReminder(movieTitle: String, posterPath: String?, releaseDate: String) {
         viewModelScope.launch {
             val accountName = authRepository.getAccountName()
+            val detail = _movieDetailState.value.movieDetail
             val isSet = _movieDetailState.value.isReminderSet
             if (isSet) {
                 reminderDao.removeReminder(movieId, accountName)
@@ -77,7 +81,13 @@ class MovieDetailViewModel @Inject constructor(
                         releaseDate = releaseDate
                     )
                 )
-                ReminderScheduler.scheduleReminder(context, movieId, movieTitle, posterPath, releaseDate)
+                ReminderScheduler.scheduleReminder(
+                    context, movieId, movieTitle, posterPath, releaseDate,
+                    backdropPath = detail?.backdropPath,
+                    overview = detail?.overview,
+                    voteAverage = detail?.voteAverage ?: 0.0,
+                    voteCount = detail?.voteCount ?: 0,
+                )
                 _movieDetailState.update { it.copy(isReminderSet = true) }
             }
         }
@@ -98,6 +108,20 @@ class MovieDetailViewModel @Inject constructor(
         ) { movieDetail ->
             _movieDetailState.update {
                 it.copy(isLoading = false, error = null, movieDetail = movieDetail)
+            }
+            movieDetail.belongsToCollectionId?.let { collectionId ->
+                fetchCollection(collectionId, movieDetail.belongsToCollectionName)
+            }
+        }
+    }
+
+    private fun fetchCollection(collectionId: Int, collectionName: String?) = viewModelScope.launch {
+        repository.getMovieCollection(collectionId).collectAndHandle(
+            onError = { },
+            onLoading = { }
+        ) { movies ->
+            _movieDetailState.update {
+                it.copy(collectionMovies = movies, collectionName = collectionName)
             }
         }
     }

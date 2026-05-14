@@ -16,7 +16,7 @@ class MoviePagingSource(
     private val languageCode: String = K.getLanguageCode()
 ) : PagingSource<Int, Movie>() {
 
-    private val categoryMap = MovieCategory.entries.associateBy { it.displayName }
+    private val categoryMap = MovieCategory.entries.associateBy { it.name }
 
     override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
         return state.anchorPosition?.let { anchorPosition ->

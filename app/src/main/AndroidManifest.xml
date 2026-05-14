@@ -38,6 +38,9 @@
         <receiver
             android:name=".receiver.AlarmReceiver"
             android:exported="false" />
+        <receiver
+            android:name=".receiver.FavoriteActionReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -131,6 +131,10 @@
     <string name="runtime">مدة الفيلم</string>
     <string name="watch">شاهد</string>
     <string name="add_to_fav">أضف للمفضلة</string>
+    <string name="watch_details">عرض التفاصيل</string>
+    <string name="released_today">تم الإصدار اليوم!</string>
+    <string name="released_today_date">%s تم إصداره اليوم! (%s)</string>
+    <string name="added_to_favorites">تمت الإضافة للمفضلة: %s</string>
 
     <!-- Favorites -->
     <string name="favorites_title">المفضلة</string>

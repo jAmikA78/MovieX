@@ -41,6 +41,10 @@ import com.depi.moviex.LocalIsGuest
 import com.depi.moviex.LocalOnLoginClick
 import com.depi.moviex.R
 import com.depi.moviex.ui.theme.components.LoginRequiredDialog
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsNone
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.wrapContentSize
 
 @Composable
 fun MovieCoverImage(
@@ -49,7 +53,10 @@ fun MovieCoverImage(
     onMovieClick: (Int, String) -> Unit,
     isInWatchlist: Boolean = false,
     onHeartClick: () -> Unit = {},
-    onRemoveFromFavorite: (Movie) -> Unit = {}
+    onRemoveFromFavorite: (Movie) -> Unit = {},
+    isUpcoming: Boolean = false,
+    isReminderSet: Boolean = false,
+    onNotifyClick: () -> Unit = {},
 ) {
     var showRemoveDialog by remember { mutableStateOf(false) }
     var showLoginDialog by remember { mutableStateOf(false) }
@@ -76,6 +83,31 @@ fun MovieCoverImage(
                 .shadow(elevation = 4.dp),
             contentScale = ContentScale.Crop
         )
+
+        if (isUpcoming) {
+            Card(
+                shape = CircleShape,
+                colors = CardDefaults.cardColors(),
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
+                    .wrapContentSize()
+                    .clickable {
+                        if (isGuest) {
+                            showLoginDialog = true
+                        } else {
+                            onNotifyClick()
+                        }
+                    }
+            ) {
+                Icon(
+                    imageVector = if (isReminderSet) Icons.Filled.Notifications else Icons.Filled.NotificationsNone,
+                    contentDescription = "Set reminder",
+                    tint = if (isReminderSet) PrimaryRed else Color.White,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+        }
 
         Card(
             shape = CircleShape,

@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.ui.theme.PrimaryRed
+import com.depi.moviex.movie.domain.models.Movie
+import com.depi.moviex.movie.domain.models.MovieCategory
 import com.depi.moviex.ui.theme.screens.home.components.CategoryRows
 import com.depi.moviex.ui.theme.screens.home.components.ErrorSection
 import com.depi.moviex.ui.theme.screens.home.components.FeaturedBanner
@@ -88,27 +90,29 @@ fun HomeScreen(
             else -> {
                 CategoryRows(
                     categories = listOf(
-                        CategoryItem(stringResource(R.string.category_trending), state.discoverMovies),
-                        CategoryItem(stringResource(R.string.category_most_watched), state.trendingMovies),
-                        CategoryItem(stringResource(R.string.category_tv_shows), state.tvShows),
-                        CategoryItem(stringResource(R.string.category_action), state.actionMovies),
-                        CategoryItem(stringResource(R.string.category_drama), state.dramaMovies),
-                        CategoryItem(stringResource(R.string.category_comedy), state.comedyMovies),
-                        CategoryItem(stringResource(R.string.category_animation), state.animationMovies),
-                        CategoryItem(stringResource(R.string.category_top_rated), state.topRatedMovies),
-                        CategoryItem(stringResource(R.string.category_documentaries), state.documentariesMovies),
-                        CategoryItem(stringResource(R.string.category_horror), state.horrorMovies),
-                        CategoryItem(stringResource(R.string.category_family_kids), state.familyKidsMovies),
-                        CategoryItem(stringResource(R.string.category_war), state.warMovies),
-                        CategoryItem(stringResource(R.string.category_crime), state.crimeMovies),
-                        CategoryItem(stringResource(R.string.category_egyptian_movies), state.egyptianMovies),
-                        CategoryItem(stringResource(R.string.category_egyptian_tv), state.egyptianTv),
-                        CategoryItem(stringResource(R.string.category_korean_tv), state.koreanTv),
-                        CategoryItem(stringResource(R.string.category_upcoming), state.upcomingMovies)
+                        CategoryItem(stringResource(R.string.category_trending), MovieCategory.DISCOVER.name, state.discoverMovies),
+                        CategoryItem(stringResource(R.string.category_most_watched), MovieCategory.TRENDING.name, state.trendingMovies),
+                        CategoryItem(stringResource(R.string.category_tv_shows), MovieCategory.TV_SHOWS.name, state.tvShows),
+                        CategoryItem(stringResource(R.string.category_action), MovieCategory.ACTION.name, state.actionMovies),
+                        CategoryItem(stringResource(R.string.category_drama), MovieCategory.DRAMA.name, state.dramaMovies),
+                        CategoryItem(stringResource(R.string.category_comedy), MovieCategory.COMEDY.name, state.comedyMovies),
+                        CategoryItem(stringResource(R.string.category_animation), MovieCategory.ANIMATION.name, state.animationMovies),
+                        CategoryItem(stringResource(R.string.category_top_rated), MovieCategory.TOP_RATED.name, state.topRatedMovies),
+                        CategoryItem(stringResource(R.string.category_documentaries), MovieCategory.DOCUMENTARIES.name, state.documentariesMovies),
+                        CategoryItem(stringResource(R.string.category_horror), MovieCategory.HORROR.name, state.horrorMovies),
+                        CategoryItem(stringResource(R.string.category_family_kids), MovieCategory.FAMILY_KIDS.name, state.familyKidsMovies),
+                        CategoryItem(stringResource(R.string.category_war), MovieCategory.WAR.name, state.warMovies),
+                        CategoryItem(stringResource(R.string.category_crime), MovieCategory.CRIME.name, state.crimeMovies),
+                        CategoryItem(stringResource(R.string.category_egyptian_movies), MovieCategory.EGYPTIAN_MOVIES.name, state.egyptianMovies),
+                        CategoryItem(stringResource(R.string.category_egyptian_tv), MovieCategory.EGYPTIAN_TV.name, state.egyptianTv),
+                        CategoryItem(stringResource(R.string.category_korean_tv), MovieCategory.KOREAN_TV.name, state.koreanTv),
+                        CategoryItem(stringResource(R.string.category_upcoming), MovieCategory.UPCOMING.name, state.upcomingMovies)
                     ),
                     onMovieClick = onMovieClick,
                     onSeeAllClick = onSeeAllClick,
-                    favoriteViewModel = favoriteViewModel
+                    favoriteViewModel = favoriteViewModel,
+                    onNotifyClick = { movie -> homeViewModel.toggleReminder(movie) },
+                    reminderMovieIds = state.reminderMovieIds,
                 )
             }
         }

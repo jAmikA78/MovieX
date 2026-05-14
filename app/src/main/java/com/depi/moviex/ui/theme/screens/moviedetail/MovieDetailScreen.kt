@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,6 +67,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.depi.moviex.common.MediaType
 import com.depi.moviex.movie.domain.models.Movie
+import com.depi.moviex.movie_detail.domain.models.CollectionMovie
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
 import com.depi.moviex.ui.theme.PrimaryRed
@@ -92,7 +95,8 @@ fun MovieDetailScreen(
     favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onCastClick: (Int, String, MediaType) -> Unit = { _, _, _ -> },
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    onMovieClick: (Int, String) -> Unit = { _, _ -> }
 ) {
     val state by movieDetailViewModel.movieDetailState.collectAsStateWithLifecycle()
 
@@ -118,7 +122,10 @@ fun MovieDetailScreen(
                     onCastMemberClick = onCastMemberClick,
                     mediaType = state.mediaType,
                     isReminderSet = state.isReminderSet,
-                    onToggleReminder = { movieDetailViewModel.toggleReminder(it, state.movieDetail!!.posterPath, state.movieDetail!!.releaseDate) }
+                    onToggleReminder = { movieDetailViewModel.toggleReminder(it, state.movieDetail!!.posterPath, state.movieDetail!!.releaseDate) },
+                    onMovieClick = onMovieClick,
+                    collectionMovies = state.collectionMovies,
+                    collectionName = state.collectionName,
                 )
             }
         }
@@ -135,7 +142,10 @@ private fun MovieDetailContent(
     onCastMemberClick: (Int) -> Unit,
     mediaType: MediaType = MediaType.MOVIE,
     isReminderSet: Boolean = false,
-    onToggleReminder: (String) -> Unit = {}
+    onToggleReminder: (String) -> Unit = {},
+    onMovieClick: (Int, String) -> Unit = { _, _ -> },
+    collectionMovies: List<CollectionMovie> = emptyList(),
+    collectionName: String? = null,
 ) {
     val context = LocalContext.current
     val trailer = videos.firstOrNull { it.type == "Trailer" && it.site == "YouTube" }
@@ -387,6 +397,67 @@ private fun MovieDetailContent(
                 movieDetail.reviews.take(3).forEach { review ->
                     ReviewItem(review = review)
                     Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+
+            if (collectionMovies.isNotEmpty()) {
+                collectionName?.let { name ->
+                    SectionTitle(text = name)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(collectionMovies.size) { index ->
+                        val movie = collectionMovies[index]
+                        Column(
+                            modifier = Modifier
+                                .width(120.dp)
+                                .clickable { onMovieClick(movie.id, MediaType.MOVIE.value) },
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(width = 120.dp, height = 180.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            ) {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data("${K.BASE_IMAGE_URL}${movie.posterPath}")
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = movie.title,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = movie.title,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Star,
+                                    contentDescription = null,
+                                    tint = Color(0xFFFFC107),
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = String.format("%.1f", movie.voteAverage),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
             }
 

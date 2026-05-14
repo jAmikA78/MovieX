@@ -1,6 +1,7 @@
 package com.depi.moviex.movie_detail.data.remote.api
 
 import com.depi.moviex.BuildConfig
+import com.depi.moviex.movie_detail.data.remote.models.CollectionDto
 import com.depi.moviex.movie_detail.data.remote.models.MovieDetailDto
 import com.depi.moviex.utils.K
 import retrofit2.http.GET
@@ -9,6 +10,7 @@ import retrofit2.http.Query
 
 private const val MOVIE_ID = "movie_id"
 private const val TV_ID = "tv_id"
+private const val COLLECTION_ID = "collection_id"
 
 interface MovieDetailApiService {
 
@@ -27,4 +29,11 @@ interface MovieDetailApiService {
         @Query("language") language: String,
         @Query("append_to_response") appendToResponse: String = "credits,reviews,videos"
     ): MovieDetailDto
+
+    @GET("collection/{$COLLECTION_ID}")
+    suspend fun fetchCollection(
+        @Path(COLLECTION_ID) collectionId: Int,
+        @Query("api_key") apiKey: String = BuildConfig.API_KEY,
+        @Query("language") language: String,
+    ): CollectionDto
 }

@@ -302,6 +302,9 @@ fun AppNavigation(
                     },
                     onCastMemberClick = { personId ->
                         navController.navigate("cast_member/$personId")
+                    },
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate("movie_detail/$mediaType/$movieId")
                     }
                 )
             }

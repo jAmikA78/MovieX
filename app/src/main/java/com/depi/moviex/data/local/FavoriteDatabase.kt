@@ -9,7 +9,7 @@ import com.depi.moviex.data.local.entity.ReminderEntity
 
 @Database(
     entities = [FavoriteMovieEntity::class, ReminderEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class FavoriteDatabase : RoomDatabase() {

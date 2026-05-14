@@ -22,7 +22,9 @@ data class MovieDetail(
     val reviews: List<Review>,
     val runTime: String,
     val videos: List<Video>,
-    val imdbId: String = ""
+    val imdbId: String = "",
+    val belongsToCollectionId: Int? = null,
+    val belongsToCollectionName: String? = null,
 )
 
 data class Video(
@@ -60,4 +62,13 @@ data class Crew(
     val job: String,
     val department: String,
     val profilePath: String?
+)
+
+data class CollectionMovie(
+    val id: Int,
+    val title: String,
+    val posterPath: String?,
+    val backdropPath: String?,
+    val releaseDate: String,
+    val voteAverage: Double,
 )

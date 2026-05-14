@@ -130,6 +130,10 @@
     <string name="runtime">Runtime</string>
     <string name="watch">Watch</string>
     <string name="add_to_fav">Add to favourites</string>
+    <string name="watch_details">Watch Details</string>
+    <string name="released_today">Released today!</string>
+    <string name="released_today_date">%s is released today! (%s)</string>
+    <string name="added_to_favorites">Added to favorites: %s</string>
 
     <!-- Favorites -->
     <string name="favorites_title">Favorites</string>

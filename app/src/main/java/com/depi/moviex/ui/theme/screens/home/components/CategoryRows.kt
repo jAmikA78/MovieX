@@ -8,14 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.depi.moviex.ui.theme.screens.home.CategoryItem
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 
 @Composable
 fun CategoryRows(
     categories: List<CategoryItem>,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     onSeeAllClick: (String) -> Unit,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -26,7 +26,7 @@ fun CategoryRows(
                     movies = category.movies,
                     onMovieClick = onMovieClick,
                     onSeeAllClick = onSeeAllClick,
-                    watchlistViewModel = watchlistViewModel
+                    favoriteViewModel = favoriteViewModel
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }

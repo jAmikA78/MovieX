@@ -36,7 +36,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
 
     // Hilt
     implementation(libs.hilt.android)
@@ -124,4 +125,13 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
+
+    // Test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("app.cash.turbine:turbine:1.1.0")
+
+    // Language
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.compose.material:material-icons-extended")
 }

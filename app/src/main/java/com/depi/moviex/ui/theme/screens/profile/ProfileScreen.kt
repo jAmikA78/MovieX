@@ -1,10 +1,9 @@
 package com.depi.moviex.ui.theme.screens.profile
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,13 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -39,86 +42,121 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.core.os.LocaleListCompat
+import androidx.navigation.NavController
+import com.depi.moviex.R
 import com.depi.moviex.ui.theme.PrimaryRed
-import com.depi.moviex.ui.theme.screens.auth.viewModel.LoginViewModel
+import com.depi.moviex.ui.theme.components.ConfirmDialog
+import com.depi.moviex.ui.theme.components.MenuItemRow
+
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     isDarkMode: Boolean = true,
     onThemeChange: (Boolean) -> Unit = {},
-    onSignOut: () -> Unit = {}
+    onSignOut: () -> Unit = {},
+    username: String? = null,
+    isGuest: Boolean = false,
+    onLoginClick: () -> Unit = {},
+    navController: NavController? = null,
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
-    val loginViewModel: LoginViewModel = hiltViewModel()
+    val currentLanguage = AppCompatDelegate.getApplicationLocales()[0]?.language ?: "en"
+    val isArabic = currentLanguage == "ar"
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 24.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
         ) {
             Text(
-                text = "Profile",
+                text = stringResource(R.string.profile),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 50.dp, bottom = 24.dp)
+                modifier = Modifier.padding(top = 50.dp, bottom = 24.dp),
             )
 
             Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .align(Alignment.CenterHorizontally),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(PrimaryRed)
+                        .align(Alignment.CenterHorizontally),
+                contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(48.dp)
+                Text(
+                    text = (username?.firstOrNull()?.uppercase() ?: "?"),
+                    color = Color.White,
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "MovieX User",
+                text = if (isGuest) stringResource(R.string.guest) else (username ?: stringResource(R.string.moviex_user)),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
             )
 
-            Text(
-                text = "user@moviex.com",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+            if (!isGuest && username != null) {
+                Text(
+                    text = "@$username",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            ProfileItem(
+            MenuItemRow(
                 icon = Icons.Default.Settings,
-                title = "Dark Mode",
-                subtitle = "Enable dark theme",
+                title = stringResource(R.string.dark_mode),
+                subtitle = stringResource(R.string.enable_dark_theme),
                 trailing = {
                     Switch(
                         checked = isDarkMode,
                         onCheckedChange = { onThemeChange(it) },
+                        colors =
+                            SwitchDefaults.colors(
+                                checkedThumbColor = PrimaryRed,
+                                checkedTrackColor = PrimaryRed.copy(alpha = 0.5f),
+                            ),
+                    )
+                },
+            )
+
+            MenuItemRow(
+                icon = Icons.Default.Public,
+                title = stringResource(R.string.arabic),
+                subtitle = stringResource(R.string.arabic_subtitle),
+                trailing = {
+                    Switch(
+                        checked = isArabic,
+                        onCheckedChange = { checked ->
+                            val targetLang = if (checked) "ar" else "en"
+                            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(targetLang)
+                            AppCompatDelegate.setApplicationLocales(appLocale)
+                        },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = PrimaryRed,
                             checkedTrackColor = PrimaryRed.copy(alpha = 0.5f)
@@ -127,42 +165,52 @@ fun ProfileScreen(
                 }
             )
 
-            ProfileItem(
+            MenuItemRow(
                 icon = Icons.Default.Notifications,
-                title = "Notifications",
-                subtitle = "Manage notification preferences",
+                title = stringResource(R.string.notifications),
+                subtitle = stringResource(R.string.notification_preferences),
                 onClick = { }
             )
 
-            ProfileItem(
-                icon = Icons.Default.Info,
-                title = "About",
-                subtitle = "App version 1.0.0",
-                onClick = { }
-            )
-
-            ProfileItem(
+            MenuItemRow(
                 icon = Icons.Default.Email,
-                title = "Support",
-                subtitle = "Contact us for help or feedback",
-                onClick = { }
+                title = stringResource(R.string.support),
+                subtitle = stringResource(R.string.contact_support),
+                onClick = { navController?.navigate("support") }
             )
 
-            ProfileItem(
+            MenuItemRow(
                 icon = Icons.Default.Person,
-                title = "Developers",
-                subtitle = "Meet the team behind MovieX",
-                onClick = { }
+                title = stringResource(R.string.developers),
+                subtitle = stringResource(R.string.meet_team),
+                onClick = { navController?.navigate("developers") }
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            ProfileItem(
-                icon = Icons.AutoMirrored.Filled.ExitToApp,
-                title = "Sign Out",
-                subtitle = "Sign out of your account",
-                titleColor = PrimaryRed,
-                onClick = { showLogoutDialog = true }
+            if (isGuest) {
+                MenuItemRow(
+                    icon = Icons.Default.Person,
+                    title = stringResource(R.string.btn_login),
+                    subtitle = stringResource(R.string.login_sub_title),
+                    titleColor = PrimaryRed,
+                    onClick = onLoginClick,
+                )
+            } else {
+                MenuItemRow(
+                    icon = Icons.AutoMirrored.Filled.ExitToApp,
+                    title = stringResource(R.string.sign_out),
+                    subtitle = stringResource(R.string.sign_out_subtitle),
+                    titleColor = PrimaryRed,
+                    onClick = { showLogoutDialog = true },
+                )
+            }
+
+            MenuItemRow(
+                icon = Icons.Default.Info,
+                title = stringResource(R.string.about),
+                subtitle = stringResource(R.string.app_version),
+                onClick = { },
             )
 
             Spacer(modifier = Modifier.height(25.dp))
@@ -170,82 +218,15 @@ fun ProfileScreen(
     }
 
     if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Sign Out") },
-            text = { Text("Are you sure you want to sign out?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        loginViewModel.logout()
-                        showLogoutDialog = false
-                        onSignOut()
-                    }
-                ) {
-                    Text("Sign Out", color = PrimaryRed)
-                }
+        ConfirmDialog(
+            title = stringResource(R.string.sign_out_confirm_title),
+            text = stringResource(R.string.sign_out_confirm_text),
+            confirmLabel = stringResource(R.string.sign_out_confirm_label),
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                showLogoutDialog = false
+                onSignOut()
             },
-            dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Cancel")
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-
-@Composable
-fun ProfileItem(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    onClick: () -> Unit = { },
-    titleColor: Color = MaterialTheme.colorScheme.onBackground,
-    trailing: @Composable (() -> Unit)? = null
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = if (titleColor == PrimaryRed) PrimaryRed else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = title,
-                color = titleColor,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                text = subtitle,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        trailing?.invoke()
     }
 }

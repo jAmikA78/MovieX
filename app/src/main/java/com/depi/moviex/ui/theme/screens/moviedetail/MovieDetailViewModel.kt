@@ -3,6 +3,7 @@ package com.depi.moviex.ui.theme.screens.moviedetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.utils.Response
 import com.depi.moviex.movie_detail.domain.models.MovieDetail
 import com.depi.moviex.movie_detail.domain.models.Video
@@ -19,7 +20,8 @@ data class MovieDetailState(
     val movieDetail: MovieDetail? = null,
     val videos: List<Video> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val mediaType: MediaType = MediaType.MOVIE
 )
 
 @HiltViewModel
@@ -29,17 +31,18 @@ class MovieDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val movieId: Int = checkNotNull(savedStateHandle["movieId"])
+    private val mediaType: MediaType = MediaType.fromValue(savedStateHandle["mediaType"] ?: "movie")
 
-    private val _movieDetailState = MutableStateFlow(MovieDetailState())
+    private val _movieDetailState = MutableStateFlow(MovieDetailState(mediaType = mediaType))
     val movieDetailState = _movieDetailState.asStateFlow()
 
     init {
-        fetchMovieDetail(movieId)
-        fetchMovieVideos(movieId)
+        fetchDetail(movieId, mediaType)
+        fetchVideos(movieId, mediaType)
     }
 
-    private fun fetchMovieDetail(movieId: Int) = viewModelScope.launch {
-        repository.fetchMovieDetail(movieId).collectAndHandle(
+    private fun fetchDetail(movieId: Int, mediaType: MediaType) = viewModelScope.launch {
+        repository.fetchDetail(movieId, mediaType).collectAndHandle(
             onError = { error ->
                 _movieDetailState.update {
                     it.copy(isLoading = false, error = error?.message)
@@ -57,8 +60,8 @@ class MovieDetailViewModel @Inject constructor(
         }
     }
 
-    private fun fetchMovieVideos(movieId: Int) = viewModelScope.launch {
-        repository.fetchMovieVideos(movieId).collectAndHandle(
+    private fun fetchVideos(movieId: Int, mediaType: MediaType) = viewModelScope.launch {
+        repository.fetchVideos(movieId, mediaType).collectAndHandle(
             onError = { },
             onLoading = { }
         ) { videos ->

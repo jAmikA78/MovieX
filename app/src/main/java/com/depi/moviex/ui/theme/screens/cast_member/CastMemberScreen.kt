@@ -11,21 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,15 +40,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.depi.moviex.cast_member.domain.models.CastMember
-import com.depi.moviex.cast_member.domain.models.KnownForMovie
+import com.depi.moviex.data.local.extensions.toMovie
 import com.depi.moviex.ui.theme.PrimaryRed
+import com.depi.moviex.ui.theme.components.BackButton
+import com.depi.moviex.ui.theme.components.ErrorText
+import com.depi.moviex.ui.theme.components.ExpandableText
+import com.depi.moviex.ui.theme.components.LoadingIndicator
+import com.depi.moviex.ui.theme.components.SectionTitle
+import com.depi.moviex.ui.theme.screens.home.components.MovieCoverImage
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 import com.depi.moviex.utils.K
+import kotlinx.coroutines.launch
 
 @Composable
 fun CastMemberScreen(
     modifier: Modifier = Modifier,
     castMemberViewModel: CastMemberViewModel = hiltViewModel(),
-    onBackClick: () -> Unit = {}
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
+    onBackClick: () -> Unit = {},
+    onMovieClick: (Int, String) -> Unit = { _, _ -> }
 ) {
     val state by castMemberViewModel.castMemberState.collectAsStateWithLifecycle()
 
@@ -68,28 +69,17 @@ fun CastMemberScreen(
     ) {
         when {
             state.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = PrimaryRed)
-                }
+                LoadingIndicator()
             }
             state.error != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = state.error!!,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
+                ErrorText(message = state.error)
             }
             state.castMember != null -> {
                 CastMemberContent(
                     castMember = state.castMember!!,
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    onMovieClick = onMovieClick,
+                    favoriteViewModel = favoriteViewModel
                 )
             }
         }
@@ -99,7 +89,9 @@ fun CastMemberScreen(
 @Composable
 private fun CastMemberContent(
     castMember: CastMember,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onMovieClick: (Int, String) -> Unit = { _, _ -> },
+    favoriteViewModel: FavoriteViewModel
 ) {
     var isBiographyExpanded by remember { mutableStateOf(false) }
 
@@ -137,20 +129,7 @@ private fun CastMemberContent(
                     )
             )
 
-            IconButton(
-                onClick = onBackClick,
-                modifier = Modifier
-                    .padding(top = 40.dp, start = 8.dp)
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
+            BackButton(onClick = onBackClick)
 
             Column(
                 modifier = Modifier
@@ -198,42 +177,16 @@ private fun CastMemberContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Biography",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            SectionTitle(text = "Biography", large = false, bottomSpacer = false)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = castMember.biography.ifEmpty { "No biography available." },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                maxLines = if (isBiographyExpanded) Int.MAX_VALUE else 4,
-                overflow = TextOverflow.Ellipsis
+            ExpandableText(
+                text = castMember.biography,
+                emptyMessage = "No biography available."
             )
-
-            if (castMember.biography.length > 150) {
-                TextButton(
-                    onClick = { isBiographyExpanded = !isBiographyExpanded },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(
-                        text = if (isBiographyExpanded) "Show Less" else "Show More",
-                        color = PrimaryRed,
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Known For",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            SectionTitle(text = "Known For", large = false, bottomSpacer = false)
             Spacer(modifier = Modifier.height(8.dp))
         }
 
@@ -242,8 +195,26 @@ private fun CastMemberContent(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(castMember.knownFor) { movie ->
-                KnownForItem(movie = movie)
+            items(castMember.knownFor) { knownFor ->
+                val movie = knownFor.toMovie()
+                val isInFavorite by favoriteViewModel.isInFavorite(movie.id)
+                    .collectAsStateWithLifecycle(initialValue = false)
+                val scope = rememberCoroutineScope()
+                MovieCoverImage(
+                    movie = movie,
+                    onMovieClick = onMovieClick,
+                    isInWatchlist = isInFavorite,
+                    onHeartClick = {
+                        scope.launch {
+                            favoriteViewModel.addToFavorite(movie)
+                        }
+                    },
+                    onRemoveFromFavorite = { movieToRemove ->
+                        scope.launch {
+                            favoriteViewModel.removeFromFavorite(movieToRemove)
+                        }
+                    }
+                )
             }
         }
 
@@ -271,46 +242,5 @@ private fun InfoItem(
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
-    }
-}
-
-@Composable
-private fun KnownForItem(movie: KnownForMovie) {
-    Card(
-        modifier = Modifier
-            .width(120.dp)
-            .height(180.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
-    ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(movie.posterPath?.let { "${K.BASE_IMAGE_URL}$it" })
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = movie.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                )
-            }
-            Text(
-                text = movie.title,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
-            )
-        }
     }
 }

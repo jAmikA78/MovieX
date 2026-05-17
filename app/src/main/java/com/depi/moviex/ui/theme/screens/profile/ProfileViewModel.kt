@@ -7,10 +7,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 data class ProfileState(
-    val username: String = "MovieX User",
-    val email: String = "user@moviex.com",
-    val joinDate: String = "January 2024"
-)
+    val username: String = DEFAULT_USERNAME,
+    val email: String = DEFAULT_EMAIL,
+    val joinDate: String = DEFAULT_JOIN_DATE
+) {
+    companion object {
+        const val DEFAULT_USERNAME = "MovieX User"
+        const val DEFAULT_EMAIL = "user@moviex.com"
+        const val DEFAULT_JOIN_DATE = "January 2024"
+    }
+}
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor() : ViewModel() {

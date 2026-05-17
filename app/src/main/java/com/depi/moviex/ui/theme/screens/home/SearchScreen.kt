@@ -13,34 +13,48 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.depi.moviex.movie.data.remote.models.Result
+import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 import com.depi.moviex.utils.K
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
+import com.depi.moviex.LocalIsGuest
+import com.depi.moviex.LocalOnLoginClick
+import com.depi.moviex.ui.theme.components.LoginRequiredDialog
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
-    onMovieClick: (Int) -> Unit
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
+    onMovieClick: (Int, String) -> Unit
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val movies by viewModel.movies.collectAsState()
+
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
 
     Column(
         modifier = Modifier
@@ -53,19 +67,20 @@ fun SearchScreen(
             onValueChange = { viewModel.onQueryChange(it) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
-            placeholder = { 
+                .padding(top = 16.dp)
+                .focusRequester(focusRequester),
+            placeholder = {
                 Text(
-                    text = "Search for movies...", 
-                    color = MaterialTheme.colorScheme.onSurfaceVariant 
-                ) 
+                    text = stringResource(R.string.search_hint),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             },
-            leadingIcon = { 
+            leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Search, 
-                    contentDescription = null, 
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
-                ) 
+                )
             },
             shape = RoundedCornerShape(16.dp),
             singleLine = true,
@@ -87,7 +102,7 @@ fun SearchScreen(
         if (movies.isEmpty() && searchQuery.length > 2) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "No movies found", 
+                    text = stringResource(R.string.no_movies_found),
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -100,9 +115,9 @@ fun SearchScreen(
             ) {
                 items(movies) { movie ->
                     MovieItem(
-                        movie = movie, 
-                        onClick = { movie.id?.let { onMovieClick(it) } },
-                        watchlistViewModel = watchlistViewModel
+                        movie = movie,
+                        onClick = { onMovieClick(movie.id, movie.mediaType.value) },
+                        favoriteViewModel = favoriteViewModel
                     )
                 }
             }
@@ -112,15 +127,17 @@ fun SearchScreen(
 
 @Composable
 fun MovieItem(
-    movie: Result, 
+    movie: Movie,
     onClick: () -> Unit,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel()
+    favoriteViewModel: FavoriteViewModel = hiltViewModel()
 ) {
-    val movieId = movie.id ?: return
-    val isInWatchlist by watchlistViewModel.isInWatchlist(movieId).collectAsStateWithLifecycle(initialValue = false)
+    val isInFavorite by favoriteViewModel.isInFavorite(movie.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
     var showRemoveDialog by remember { mutableStateOf(false) }
-    
+    var showLoginDialog by remember { mutableStateOf(false) }
+    val isGuest = LocalIsGuest.current
+    val onLoginClick = LocalOnLoginClick.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,7 +160,7 @@ fun MovieItem(
                     contentScale = ContentScale.Crop
                 )
                 Text(
-                    text = movie.title ?: "Unknown",
+                    text = movie.title,
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -151,8 +168,7 @@ fun MovieItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            
-            // Heart icon for watchlist
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -161,37 +177,25 @@ fun MovieItem(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
                     .clickable {
-                if (isInWatchlist) {
-                    showRemoveDialog = true
-                } else {
-                    scope.launch {
-                        watchlistViewModel.addToWatchlist(
-                            com.depi.moviex.movie.domain.models.Movie(
-                                id = movie.id ?: 0,
-                                title = movie.title ?: "",
-                                posterPath = movie.posterPath ?: "",
-                                backdropPath = movie.backdropPath ?: "",
-                                releaseDate = movie.releaseDate ?: "",
-                                voteAverage = movie.voteAverage ?: 0.0,
-                                voteCount = movie.voteCount ?: 0,
-                                genreIds = emptyList(),
-                                originalLanguage = "",
-                                originalTitle = movie.title ?: "",
-                                overview = "",
-                                popularity = 0.0,
-                                video = false
-                            ),
-                            "Search"
-                        )
-                    }
-                }
+                        if (isInFavorite) {
+                            showRemoveDialog = true
+                        } else if (isGuest) {
+                            showLoginDialog = true
+                        } else {
+                            scope.launch {
+                                favoriteViewModel.addToFavorite(
+                                    movie,
+                                    "Search"
+                                )
+                            }
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = "Toggle Watchlist",
-                    tint = if (isInWatchlist) PrimaryRed else Color.White,
+                    imageVector = if (isInFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = stringResource(R.string.toggle_favorite),
+                    tint = if (isInFavorite) PrimaryRed else Color.White,
                     modifier = Modifier.size(18.dp)
                 )
             }

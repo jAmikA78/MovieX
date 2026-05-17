@@ -21,7 +21,8 @@ data class MovieDetail(
     val productionCountry: List<String>,
     val reviews: List<Review>,
     val runTime: String,
-    val videos: List<Video>
+    val videos: List<Video>,
+    val imdbId: String = ""
 )
 
 data class Video(

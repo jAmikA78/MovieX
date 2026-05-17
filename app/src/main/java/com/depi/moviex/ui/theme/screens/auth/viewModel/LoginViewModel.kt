@@ -48,6 +48,10 @@ class LoginViewModel @Inject constructor(
         _loginState.value = LoginState.Idle
     }
 
+    fun loginAsGuest() {
+        authRepository.saveGuest()
+    }
+
     fun logout() {
         authRepository.logout()
         _loginState.value = LoginState.Idle

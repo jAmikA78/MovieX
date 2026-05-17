@@ -1,27 +1,30 @@
 package com.depi.moviex.movie.data.mapper_impl
 
+import com.depi.moviex.common.MediaType
 import com.depi.moviex.common.data.ApiMapper
 import com.depi.moviex.movie.data.remote.models.MovieDto
 import com.depi.moviex.movie.domain.models.Movie
-import com.depi.moviex.utils.GenreConstants
+import com.depi.moviex.movie.domain.models.MovieCategory
 
 class MovieApiMapperImpl : ApiMapper<List<Movie>, MovieDto> {
-    override fun mapToDomain(apiDto: MovieDto): List<Movie> {
-        return apiDto.results?.map { result ->
+    override fun mapToDomain(entity: MovieDto): List<Movie> {
+        return entity.results?.map { result ->
+            val isTvShow = !result?.name.isNullOrEmpty()
             Movie(
                 backdropPath = formatEmptyValue(result?.backdropPath),
                 genreIds = formatGenre(result?.genreIds),
                 id = result?.id ?: 0,
                 originalLanguage = formatEmptyValue(result?.originalLanguage, "language"),
-                originalTitle = formatEmptyValue(result?.originalTitle, "title"),
+                originalTitle = formatEmptyValue(result?.originalTitle ?: result?.originalName, "title"),
                 overview = formatEmptyValue(result?.overview, "overview"),
                 popularity = result?.popularity ?: 0.0,
                 posterPath = formatEmptyValue(result?.posterPath),
-                releaseDate = formatEmptyValue(result?.releaseDate, "date"),
-                title = formatEmptyValue(result?.title, "title"),
+                releaseDate = formatEmptyValue(result?.releaseDate ?: result?.firstAirDate, "date"),
+                title = formatEmptyValue(result?.title ?: result?.name, "title"),
                 voteAverage = result?.voteAverage ?: 0.0,
                 voteCount = result?.voteCount ?: 0,
-                video = result?.video ?: false
+                video = result?.video ?: false,
+                mediaType = if (isTvShow) MediaType.TV else MediaType.MOVIE
             )
         } ?: emptyList()
     }
@@ -32,7 +35,7 @@ class MovieApiMapperImpl : ApiMapper<List<Movie>, MovieDto> {
     }
 
     private fun formatGenre(genreIds: List<Int?>?): List<String> {
-        return genreIds?.map { GenreConstants.getGenreNameById(it ?: 0) } ?: emptyList()
+        return genreIds?.map { MovieCategory.getGenreNameById(it ?: 0) } ?: emptyList()
     }
 
 }

@@ -29,7 +29,7 @@ import kotlinx.coroutines.yield
 @Composable
 fun FeaturedBanner(
     featuredMovies: List<Movie>,
-    onMovieClick: (Int) -> Unit
+    onMovieClick: (Int, String) -> Unit
 ) {
     if (featuredMovies.isEmpty()) return
 
@@ -66,7 +66,7 @@ fun FeaturedBanner(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(24.dp))
-                    .clickable { onMovieClick(movie.id) }
+                    .clickable { onMovieClick(movie.id, movie.mediaType.value) }
             ) {
 
                 AsyncImage(

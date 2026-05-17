@@ -24,6 +24,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.ui.theme.screens.auth.viewModel.SignUpState
 import com.depi.moviex.ui.theme.screens.auth.viewModel.SignUpViewModel
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Preview
 @Composable
@@ -51,12 +53,9 @@ fun SignUpScreen(
     val signUpState by signUpViewModel.signUpState.collectAsStateWithLifecycle()
 
     LaunchedEffect(signUpState) {
-        when (signUpState) {
-            is SignUpState.MessageShown -> {
-                onSignUpSuccess()
-                signUpViewModel.resetState()
-            }
-            else -> { }
+        if (signUpState is SignUpState.Success) {
+            onSignUpSuccess()
+            signUpViewModel.resetState()
         }
     }
 
@@ -78,7 +77,7 @@ fun SignUpScreen(
             modifier = Modifier.fillMaxWidth().align(Alignment.Center)
         ) {
             Text(
-                text = "Sign Up",
+                text = stringResource(R.string.btn_signup),
                 color = Color.White,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
@@ -88,8 +87,8 @@ fun SignUpScreen(
             AuthTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = "Username",
-                placeholder = "Choose a username",
+                label = stringResource(R.string.label_name),
+                placeholder = stringResource(R.string.hint_choose_username),
                 icon = Icons.Default.Person
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -97,8 +96,8 @@ fun SignUpScreen(
             AuthTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = "Email",
-                placeholder = "Enter your email",
+                label = stringResource(R.string.label_email),
+                placeholder = stringResource(R.string.hint_email),
                 icon = Icons.Default.Email
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -106,8 +105,8 @@ fun SignUpScreen(
             AuthTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Password",
-                placeholder = "Create a password",
+                label = stringResource(R.string.label_password),
+                placeholder = stringResource(R.string.hint_create_password),
                 icon = Icons.Default.Lock,
                 isPassword = true
             )
@@ -116,24 +115,28 @@ fun SignUpScreen(
             AuthTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = "Confirm Password",
-                placeholder = "Confirm your password",
+                label = stringResource(R.string.label_confirm_password),
+                placeholder = stringResource(R.string.hint_confirm_password),
                 icon = Icons.Default.Lock,
                 isPassword = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // TMDB does not support signup via API
-            Text(
-                text = "TMDB does not support signup via API.\nPlease create an account at themoviedb.org",
-                color = Color.Gray,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            if (signUpState is SignUpState.Error) {
+                Text(
+                    text = (signUpState as SignUpState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
 
             Button(
-                onClick = { signUpViewModel.onSignUpClick() },
+                onClick = {
+                    signUpViewModel.onSignUpClick(username, email, password, confirmPassword)
+                },
+                enabled = signUpState !is SignUpState.Loading,
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -144,12 +147,20 @@ fun SignUpScreen(
                         .background(signUpButtonGradient, shape = RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "SIGN UP",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (signUpState is SignUpState.Loading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.btn_signup_caps),
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -165,8 +176,7 @@ fun SignUpScreen(
                 .padding(bottom = 16.dp)
         ) {
             Text(
-                text = "Already have an account? Login" +
-                        "\nOr continue as GUEST",
+                text = stringResource(R.string.already_have_account_login),
                 color = Color.White,
                 fontWeight = FontWeight.Medium
             )

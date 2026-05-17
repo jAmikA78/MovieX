@@ -14,7 +14,9 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
@@ -35,16 +37,21 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
 import com.depi.moviex.utils.K
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
+import com.depi.moviex.LocalIsGuest
+import com.depi.moviex.LocalOnLoginClick
+import com.depi.moviex.ui.theme.components.LoginRequiredDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeeAllScreen(
     categoryTitle: String,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     onBackClick: () -> Unit,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     viewModel: SeeAllViewModel = hiltViewModel()
 ) {
     val movies = viewModel.getPagedMovies(categoryTitle).collectAsLazyPagingItems()
@@ -64,7 +71,7 @@ fun SeeAllScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -92,8 +99,8 @@ fun SeeAllScreen(
                     if (movie != null) {
                         MovieGridItem(
                             movie = movie,
-                            onClick = { onMovieClick(movie.id) },
-                            watchlistViewModel = watchlistViewModel,
+                            onClick = { onMovieClick(movie.id, movie.mediaType.value) },
+                            favoriteViewModel = favoriteViewModel,
                             categoryTitle = categoryTitle
                         )
                     }
@@ -122,11 +129,14 @@ fun SeeAllScreen(
 fun MovieGridItem(
     movie: Movie,
     onClick: () -> Unit,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     categoryTitle: String = ""
 ) {
-    val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
+    val isInFavorite by favoriteViewModel.isInFavorite(movie.id).collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
+    var showLoginDialog by remember { mutableStateOf(false) }
+    val isGuest = LocalIsGuest.current
+    val onLoginClick = LocalOnLoginClick.current
     
     Card(
         modifier = Modifier
@@ -136,7 +146,7 @@ fun MovieGridItem(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
+        val isInFavorite by favoriteViewModel.isInFavorite(movie.id).collectAsStateWithLifecycle(initialValue = false)
 
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -181,23 +191,34 @@ fun MovieGridItem(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
                     .clickable {
-                scope.launch {
-                    if (isInWatchlist) {
-                        watchlistViewModel.removeFromWatchlist(movie)
-                    } else {
-                        watchlistViewModel.addToWatchlist(movie, categoryTitle)
+                if (isInFavorite) {
+                    scope.launch {
+                        favoriteViewModel.removeFromFavorite(movie)
+                    }
+                } else if (isGuest) {
+                    showLoginDialog = true
+                } else {
+                    scope.launch {
+                        favoriteViewModel.addToFavorite(movie, categoryTitle)
                     }
                 }
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (isInWatchlist) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = "Toggle Watchlist",
-                    tint = if (isInWatchlist) PrimaryRed else Color.White,
+                    imageVector = if (isInFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = stringResource(R.string.toggle_favorite),
+                    tint = if (isInFavorite) PrimaryRed else Color.White,
                     modifier = Modifier.size(18.dp)
                 )
             }
+        }
+
+        if (showLoginDialog) {
+            LoginRequiredDialog(
+                onDismiss = { showLoginDialog = false },
+                onLoginClick = onLoginClick
+            )
         }
     }
 }

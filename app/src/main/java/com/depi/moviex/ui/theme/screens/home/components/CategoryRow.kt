@@ -26,15 +26,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.ui.theme.PrimaryRed
-import com.depi.moviex.ui.theme.screens.watchlist.WatchlistViewModel
+import com.depi.moviex.ui.theme.screens.favorites.FavoriteViewModel
+import androidx.compose.ui.res.stringResource
+import com.depi.moviex.R
 
 @Composable
 fun CategoryRow(
     title: String,
     movies: List<Movie>,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     onSeeAllClick: (String) -> Unit,
-    watchlistViewModel: WatchlistViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -53,7 +55,7 @@ fun CategoryRow(
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = "See All",
+                text = stringResource(R.string.see_all),
                 style = MaterialTheme.typography.bodyMedium,
                 color = PrimaryRed,
                 modifier = Modifier.clickable { onSeeAllClick(title) }
@@ -67,22 +69,22 @@ fun CategoryRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(movies) { movie ->
-                val isInWatchlist by watchlistViewModel.isInWatchlist(movie.id).collectAsStateWithLifecycle(initialValue = false)
+                val isInFavorite by favoriteViewModel.isInFavorite(movie.id).collectAsStateWithLifecycle(initialValue = false)
                 val scope = rememberCoroutineScope()
                 MovieCoverImage(
                     movie = movie,
                     onMovieClick = onMovieClick,
-                    isInWatchlist = isInWatchlist,
+                    isInWatchlist = isInFavorite,
                     onHeartClick = {
                         scope.launch {
-                            if (!isInWatchlist) {
-                                watchlistViewModel.addToWatchlist(movie, title)
+                            if (!isInFavorite) {
+                                favoriteViewModel.addToFavorite(movie, title)
                             }
                         }
                     },
-                    onRemoveFromWatchlist = { movieToRemove ->
+                    onRemoveFromFavorite = { movieToRemove ->
                         scope.launch {
-                            watchlistViewModel.removeFromWatchlist(movieToRemove)
+                            favoriteViewModel.removeFromFavorite(movieToRemove)
                         }
                     }
                 )

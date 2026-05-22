@@ -7,8 +7,11 @@ import com.depi.moviex.movie.domain.models.Movie
 import com.depi.moviex.movie.domain.models.MovieCategory
 
 class MovieApiMapperImpl : ApiMapper<List<Movie>, MovieDto> {
+
     override fun mapToDomain(entity: MovieDto): List<Movie> {
-        return entity.results?.filter { it?.adult != true }?.map { result ->
+        return entity.results?.filter { result ->
+            result?.adult != true && !result.isExplicit()
+        }?.map { result ->
             val isTvShow = !result?.name.isNullOrEmpty()
             Movie(
                 backdropPath = formatEmptyValue(result?.backdropPath),
@@ -37,5 +40,12 @@ class MovieApiMapperImpl : ApiMapper<List<Movie>, MovieDto> {
     private fun formatGenre(genreIds: List<Int?>?): List<String> {
         return genreIds?.map { MovieCategory.getGenreNameById(it ?: 0) } ?: emptyList()
     }
+}
 
+private val explicitKeywords = setOf("erotic", "porn", "xxx", "nsfw", "hardcore")
+
+private fun com.depi.moviex.movie.data.remote.models.Result?.isExplicit(): Boolean {
+    if (this == null) return false
+    val text = "${title.orEmpty()} ${originalTitle.orEmpty()} ${name.orEmpty()} ${originalName.orEmpty()}".lowercase()
+    return explicitKeywords.any { text.contains(it) }
 }

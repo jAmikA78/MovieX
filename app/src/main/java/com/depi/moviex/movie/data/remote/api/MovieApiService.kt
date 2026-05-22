@@ -54,6 +54,7 @@ interface MovieApiService {
     suspend fun searchMovies(
         @Query("api_key") apiKey: String = BuildConfig.API_KEY,
         @Query("query") query: String,
+        @Query("include_adult") includeAdult: Boolean = false,
         @Query("page") page: Int = 1,
         @Query("language") language: String = "en-US"
     ): MovieDto

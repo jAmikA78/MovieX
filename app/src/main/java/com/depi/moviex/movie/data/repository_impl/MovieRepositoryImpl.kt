@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
+private val explicitKeywords = setOf("erotic", "porn", "xxx", "nsfw", "hardcore")
+
 class MovieRepositoryImpl(
     private val movieApiService: MovieApiService,
     private val apiMapper: ApiMapper<List<Movie>, MovieDto>
@@ -50,7 +52,7 @@ class MovieRepositoryImpl(
                 originCountry = category.originCountry, page = page, language = language
             )
         }
-        apiMapper.mapToDomain(movieDto).apply {
+        apiMapper.mapToDomain(movieDto).filter { it.originalLanguage != "tl" && it.originalLanguage != "fil" }.apply {
             emit(Response.Success(this))
         }
     }.catch { e ->
@@ -59,20 +61,24 @@ class MovieRepositoryImpl(
 
     override suspend fun searchMovies(query: String): List<Movie> {
         val response = movieApiService.searchMovies(query = query, language = K.getLanguageCode())
-        return apiMapper.mapToDomain(response)
+        return apiMapper.mapToDomain(response).filter { it.originalLanguage != "tl" && it.originalLanguage != "fil" }
     }
 
     override suspend fun searchAll(query: String): List<SearchResultItem> {
         val response = movieApiService.searchMulti(query = query, language = K.getLanguageCode())
         return response.results?.mapNotNull { result ->
             if (result == null || result.adult == true) return@mapNotNull null
+            val lang = result.originalLanguage ?: ""
+            if (lang == "tl" || lang == "fil") return@mapNotNull null
+            val titleText = "${result.title.orEmpty()} ${result.originalTitle.orEmpty()} ${result.name.orEmpty()} ${result.originalName.orEmpty()}".lowercase()
+            if (explicitKeywords.any { titleText.contains(it) }) return@mapNotNull null
             when (result.mediaType) {
                 "movie" -> {
                     val movie = Movie(
                         backdropPath = result.backdropPath ?: "",
                         genreIds = result.genreIds?.map { MovieCategory.getGenreNameById(it ?: 0) } ?: emptyList(),
                         id = result.id ?: 0,
-                        originalLanguage = result.originalLanguage ?: "",
+                        originalLanguage = lang,
                         originalTitle = result.originalTitle ?: result.title ?: "",
                         overview = result.overview ?: "",
                         popularity = result.popularity ?: 0.0,
@@ -91,7 +97,7 @@ class MovieRepositoryImpl(
                         backdropPath = result.backdropPath ?: "",
                         genreIds = result.genreIds?.map { MovieCategory.getGenreNameById(it ?: 0) } ?: emptyList(),
                         id = result.id ?: 0,
-                        originalLanguage = result.originalLanguage ?: "",
+                        originalLanguage = lang,
                         originalTitle = result.originalName ?: result.name ?: "",
                         overview = result.overview ?: "",
                         popularity = result.popularity ?: 0.0,

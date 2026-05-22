@@ -48,7 +48,7 @@ class MoviePagingSource(
                 )
             }
 
-            val movies = apiMapper.mapToDomain(response)
+            val movies = apiMapper.mapToDomain(response).filter { it.originalLanguage != "tl" && it.originalLanguage != "fil" }
 
             LoadResult.Page(
                 data = movies,
